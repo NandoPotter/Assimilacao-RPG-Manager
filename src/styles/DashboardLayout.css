@@ -1,0 +1,51 @@
+/* =================================================================
+    Arquivo: src/styles/DashboardLayout.css
+    ESTRUTURA DE LAYOUT E TEMAS GLOBAIS
+   ================================================================= */
+
+/* MAPEAMENTO DE TEMAS */
+.theme-assimilador {
+    --cor-tema: var(--cor-assimilador);
+    --cor-tema-glow: var(--cor-assimilador-glow);
+}
+
+.theme-infectado {
+    --cor-tema: var(--cor-infectado);
+    --cor-tema-glow: var(--cor-infectado-glow);
+}
+
+/* CONTAINER PRINCIPAL */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-image: var(--bg-gradient);
+    padding-left: var(--sidebar-width); /* Reserva espaço para a sidebar fixa */
+    transition: all 0.5s ease;
+}
+
+/* ÁREA DE CONTEÚDO DINÂMICO */
+.content-area {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.user-role {
+    color: var(--cor-tema);
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px var(--cor-tema-glow);
+    margin-bottom: 30px;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        padding-left: 0;
+    }
+    .content-area {
+        padding: 20px;
+    }
+}
