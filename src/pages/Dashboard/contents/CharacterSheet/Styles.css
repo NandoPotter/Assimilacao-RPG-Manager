@@ -1,0 +1,1338 @@
+/* =================================================================
+   FICHA INTERATIVA - ESTILOS (COMPACTO & UNIFORME)
+   ================================================================= */
+
+/* Container Principal */
+.sheet-container {
+    width: 100%;
+    height: calc(100vh - 150px); 
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;    
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    position: relative;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* HEADER FIXO */
+.sheet-header {
+    flex-shrink: 0;
+    background: rgba(10, 12, 15, 0.98);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    z-index: 20;
+}
+
+.char-identity { display: flex; flex-direction: column; text-align: right; }
+.char-name-title { font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: 2px; margin: 0; line-height: 1; text-transform: uppercase; text-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
+.char-gen-subtitle { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; letter-spacing: 1px; margin-top: 2px; }
+
+.btn-save-sheet {
+    background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #ccc;
+    padding: 6px 15px; font-weight: bold; text-transform: uppercase; cursor: pointer;
+    transition: 0.3s; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; border-radius: 4px;
+}
+.btn-save-sheet:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); }
+
+/* WRAPPER ROLÁVEL */
+.sheet-scrollable-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+
+    scroll-snap-type: y proximity;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cor-tema) #050505;
+}
+
+.sheet-scrollable-area::-webkit-scrollbar { width: 8px; }
+.sheet-scrollable-area::-webkit-scrollbar-track { background: #050505; }
+.sheet-scrollable-area::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+.sheet-scrollable-area::-webkit-scrollbar-thumb:hover { background: var(--cor-tema); }
+
+.snap-section {
+    scroll-snap-align: start; /* O topo do elemento alinha com o topo do scroll */
+    scroll-margin-top: 5px;  /* Margem de segurança para não colar no topo */
+    margin-bottom: 5px;      /* Garante espaço entre os blocos */
+}
+
+.snap-section:first-child {
+    scroll-margin-top: 20px;
+}
+
+/* GRID PRINCIPAL */
+.sheet-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px; 
+    gap: 10px;
+    max-width: 1600px; margin: 0 auto; width: 100%;
+    align-items: start;
+}
+@media (max-width: 1000px) { .sheet-grid { grid-template-columns: 1fr; } }
+
+/* COLUNAS */
+.sheet-content { display: flex; flex-direction: column; gap: 0px; /* Gap zerado, controlamos no margin-bottom dos filhos */ }
+.sheet-sidebar { position: sticky; top: 0; display: flex; flex-direction: column; gap: 10px; }
+
+
+/* =================================================================
+   ESTILOS INTERNOS & TIPOGRAFIA
+   ================================================================= */
+
+/* --- TÍTULOS PADRONIZADOS --- */
+/* Usados em Origens, Atributos, Seções */
+.group-title, .section-title, .purpose-title {
+    color: var(--cor-tema);
+    font-size: 0.8rem; /* Tamanho discreto */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 3px;
+    display: block;
+}
+
+/* Remover margens extras dos hr */
+hr { border-color: rgba(255,255,255,0.05); margin: 5px 0; }
+
+/* Container interno de seções (Características, Inventário, etc) */
+.attr-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* Espaço entre o Título e os Cards */
+    width: 100%;
+}
+
+/* --- CONTAINERS (Origens, Atributos) --- */
+.attr-group-container {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 8px; /* Padding reduzido */
+    margin-bottom: 0px; /* Margem entre boxes reduzida */
+}
+
+/* --- ORIGENS --- */
+.input-label { display: block; font-size: 0.65rem; color: #666; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+.input-dark-sheet {
+    width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff; padding: 6px 8px; border-radius: 4px; font-size: 0.85rem; font-family: inherit; transition: 0.2s;
+}
+.input-dark-sheet:focus { background: rgba(0, 0, 0, 0.5); border-color: var(--cor-tema); outline: none; }
+
+.purposes-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; /* Gap apertado */
+    background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px;
+}
+.purpose-col { display: flex; flex-direction: column; gap: 6px; }
+.purpose-input { font-size: 0.8rem; padding: 5px 8px; }
+
+/* --- ATRIBUTOS + DADOS --- */
+.sheet-content-top {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; /* Gap reduzido entre colunas */
+    margin-bottom: 5px;
+}
+@media (max-width: 1200px) { .sheet-content-top { grid-template-columns: 1fr; } }
+
+.grid-instincts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.grid-aptitudes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
+
+.mini-card {
+    background: rgba(255,255,255,0.03); padding: 5px 8px; border-radius: 4px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; border: 1px solid transparent; transition: 0.2s;
+}
+.mini-card:hover { background: rgba(255,255,255,0.08); border-color: var(--cor-tema); }
+.mini-label { font-size: 0.95rem; color: #aaa; }
+.mini-val { font-weight: bold; font-size: 0.95rem; color: #fff; }
+
+/* --- MESA DE DADOS --- */
+.dice-stage-container {
+    background: radial-gradient(circle at center, #1a1e24 0%, #0a0c0f 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    height: 100%; min-height: 300px; /* Altura mínima um pouco menor */
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 5px;
+}
+
+.dice-placeholder-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: rgba(255,255,255,0.1); font-size: 1.5rem; text-transform: uppercase; font-weight: bold; pointer-events: none;
+}
+
+/* --- SIDEBAR COMPONENTS --- */
+.char-avatar-box {
+    width: 60%; margin: 0 auto 10px auto; aspect-ratio: 1 / 1; 
+    background: #0f1215; border: 3px solid rgba(255, 255, 255, 0.15); border-radius: 50%; 
+    overflow: hidden; position: relative; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.char-avatar-img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; border-radius: 50%; }
+.char-avatar-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s;
+    color: #fff; font-weight: bold; font-size: 0.7rem; border-radius: 50%; text-transform: uppercase;
+}
+.char-avatar-box:hover .char-avatar-overlay { opacity: 1; }
+
+.tug-wrapper, .health-section {
+    background: #0f1215; padding: 10px; border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08); margin-bottom: 0; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Descrição Sidebar */
+.desc-box-container {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+}
+
+.desc-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
+.desc-textarea {
+    width: 100%; 
+    background: transparent; 
+    border: none; 
+    color: #ccc; 
+    font-size: 0.9rem;
+    resize: none; /* Remove resize manual para manter layout fixo */
+    flex: 1; /* Ocupa todo o espaço vertical restante */
+    min-height: 150px; /* Altura mínima garantida */
+    font-family: inherit; 
+    line-height: 1.5; 
+    outline: none;
+}
+
+.desc-textarea:focus { color: #fff; }
+
+/* Features & Inv */
+.feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.feat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 10px; }
+.feat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 3px; }
+.feat-name { color: var(--cor-infectado); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+.feat-desc { font-size: 0.75rem; color: #aaa; line-height: 1.3; margin: 0; }
+
+/* =================================================================
+   INVENTÁRIO (FINAL ADJUSTED)
+   ================================================================= */
+
+.inv-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 100%;
+}
+
+/* --- CABEÇALHOS --- */
+.inv-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+    padding-bottom: 0px;
+    min-height: 20px;
+}
+
+.inv-capacity-indicator {
+    font-size: 0.7rem; color: #888; background: rgba(0,0,0,0.3);
+    padding: 1px 6px; border-radius: 4px; border: 1px solid transparent;
+}
+.inv-capacity-indicator.overload { 
+    color: #ff5555; border-color: #ff5555; background: rgba(255, 85, 85, 0.1);
+}
+
+/* Badges e Botões Globais */
+.inv-slots-badge {
+    font-size: 0.6rem; color: #aaa; background: rgba(0,0,0,0.4);
+    padding: 2px 6px; border-radius: 3px; display: inline-block;
+    border: 1px solid rgba(255,255,255,0.05); white-space: nowrap;
+}
+
+.btn-inspect-icon {
+    background: transparent; border: none; color: #666; cursor: pointer;
+    font-size: 0.85rem; padding: 4px; transition: 0.2s; line-height: 1;
+}
+.btn-inspect-icon:hover { color: #fff; transform: scale(1.1); }
+
+
+/* --- 1. EQUIPADOS (GRID) --- */
+.inv-equipped-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 0;
+}
+
+.inv-slot-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px; height: 140px; 
+    padding: 8px; display: flex; flex-direction: column; justify-content: space-between;
+    transition: 0.2s;
+}
+.inv-slot-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.3); }
+
+/* Estado "Largado" (Mochila Dropada) */
+.inv-slot-card.dropped {
+    border-color: #ff5555; background: rgba(255, 85, 85, 0.05); opacity: 0.8;
+}
+
+.inv-slot-card.empty {
+    border-style: dashed; border-color: rgba(255,255,255,0.05);
+    align-items: center; justify-content: center;
+}
+.inv-empty-text { color: rgba(255,255,255,0.1); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+
+.inv-slot-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.inv-item-name { font-size: 0.75rem; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%; }
+.inv-item-type { font-size: 0.6rem; color: var(--cor-tema); text-transform: uppercase; display: block; margin-top: 2px; }
+
+.inv-item-desc {
+    font-size: 0.65rem; color: #888; margin: 4px 0; line-height: 1.2;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Botões do Equipado */
+.inv-actions { display: flex; gap: 4px; margin-top: auto; }
+.inv-actions button {
+    flex: 1; background: rgba(0,0,0,0.4); border: 1px solid #333; color: #aaa;
+    font-size: 0.6rem; padding: 4px 0; border-radius: 3px; cursor: pointer; transition: 0.2s;
+}
+.inv-actions button:hover { background: #333; color: #fff; border-color: #666; }
+/* Estilo Botão Perigo (Largar/Perdida) */
+.btn-danger { color: #ff7777 !important; border-color: #773333 !important; }
+.btn-danger:hover { background: #552222 !important; color: #ffaaaa !important; }
+/* Estilo Botão Sucesso (Recuperar) */
+.btn-success { color: #77ff77 !important; border-color: #337733 !important; }
+
+
+/* --- 2. DIVISÃO MOCHILA / REFÚGIO --- */
+.inv-split-area {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 8px;
+    flex: 1; 
+    min-height: 0;
+    margin-top: 2px; /* Importante para o scroll interno funcionar e não estourar a tela */
+}
+
+.inv-column {
+    background: rgba(0,0,0,0.2); 
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.05); 
+    padding: 10px;
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; 
+    position: relative;
+    height: 100%; /* Garante que o container respeite a altura do pai */
+}
+
+/* LISTAS COM SCROLL */
+.inv-list-scroll {
+    display: flex; 
+    flex-direction: column; 
+    gap: 6px; 
+    
+    /* ALTURA FIXA PARA 6 CARDS */
+    height: 400px;        /* Altura calculada */
+    min-height: 400px;    /* Garante que não diminua */
+    max-height: 400px;    /* Garante que não estique */
+    
+    overflow-y: auto;     /* Scroll se passar de 6 itens */
+    padding-right: 5px;
+}
+
+.inv-list-scroll::-webkit-scrollbar { width: 4px; }
+.inv-list-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.inv-list-scroll::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+.inv-list-scroll::-webkit-scrollbar-thumb:hover { background: var(--cor-tema); }
+
+/* --- CARD DA MOCHILA (LAYOUT 3 COLUNAS) --- */
+.inv-backpack-card {
+    background: rgba(255,255,255,0.02); 
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 4px; 
+    padding: 6px 8px; /* Padding reduzido verticalmente */
+    
+    display: grid; 
+    /* Col 1: 25% (Info compacta) | Col 2: Auto (Desc) | Col 3: 20% (Ações) */
+    grid-template-columns: 20% 1fr 20%; 
+    gap: 8px; 
+    align-items: start;
+    transition: 0.2s;
+    min-height: 60px; /* Altura mínima para garantir consistência */
+}
+.inv-backpack-card:hover { 
+    background: rgba(255,255,255,0.05); 
+    border-color: rgba(255,255,255,0.2); 
+}
+
+/* Coluna 1: Info Principal */
+.inv-col-info { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 1px; 
+    overflow: hidden; 
+    min-width: 0; /* Permite truncar texto */
+}
+.inv-item-name {
+    font-size: 0.7rem; 
+    font-weight: bold; 
+    color: #fff;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+.inv-item-cat-small { 
+    font-size: 0.55rem; 
+    color: var(--cor-tema); 
+    text-transform: uppercase; 
+    margin-bottom: 2px;
+}
+/* Badge de Slots ajustado */
+.inv-slots-badge {
+    font-size: 0.55rem; 
+    color: #aaa; 
+    background: rgba(0,0,0,0.4);
+    padding: 1px 4px; 
+    border-radius: 3px; 
+    border: 1px solid rgba(255,255,255,0.05); 
+    white-space: nowrap;
+    align-self: flex-start; /* Não estica a largura */
+}
+
+/* Coluna 2: Descrição (Agora tem mais espaço) */
+.inv-col-desc { 
+    font-size: 0.75rem; 
+    color: #888; 
+    line-height: 1.3;
+    /* Limita a 3 linhas para não estourar verticalmente */
+    display: -webkit-box; 
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden;
+    
+    border-left: 1px solid rgba(255,255,255,0.1); 
+    padding-left: 8px; 
+    height: 100%;
+    min-width: 0;
+}
+
+/* Coluna 3: Ações (Botões pequenos) */
+.inv-col-actions { 
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    height: 100%;
+}
+
+/* Grid interno para Lupa e Equipar ficarem lado a lado na parte de cima */
+.inv-actions-top-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Lupa menor, Equipar maior */
+    gap: 3px;
+}
+
+/* Botões da Mochila - Tamanho Reduzido */
+.btn-bp-action {
+    background: rgba(0,0,0,0.3); 
+    border: 1px solid #333; 
+    color: #888;
+    font-size: 0.55rem; /* Fonte bem pequena */
+    padding: 3px 0; 
+    border-radius: 2px; 
+    cursor: pointer;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: 0.2s;
+    width: 100%;
+}
+.btn-bp-action:hover { border-color: #666; color: #fff; background: #333; }
+
+/* Botão Refúgio (Embaixo, ocupa tudo) */
+.btn-bp-refuge {
+    margin-top: auto; /* Empurra para o fundo se sobrar espaço */
+}
+
+/* --- ESTILOS DO REFÚGIO (Mantidos compactos) --- */
+.inv-refuge-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 8px; border-radius: 3px; background: rgba(0,0,0,0.15);
+    border-left: 2px solid transparent; transition: 0.2s;
+}
+.inv-refuge-item:hover { background: rgba(255,255,255,0.03); border-left-color: #666; }
+
+.inv-refuge-info { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.inv-refuge-name { font-size: 0.7rem; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.inv-refuge-actions { display: flex; gap: 4px; }
+.btn-ref-action {
+    background: transparent; border: 1px solid #333; color: #666;
+    font-size: 0.55rem; padding: 2px 5px; border-radius: 3px; cursor: pointer;
+}
+.btn-ref-action:hover { border-color: #666; color: #fff; }
+
+/* =================================================================
+   DESCRIÇÃO E NOTAS
+   ================================================================= */
+
+.split-50-50 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+@media (max-width: 1200px) { .split-50-50 { grid-template-columns: 1fr; } }
+
+/* =================================================================
+   MONITOR DE SAÚDE (SEGMENTADO & CLEAN)
+   ================================================================= */
+
+.health-section { 
+    background: #0f1215; 
+    padding: 15px; 
+    border-radius: 8px; 
+    border: 1px solid rgba(255,255,255,0.08); 
+    margin-bottom: 0; 
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Header */
+.health-header-grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+    gap: 10px;
+}
+
+.health-display-box {
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; line-height: 1;
+}
+
+.health-total-val {
+    font-size: 1.8rem; font-weight: 800; color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.health-label-small {
+    font-size: 0.6rem; text-transform: uppercase; color: #666; margin-top: 4px; letter-spacing: 1px;
+}
+
+/* Controles */
+.health-ctrl-group {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+
+.health-ctrl-title {
+    font-size: 0.6rem; color: #888; text-transform: uppercase; margin-bottom: 2px;
+}
+
+.btn-health-adjust {
+    width: 24px; height: 24px;
+    background: #222; border: 1px solid #444; color: #ccc;
+    border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center; transition: 0.2s;
+}
+.btn-health-adjust:hover { background: #333; color: #fff; border-color: #666; }
+
+/* --- ESTRUTURA DAS CAIXAS --- */
+.health-groups-container {
+    display: flex; flex-direction: column; gap: 10px;
+}
+
+.health-group-row {
+    display: flex; flex-direction: column; width: 100%;
+}
+
+/* Títulos: Cor Padrão (Sem Vermelho/Verde) */
+.health-group-title {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-align: center;
+    width: 100%;
+    opacity: 0.8;
+}
+
+.health-boxes-wrapper {
+    display: flex; gap: 10px; width: 100%;
+}
+
+.hp-box-container {
+    display: flex; flex-direction: column; align-items: center; flex: 1;
+}
+
+/* A Barra Segmentada */
+.hp-box-segments {
+    width: 100%;
+    height: 28px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 2px;
+    
+    display: flex;
+    gap: 2px; /* Espaço entre segmentos */
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* O Segmento Individual */
+.hp-segment {
+    flex: 1;
+    height: 100%;
+    background: #222;
+    border-radius: 2px;
+    transition: 0.2s;
+    opacity: 0.2; /* Apagado por padrão */
+}
+
+/* Cores dos Segmentos Ativos */
+.hp-segment.active.green { background: #4caf50; opacity: 1; box-shadow: 0 0 4px #4caf50; }
+.hp-segment.active.yellow { background: #ffc107; opacity: 1; box-shadow: 0 0 4px #ffc107; }
+.hp-segment.active.red { background: #f44336; opacity: 1; box-shadow: 0 0 4px #f44336; }
+
+/* Nome Sobreposto */
+.hp-box-label-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.95); /* Texto bem claro */
+    
+    /* Contorno Sólido #222 (Simulando Stroke) */
+    text-shadow: 
+        -1px -1px 0 #222,  
+         1px -1px 0 #222,
+        -1px  1px 0 #222,
+         1px  1px 0 #222,
+         0 0 2px #222; /* Sombra extra suave para garantir leitura */
+         
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Legendas */
+.hp-legend-row {
+    font-size: 0.6rem; color: #777; text-align: center; font-style: italic; margin-top: 2px;
+}
+
+.hp-box-specific-legend {
+    font-size: 0.55rem; color: #666; text-align: center; margin-top: 4px; line-height: 1.2;
+}
+
+/* =================================================================
+   CABO DE GUERRA (FINAL ADJUSTED)
+   ================================================================= */
+
+.tug-wrapper {
+    background: #0f1215; 
+    padding: 10px; /* Padding reduzido para voltar ao tamanho original */
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08); 
+    margin-bottom: 0; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Gap reduzido */
+}
+
+/* Área da Trilha (Sem fundo agora) */
+.tug-track-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px; /* Espaço ajustado */
+    background: transparent; /* SEM TARJA ESCURA */
+    padding: 0;
+    height: 30px; /* Altura compacta */
+}
+
+/* Triângulo SVG */
+.tug-triangle {
+    flex: 1; 
+    height: 100%; 
+    max-width: 22px; /* Tamanho equilibrado */
+    min-width: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tug-triangle:hover {
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.6));
+    transform: scale(1.15);
+    z-index: 2;
+}
+
+/* Área Inferior */
+.tug-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 0 5px;
+}
+
+.tug-circle {
+    width: 38px; height: 38px; /* Levemente menor para caber melhor */
+    border-radius: 50%; 
+    display: flex; justify-content: center; align-items: center; 
+    font-weight: bold; font-size: 1.1rem; 
+    border: 2px solid; 
+    background: #15171b;
+    flex-shrink: 0;
+    transition: 0.3s;
+}
+
+/* Vermelho = Determinação (Esquerda) */
+.det-circle { 
+    border-color: var(--cor-assim-evolutiva); 
+    color: var(--cor-assim-evolutiva); 
+    box-shadow: 0 0 10px rgba(255, 85, 85, 0.15); 
+}
+
+/* Azul = Assimilação (Direita) */
+.ass-circle { 
+    border-color: var(--cor-assim-inoportuna); 
+    color: var(--cor-assim-inoportuna); 
+    box-shadow: 0 0 10px rgba(0, 187, 255, 0.15); 
+}
+
+.tug-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-tug-adjust {
+    background: #222;
+    border: 1px solid #444;
+    color: #ccc;
+    width: 26px; height: 26px; /* Compacto */
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+
+.btn-tug-adjust:hover {
+    background: #333;
+    color: #fff;
+    border-color: #666;
+}
+
+/* =================================================================
+   SEÇÃO DIVIDIDA (CARACTERÍSTICAS & ASSIMILAÇÕES)
+   ================================================================= */
+
+/* Layout 50/50 */
+.split-50-50 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+@media (max-width: 1200px) { .split-50-50 { grid-template-columns: 1fr; } }
+
+/* Wrapper Principal */
+.paginated-wrapper {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 0; /* Padding zero para os botões encostarem na borda */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Para os botões respeitarem o border-radius */
+}
+
+/* Header */
+.paginated-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px; /* Padding só no header */
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.01);
+}
+
+.counter-badge {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.page-indicator-text {
+    font-size: 0.65rem;
+    color: #555;
+    font-family: monospace;
+}
+
+/* --- CORPO DA PAGINAÇÃO (BOTOES LATERAIS) --- */
+.paginated-body {
+    display: flex; /* Linha: Botão - Conteúdo - Botão */
+    flex: 1; /* Ocupa a altura restante */
+    align-items: stretch; /* Estica os filhos na altura total */
+}
+
+/* Botões Laterais (Verticais) */
+.side-nav-btn {
+    width: 25px; /* Largura da barra clicável */
+    background: rgba(0,0,0,0.2);
+    border: none;
+    border-left: 1px solid rgba(255,255,255,0.03);
+    border-right: 1px solid rgba(255,255,255,0.03);
+    color: #888;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    outline: none;
+}
+/* O primeiro botão não precisa de borda esquerda, o ultimo não precisa de direita */
+.side-nav-btn:first-child { border-left: none; }
+.side-nav-btn:last-child { border-right: none; }
+
+.side-nav-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+.side-nav-btn:disabled {
+    opacity: 0.2;
+    cursor: default;
+    background: transparent;
+}
+
+/* Área central onde fica o Grid */
+.paginated-content-area {
+    flex: 1; /* Ocupa o miolo */
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Grid 3x2 */
+.paginated-grid-3x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(3, 1fr); /* 3 Linhas iguais */
+    gap: 8px;
+    flex: 1;
+    min-height: 150px; /* Altura mínima para caber 3 linhas confortavelmente */
+}
+
+.paginated-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 85px; 
+    overflow: hidden;
+}
+
+.empty-paginated-state {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-style: italic;
+    font-size: 0.8rem;
+}
+
+/* Padrão (Características - Branco) */
+.card-title-standard { color: rgb(var(--rgb-padrao-white)); text-shadow: 0 0 5px rgba(var(--rgb-padrao-white), 0.3); }
+
+/* Evolutiva (Vermelho) */
+.card-title-evolutiva { color: var(--cor-assim-evolutiva); text-shadow: 0 0 8px rgba(var(--rgb-assim-evolutiva), 0.5); }
+
+/* Inoportuna (Azul) */
+.card-title-inoportuna { color: var(--cor-assim-inoportuna); text-shadow: 0 0 8px rgba(var(--rgb-assim-inoportuna), 0.5); }
+
+/* Singular (Roxo) */
+.card-title-singular { color: var(--cor-assim-singular); text-shadow: 0 0 8px rgba(var(--rgb-assim-singular), 0.5); }
+
+/* Adaptativa (Degradê + Neon Corrigido) */
+.card-title-adaptativa {
+    background: linear-gradient(90deg, #ff5555, #00bbff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    /* O truque para neon em gradiente: filter drop-shadow */
+    filter: drop-shadow(0 0 3px rgba(0, 187, 255, 0.5)) drop-shadow(0 0 3px rgba(255, 85, 85, 0.5));
+}
+
+/* --- GLOWS DE FUNDO DO MODAL (Novas Classes) --- */
+/* Estas classes serão aplicadas ao container do modal */
+
+.modal-glow-standard { box-shadow: 0 0 40px rgba(var(--rgb-padrao-white), 0.15); border-color: rgba(var(--rgb-padrao-white), 0.3); }
+.modal-glow-evolutiva { box-shadow: 0 0 40px rgba(var(--rgb-assim-evolutiva), 0.3); border-color: rgba(var(--rgb-assim-evolutiva), 0.5); }
+.modal-glow-inoportuna { box-shadow: 0 0 40px rgba(var(--rgb-assim-inoportuna), 0.3); border-color: rgba(var(--rgb-assim-inoportuna), 0.5); }
+.modal-glow-singular { box-shadow: 0 0 40px rgba(var(--rgb-assim-singular), 0.3); border-color: rgba(var(--rgb-assim-singular), 0.5); }
+.modal-glow-adaptativa { box-shadow: 0 0 40px rgba(150, 100, 255, 0.3); border-color: rgba(150, 100, 255, 0.5); }
+
+.simple-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.simple-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--cor-tema);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.simple-card-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.1;
+    /* Trunca texto muito longo com '...' */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* =================================================================
+   OVERLAY DE DETALHES (O Card Expandido)
+   ================================================================= */
+.detail-overlay-backdrop {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); /* Fundo mais escuro */
+    backdrop-filter: blur(5px); /* Mais blur */
+    z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+    padding: 20px; /* Espaço nas bordas em telas pequenas */
+}
+
+.detail-card-expanded {
+    background: #121418; /* Fundo ligeiramente mais claro que o site */
+    /* Border e Box-shadow serão definidos dinamicamente pelas classes modal-glow-* */
+    border: 1px solid transparent; 
+    border-radius: 12px;
+    padding: 25px;
+    
+    /* Tamanho dinâmico: Tenta ser 450px, mas nunca passa de 100% da tela disponível */
+    width: min(100%, 450px); 
+    
+    display: flex; flex-direction: column;
+    transform: scale(1);
+    animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Cabeçalho do Modal */
+.expanded-header-area {
+    display: flex; flex-direction: column;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 15px; margin-bottom: 15px;
+    text-align: center; /* Título centralizado fica melhor no modal */
+}
+
+.expanded-title {
+    font-size: 1.4rem; /* Maior destaque */
+    font-weight: 800;
+    text-transform: uppercase;
+    /* Permite quebra de linha no modal se o título for muito longo */
+    white-space: normal; 
+    line-height: 1.2;
+}
+
+.expanded-type {
+    font-size: 0.75rem; text-transform: uppercase; color: #888;
+    margin-top: 8px; font-weight: bold; letter-spacing: 2px;
+}
+
+.expanded-desc {
+    font-size: 0.9rem; /* Fonte maior para leitura confortável */
+    color: #ddd; line-height: 1.6; text-align: left;
+    margin-bottom: 25px; /* Espaço para o botão */
+    flex-grow: 1; /* Ocupa espaço disponível */
+}
+
+/* NOVO BOTÃO LARGÃO EMBAIXO */
+.btn-close-modal-wide {
+    width: 100%;
+    padding: 12px;
+    background: rgba(200, 40, 40, 0.9); /* Vermelho forte */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 15px rgba(200, 40, 40, 0.3);
+}
+
+.btn-close-modal-wide:hover {
+    background: rgb(220, 50, 50);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 50, 50, 0.4);
+}
+.btn-close-modal-wide:active {
+    transform: translateY(0);
+}
+
+/* =================================================================
+   ATRIBUTOS (LAYOUT COMPACTO & OTIMIZADO)
+   ================================================================= */
+
+/* --- HEADER ESPECÍFICO DOS INSTINTOS (3 Elementos na mesma linha) --- */
+.instincts-header-grid {
+    display: grid;
+    /* Coluna 1 (Título), Coluna 2 (Botão Central), Coluna 3 (Botão Editar) */
+    grid-template-columns: 1fr auto 1fr; 
+    align-items: center;
+    margin-bottom: 5px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Alinhamentos dentro do Grid */
+.instincts-header-grid .group-title {
+    justify-self: start; /* Título à esquerda */
+    margin: 0;
+}
+
+.instincts-header-grid .btn-toggle-center {
+    justify-self: center; /* Botão no meio exato */
+}
+
+.instincts-header-grid .btn-edit-right {
+    justify-self: end; /* Botão editar à direita */
+}
+
+/* --- TÍTULOS DOS OUTROS GRUPOS --- */
+.group-header-simple {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+
+/* --- BOTÕES DE CONTROLE --- */
+
+/* Botão Editar */
+.btn-edit-small {
+    background: transparent;
+    border: 1px solid #444;
+    color: #888;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.btn-edit-small:hover { color: #fff; border-color: #666; }
+.btn-edit-small.saving {
+    background: var(--cor-tema);
+    color: #000;
+    border-color: var(--cor-tema);
+    font-weight: bold;
+}
+
+/* Botão Rolagem Assimilada */
+.btn-toggle-assimilated {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid #444;
+    color: #666;
+    font-size: 0.6rem;
+    padding: 2px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex; 
+    align-items: center; 
+    gap: 6px;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+.btn-toggle-assimilated:hover { border-color: #666; color: #aaa; }
+
+.btn-toggle-assimilated.active {
+    border-color: #bd00ff;
+    color: #e0aaff;
+    background: rgba(189, 0, 255, 0.15);
+    box-shadow: 0 0 8px rgba(189, 0, 255, 0.2);
+}
+
+.dot-indicator {
+    width: 6px; height: 6px; border-radius: 50%; background: #555;
+    transition: 0.3s;
+}
+.btn-toggle-assimilated.active .dot-indicator { 
+    background: #bd00ff; box-shadow: 0 0 5px #bd00ff; 
+}
+
+
+/* --- O MINI CARD (GRID DOS ATRIBUTOS) --- */
+.mini-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 4px 6px; /* Padding levemente reduzido */
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+    min-height: 28px; /* Altura compacta */
+}
+.mini-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+
+/* Estados */
+.mini-card.selected {
+    border-color: var(--cor-tema);
+    background: rgba(var(--cor-tema-rgb), 0.1); 
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+}
+.mini-card.disabled {
+    opacity: 0.3; cursor: not-allowed; filter: grayscale(1);
+}
+
+/* Lado Esquerdo */
+.mc-left { display: flex; align-items: center; gap: 6px; }
+
+.mc-selector {
+    width: 8px; height: 8px; border-radius: 50%;
+    border: 1px solid #666; background: transparent;
+    transition: 0.2s;
+}
+.mini-card.selected .mc-selector {
+    background: var(--cor-tema); border-color: var(--cor-tema);
+    box-shadow: 0 0 4px var(--cor-tema);
+}
+
+.mini-label { font-size: 0.7rem; color: #ccc; text-transform: uppercase; margin-top: 1px; }
+.mini-card.selected .mini-label { color: #fff; font-weight: bold; }
+
+/* Lado Direito */
+.mc-right { display: flex; align-items: center; gap: 4px; }
+
+.mini-val { 
+    font-size: 0.9rem; font-weight: bold; color: #fff; 
+    min-width: 14px; text-align: center;
+}
+
+/* Botões +/- */
+.btn-attr-tiny {
+    width: 14px; height: 14px;
+    background: #222; border: 1px solid #444; color: #aaa;
+    font-size: 0.7rem; border-radius: 3px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1; z-index: 2;
+}
+.btn-attr-tiny:hover { background: #333; color: #fff; border-color: #777; }
+
+/* =================================================================
+   ESTILOS DA ROLAGEM ASSIMILADA (TEMA AZUL)
+   ================================================================= */
+
+/* Variável local para o azul (Cyan Neon) */
+:root {
+    --cor-assimilacao: #00f3ff;
+}
+
+/* Título Azul */
+.group-title.blue-mode {
+    color: var(--cor-assimilacao);
+    text-shadow: 0 0 5px rgba(0, 243, 255, 0.4);
+}
+
+/* Botão Toggle Ativo (Azul) */
+.btn-toggle-assimilated.active-blue {
+    border-color: var(--cor-assimilacao);
+    color: var(--cor-assimilacao);
+    background: rgba(0, 243, 255, 0.1);
+    box-shadow: 0 0 8px rgba(0, 243, 255, 0.2);
+}
+.btn-toggle-assimilated.active-blue .dot-indicator { 
+    background: var(--cor-assimilacao); 
+    box-shadow: 0 0 5px var(--cor-assimilacao); 
+}
+
+/* Card Selecionado em Modo Assimilação (Azul) */
+.mini-card.selected-blue {
+    border-color: var(--cor-assimilacao);
+    background: rgba(0, 243, 255, 0.1); 
+    box-shadow: inset 0 0 8px rgba(0, 243, 255, 0.2);
+}
+
+/* Bolinha de Seleção Azul */
+.mini-card.selected-blue .mc-selector {
+    background: var(--cor-assimilacao); 
+    border-color: var(--cor-assimilacao);
+    box-shadow: 0 0 6px var(--cor-assimilacao);
+}
+
+/* Texto do Label Azul */
+.mini-card.selected-blue .mini-label { 
+    color: #fff; 
+    text-shadow: 0 0 2px var(--cor-assimilacao);
+}
+
+/* --- MODAL DE AVISO (SIMPLES) --- */
+.warning-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+}
+.warning-box {
+    background: #1a1a1a; border: 1px solid #ff5555;
+    padding: 20px; border-radius: 8px; text-align: center;
+    max-width: 300px;
+    box-shadow: 0 0 20px rgba(255, 85, 85, 0.2);
+}
+.warning-title { color: #ff5555; font-size: 1rem; font-weight: bold; margin-bottom: 10px; display: block; }
+.warning-text { color: #ccc; font-size: 0.85rem; margin-bottom: 20px; }
+.btn-warning-close {
+    background: #ff5555; color: #fff; border: none; padding: 5px 15px;
+    border-radius: 4px; cursor: pointer; font-weight: bold;
+}
+
+/* =================================================================
+   MODAIS DRAMÁTICOS (ROLAGEM ASSIMILADA)
+   ================================================================= */
+
+.dramatic-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.dramatic-box {
+    background: #0f1215;
+    border: 1px solid #333;
+    width: 90%; max-width: 400px;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de borda brilhante animada */
+.dramatic-box::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cor-assimilacao), transparent);
+    animation: scanline 2s infinite linear;
+}
+
+.dramatic-title {
+    font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 15px; display: block;
+    color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
+.dramatic-text {
+    font-size: 0.9rem; color: #ccc; line-height: 1.6; margin-bottom: 25px; font-style: italic;
+}
+
+/* Botões de Escolha */
+.dramatic-choices {
+    display: flex; flex-direction: column; gap: 10px;
+}
+
+.btn-choice {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #444;
+    color: #eee;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    transition: 0.3s;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.btn-choice:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: #fff;
+    transform: scale(1.02);
+}
+
+/* Variação: Custo de Assimilação (Azul) */
+.btn-choice.cost-assimilation:hover {
+    border-color: var(--cor-assimilacao);
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+    color: var(--cor-assimilacao);
+}
+
+/* Variação: Custo de Determinação (Vermelho/Laranja) */
+.btn-choice.cost-determination:hover {
+    border-color: #ff5555;
+    box-shadow: 0 0 10px rgba(255, 85, 85, 0.3);
+    color: #ff5555;
+}
+
+/* Botão Cancelar */
+.btn-dramatic-cancel {
+    margin-top: 15px;
+    background: transparent; border: none; color: #666;
+    font-size: 0.75rem; cursor: pointer; text-decoration: underline;
+}
+.btn-dramatic-cancel:hover { color: #888; }
+
+/* Modal de Erro */
+.dramatic-box.error-mode { border-color: #552222; }
+.dramatic-box.error-mode::before { background: linear-gradient(90deg, transparent, #ff3333, transparent); }
+.dramatic-title.error { color: #ff5555; text-shadow: 0 0 10px rgba(255, 50, 50, 0.4); }
+
+@keyframes scanline {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

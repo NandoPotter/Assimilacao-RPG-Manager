@@ -1,3 +1,8 @@
+/** ============================================================
+ *  ARQUIVO: src/services/authService.ts
+ *  DESCRIÇÃO: Serviços de autenticação do usuário.
+ *  ============================================================ */
+
 import { supabase } from './supabaseClient';
 import { type UserMode } from '../interfaces/System';
 

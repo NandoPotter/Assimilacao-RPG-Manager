@@ -1,15 +1,15 @@
 /** ============================================================
- * ARQUIVO: src/components/Sidebar/index.tsx
+ * ARQUIVO: src/pages/Dashboard/components/Sidebar/index.tsx
  * DESCRIÇÃO: Sidebar de navegação lateral do Dashboard.
  * ============================================================ */
 
 import { NavLink, useNavigate } from 'react-router-dom';
-import { type UserMode } from '../../interfaces/System';
-import { coreAppName, coreAppVersion } from '../../core/SystemConstants';
-import { useAuth } from '../../contexts/AuthContext'; // Apenas para o Logout
+import { type UserMode } from '../../../../interfaces/System';
+import { coreAppName, coreAppVersion } from '../../../../core/SystemConstants';
+import { useAuth } from '../../../../contexts/AuthContext'; // Apenas para o Logout
 
-import logoImg from '../../assets/LogoAssimilacao.png';
-import './Sidebar.css';
+import logoImg from '../../../../assets/LogoAssimilacao.png';
+import './Styles.css';
 
 // Mantivemos a Interface de Props para o DashboardLayout funcionar
 interface SidebarProps {

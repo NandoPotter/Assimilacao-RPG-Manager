@@ -1,0 +1,316 @@
+/* src/pages/Dashboard/contents/CharacterCreator/Styles.css */
+
+/* ==========================================================================
+   ESTRUTURA PRINCIPAL
+   ========================================================================== */
+.creator-container {
+    color: #eee;
+    width: 100%;
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease-out;
+    height: calc(100vh - 170px);
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ==========================================================================
+   CABEÇALHO
+   ========================================================================== */
+.wizard-header {
+    flex-shrink: 0;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.wizard-title-row {
+    display: flex; align-items: center; justify-content: space-between;
+}
+.wizard-title {
+    font-size: 1.4rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; margin: 0;
+}
+.wizard-steps {
+    display: flex; gap: 8px; width: 200px;
+}
+.step-indicator {
+    flex: 1; height: 6px; background: #222; border-radius: 3px; transition: all 0.3s ease;
+}
+.step-indicator.active {
+    background: var(--cor-tema); box-shadow: 0 0 10px var(--cor-tema-glow);
+}
+
+/* ==========================================================================
+   CONTEÚDO
+   ========================================================================== */
+.wizard-content {
+    flex: 1; overflow-y: auto; padding-right: 10px; width: 100%;
+    display: flex; flex-direction: column;
+    scrollbar-width: thin; scrollbar-color: var(--cor-tema) #111;
+}
+
+.wizard-wrapper {
+    width: 100%; max-width: 1200px; margin: 0 auto;
+    height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+}
+
+/* --- Componentes de Seção --- */
+.form-section {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px; padding: 15px; margin-bottom: 15px;
+}
+.compact-section { padding: 12px 15px; margin-bottom: 10px; }
+
+.form-section h3 {
+    color: #fff; border-bottom: 1px solid #333; padding-bottom: 5px;
+    margin-bottom: 15px; font-size: 1rem; text-transform: uppercase; font-weight: 600;
+}
+.header-compact {
+    margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px;
+}
+.header-compact h3 { margin-bottom: 0; font-size: 0.95rem; }
+
+/* Texto de Custo (Passo 3) */
+.evolution-hint {
+    font-size: 0.8rem; color: #666; font-style: italic;
+    margin-top: 10px; /* Espaço em cima */
+    margin-bottom: 5px; /* Espaço embaixo */
+}
+
+/* ==========================================================================
+   PASSO 1: IDENTIDADE
+   ========================================================================== */
+.identity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.identity-col-left, .identity-col-right { display: flex; flex-direction: column; }
+.input-group { margin-bottom: 10px; }
+.input-group label { display: block; color: #88aacc; margin-bottom: 4px; font-size: 0.85rem; }
+.input-field {
+    width: 100%; padding: 8px 12px; background: #0d1116; border: 1px solid #333; margin-bottom: 2px;
+    border-radius: 4px; color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s;
+}
+.input-field:focus { border-color: var(--cor-tema); box-shadow: 0 0 5px var(--cor-tema-glow); }
+.text-area-full { flex: 1; resize: none; min-height: 150px; line-height: 1.5; }
+.subtitle-std { color: #aaa; font-size: 0.85rem; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
+
+/* ==========================================================================
+   PASSO 2: ATRIBUTOS
+   ========================================================================== */
+.stats-grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.stats-grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #151a20; padding: 4px 8px; margin-bottom: 4px;
+    border-radius: 4px; border: 1px solid #252a30; min-height: 32px;
+}
+.stat-name { color: #ccc; font-size: 0.8rem; }
+.stat-value { width: 20px; text-align: center; font-weight: bold; color: var(--cor-tema); }
+.points-remaining { font-size: 0.85rem; color: #ffaa00; }
+.stat-control { display: flex; align-items: center; gap: 8px; }
+.btn-mini {
+    width: 20px; height: 20px; border: 1px solid #444; background: #222; color: #fff;
+    border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: 0.2s; font-size: 0.8rem; line-height: 1;
+}
+.btn-mini:hover { background: var(--cor-tema); color: #000; }
+.aptitudes-split-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+.compact-col { padding: 10px; background: rgba(0,0,0,0.2); border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); }
+.stats-list-vertical { display: flex; flex-direction: column; gap: 0; }
+
+/* ==========================================================================
+   PASSO 3: EVOLUÇÃO (LAYOUT 2 COLUNAS)
+   ========================================================================== */
+.step3-grid {
+    display: grid; 
+    grid-template-columns: 0.9fr 1.3fr; 
+    gap: 20px;
+    height: 100%; overflow: hidden;
+}
+
+/* Coluna Esquerda */
+.step3-col-left { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+
+/* Margem Inferior da Caixa */
+.characteristics-container { 
+    flex: 1; 
+    min-height: 0;
+    display: flex; 
+    flex-direction: column; 
+    margin-bottom: 15px; /* Ajuste conforme necessário (15px solicitado) */
+}
+
+.characteristics-list {
+    flex: 1; overflow-y: auto; padding-right: 5px;
+    border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2);
+    border-radius: 4px; padding: 10px;
+    scrollbar-width: thin; scrollbar-color: var(--cor-tema) #111;
+}
+
+/* Item de Característica */
+.carac-row {
+    display: flex; 
+    align-items: flex-start; 
+    gap: 12px;
+    padding: 10px;
+    padding-bottom: 28px; 
+    margin-bottom: 5px; 
+    cursor: pointer;
+    background: rgba(255,255,255,0.02); 
+    border-radius: 4px; 
+    border: 1px solid transparent;
+    transition: 0.2s;
+    position: relative;
+}
+.carac-row:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+
+/* ESTADO TRAVADO (Não atende requisitos) */
+.carac-row.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(0,0,0,0.3);
+}
+
+/* Checkbox Circular */
+.circular-checkbox-container {
+    position: relative; display: inline-block; width: 18px; height: 18px; cursor: pointer; margin-top: 2px;
+    pointer-events: none;
+}
+.circular-checkbox-container input { opacity: 0; width: 0; height: 0; }
+.circular-checkmark {
+    position: absolute; top: 0; left: 0; height: 18px; width: 18px;
+    background-color: transparent; border: 2px solid #555; border-radius: 50%;
+    transition: 0.2s;
+}
+.circular-checkbox-container input:checked ~ .circular-checkmark { background-color: var(--cor-tema); border-color: var(--cor-tema); }
+.circular-checkmark.locked-check { border-color: #444; }
+
+.carac-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.carac-name { font-weight: bold; font-size: 0.9rem; }
+.carac-desc { font-size: 0.75rem; color: #aaa; line-height: 1.3; }
+
+.carac-req { 
+    font-size: 0.7rem; 
+    font-family: monospace; 
+    margin-top: 4px; 
+}
+
+.req-static {
+    color: #666;
+}
+
+.req-success {
+    color: #00ff88; /* Verde brilhante */
+    text-shadow: 0 0 2px rgba(0, 255, 136, 0.3);
+}
+
+.req-fail {
+    color: #ff4444;
+}
+
+.carac-cost { 
+    font-weight: bold; 
+    font-size: 0.9rem;
+    color: #ffaa00; 
+    white-space: nowrap; 
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+/* Coluna Direita */
+.step3-col-right { display: flex; flex-direction: column; height: 100%; gap: 15px; overflow: hidden; padding-bottom: 5px; }
+
+.xp-panel {
+    background: #0d1116; border: 1px solid var(--cor-tema); border-radius: 6px;
+    padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5); flex-shrink: 0;
+}
+.xp-label { color: #aaa; font-size: 0.9rem; font-weight: bold; letter-spacing: 1px; }
+.xp-value { color: var(--cor-tema); font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 5px var(--cor-tema-glow); }
+
+.expanded-section { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; min-height: 0; overflow: hidden; }
+.expanded-section .stats-list-vertical { overflow-y: auto; scrollbar-width: thin; }
+
+/* Kit Inicial */
+.kit-section { display: flex; flex-direction: column; margin-top: auto; flex-shrink: 0; }
+.kit-items-display {
+    margin-top: 10px; background: #0a0f14; padding: 10px; border-radius: 4px;
+    border: 1px solid #333; color: #ccc; font-size: 0.85rem; min-height: 40px;
+}
+
+/* Helpers Evolução */
+.upgrade-math { display: flex; align-items: center; gap: 5px; font-family: monospace; font-size: 0.9rem; color: #666; margin-right: 10px; }
+.math-symbol { color: #444; } .math-base { color: #888; } .math-total { color: #fff; font-weight: bold; }
+.math-added { color: #555; transition: 0.3s; }
+.math-added.active { color: var(--cor-tema); font-weight: bold; text-shadow: 0 0 5px var(--cor-tema-glow); }
+.next-cost-preview { font-size: 0.65rem; color: #ffaa00; width: 25px; text-align: center; }
+
+/* ==========================================================================
+   MODAL PERSONALIZADO
+   ========================================================================== */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-box {
+    background: #0d1116; border: 1px solid var(--cor-tema);
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 10px var(--cor-tema-glow);
+    padding: 25px; width: 90%; max-width: 400px; border-radius: 6px;
+    text-align: center; color: #fff; transform: scale(1);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-title {
+    color: var(--cor-tema); font-size: 1.2rem; font-weight: bold;
+    text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.modal-message { font-size: 0.95rem; line-height: 1.5; color: #ccc; margin-bottom: 25px; }
+
+.modal-btn {
+    background: var(--cor-tema); color: #000; border: none; padding: 10px 25px;
+    font-weight: bold; text-transform: uppercase; cursor: pointer; border-radius: 4px;
+    transition: 0.3s; width: 100%;
+}
+.modal-btn:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--cor-tema-glow); }
+
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ==========================================================================
+   RODAPÉ
+   ========================================================================== */
+.creator-footer {
+    display: flex; justify-content: space-between;
+    margin-top: auto; padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+}
+.btn-nav { padding: 10px 25px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: 0.3s; text-transform: uppercase; }
+.btn-back { background: transparent; border: 1px solid #444; color: #888; }
+.btn-back:hover { border-color: #fff; color: #fff; }
+.btn-next { background: var(--cor-tema); border: none; color: #000; box-shadow: 0 0 10px var(--cor-tema-glow); }
+.btn-next:hover { filter: brightness(1.2); box-shadow: 0 0 20px var(--cor-tema-glow); }
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   ========================================================================== */
+@media (max-width: 900px) {
+    .step3-grid { grid-template-columns: 1fr; overflow-y: auto; }
+    .step3-col-left, .characteristics-container { height: 400px; margin-bottom: 0; }
+    .step3-col-right { overflow-y: visible; height: auto; }
+}
+
+@media (max-width: 768px) {
+    .identity-grid, .stats-grid-3col, .aptitudes-split-row { grid-template-columns: 1fr; }
+    .text-area-full { min-height: 100px; }
+    .wizard-steps { width: 100px; }
+}

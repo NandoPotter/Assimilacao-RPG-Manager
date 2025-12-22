@@ -1,13 +1,13 @@
 /** ============================================================
- * ARQUIVO: src/layouts/DashboardLayout.tsx
+ * ARQUIVO: src/pages/Dashboard/Index.tsx
  * DESCRIÇÃO: Layout principal que reage ao estado global de Auth.
  * ============================================================ */
 
 import { Outlet, Navigate } from 'react-router-dom'; // Adicionei o Navigate
-import { Sidebar } from '../components/Sidebar';
-import { useAuth } from '../contexts/AuthContext';
+import { Sidebar } from './components/Sidebar';
+import { useAuth } from '../../contexts/AuthContext';
 
-import '../styles/DashboardLayout.css';
+import '../../styles/DashboardLayout.css';
 
 function DashboardLayout() {
     // Adicionamos o 'user' aqui para checar se a sessão existe

@@ -1,0 +1,234 @@
+/* =================================================================
+   Arquivo: src/pages/Dashboard/components/Characters/Styles.css
+   ESTILOS INTERNOS DA PÁGINA DE PERSONAGENS
+   ================================================================= */
+
+.chars-page-container {
+    width: 100%;
+    /* REDUNDÂNCIA 1: Use a animação global 'slideUp' ou 'fadeIn' que já está no global.css */
+    animation: slideUp 0.5s ease-out; 
+    padding-bottom: 80px;
+}
+
+/* Header Principal da Página */
+.chars-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+}
+
+.chars-title { 
+    font-size: 1.8rem; 
+    font-weight: 300; 
+    color: #fff; 
+    letter-spacing: 1px; 
+    line-height: 1; 
+}
+
+.chars-subtitle { 
+    font-size: 0.8rem; 
+    color: #666; 
+    margin-top: 5px; 
+}
+
+/* Botão Novo */
+.btn-new-char {
+    background: transparent;
+    border: 1px solid var(--cor-tema);
+    color: var(--cor-tema);
+    padding: 10px 25px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.btn-new-char:hover {
+    background: var(--cor-tema);
+    color: #000;
+    box-shadow: 0 0 20px var(--cor-tema-glow);
+}
+
+/* Seções e Divisores */
+.section-label { 
+    font-size: 0.85rem; 
+    /* REDUNDÂNCIA 2: Usar variável global ao invés de #88aacc */
+    color: var(--text-muted); 
+    font-weight: bold; 
+    letter-spacing: 2px; 
+    white-space: nowrap; 
+    margin-right: 15px; 
+}
+
+.divider-line { 
+    height: 1px; 
+    background: rgba(255,255,255,0.1); 
+    width: 100%; 
+}
+
+.drafts-header-row, .active-section-divider { 
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 20px; 
+    margin-top: 10px; 
+}
+
+.drafts-section {
+    background: rgba(255, 215, 0, 0.05);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px dashed rgba(255, 215, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+/* GRID */
+.chars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+/* CARD GERAL */
+.char-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.char-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.card-draft { border-color: rgba(255, 215, 0, 0.4); }
+.card-draft:hover { border-color: #ffd700; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1); }
+
+/* --- CARD HEADER (NOVO LAYOUT) --- */
+.card-header {
+    padding: 10px 15px;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 1. Esquerda: Stack de Status */
+.header-stats-stack {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    gap: 2px;
+}
+
+.stat-item {
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: #888;
+    letter-spacing: 0.5px;
+}
+
+/* 2. Centro: Geração (Destaque) */
+.header-generation {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    /* REDUNDÂNCIA 3: Usar variável global ao invés de #00f2ff */
+    color: var(--cor-neon-azul); 
+    font-weight: bold; 
+    text-align: center;
+    flex: 1; 
+}
+
+/* 3. Direita: Bolinha de Status */
+.header-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 20px;
+}
+
+/* --- BODY DO CARD --- */
+.card-body {
+    padding: 20px;
+    text-align: center;
+    flex: 1;
+}
+
+.char-avatar-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #151a20;
+    border: 1px solid #333;
+    margin: 0 auto 10px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: bold;
+    overflow: hidden; /* Importante para a imagem não vazar bordas */
+}
+
+.char-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 0;
+}
+
+/* --- FOOTER --- */
+.card-footer {
+    padding: 12px 15px;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.btn-card-action {
+    background: transparent;
+    border: 1px solid #444;
+    padding: 6px 15px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.btn-play { border-color: #55ff55; color: #55ff55; }
+.btn-play:hover { background: rgba(85, 255, 85, 0.1); box-shadow: 0 0 10px rgba(85,255,85,0.2); }
+
+.btn-continue { border-color: #ffd700; color: #ffd700; }
+.btn-continue:hover { background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+
+.btn-trash {
+    background: transparent;
+    border: none;
+    color: #555; 
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-trash:hover { color: #ff4444; background: rgba(255, 0, 0, 0.1); }

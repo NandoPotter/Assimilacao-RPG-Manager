@@ -1,0 +1,85 @@
+/* ARQUIVO: src/components/InfoTooltip/styles.css */
+
+.info-icon-container {
+    display: inline-flex;
+    align-items: center; 
+    justify-content: center;
+    
+    /* --- EFEITO SOBRESCRITO (SUPERSCRIPT) --- */
+    width: 11px;         /* Bem pequeno */
+    height: 11px;
+    margin-left: 2px;    /* Colado no texto */
+    transform: translateY(-5px); /* Empurra para cima */
+    
+    /* Estilo Visual */
+    border-radius: 50%;
+    border: 1px solid #555;
+    color: #888;
+    background: rgba(0,0,0,0.3);
+    cursor: help;
+    transition: 0.3s;
+    z-index: 10;
+    
+    /* Para garantir que não quebre linhas */
+    flex-shrink: 0; 
+}
+
+.info-icon-container:hover {
+    border-color: var(--cor-tema, #bd00ff);
+    color: #fff;
+    background: var(--cor-tema, #bd00ff);
+    box-shadow: 0 0 5px var(--cor-tema, #bd00ff);
+}
+
+.info-icon-symbol {
+    font-size: 0.55rem; /* Letra 'i' minúscula */
+    font-family: 'Courier New', monospace; /* Fonte serifada ou mono fica melhor pro 'i' */
+    font-weight: bold;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* --- BALÃO FLUTUANTE --- */
+.info-tooltip-balloon {
+    position: absolute;
+    /* Ajuste para aparecer centralizado em relação ao ícone */
+    bottom: 160%; 
+    left: 50%;
+    transform: translateX(-50%);
+    
+    width: 220px;
+    background: rgba(15, 18, 21, 0.98);
+    border: 1px solid var(--cor-tema, #bd00ff);
+    padding: 10px;
+    border-radius: 6px;
+    
+    color: #ccc;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-align: left;
+    text-transform: none; /* Garante que o texto não fique UPPERCASE */
+    font-weight: normal;
+    font-family: sans-serif; /* Garante leitura fácil */
+    
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+    pointer-events: none;
+    z-index: 9999;
+    
+    animation: fadeInTooltip 0.2s ease-out;
+}
+
+/* Setinha do balão */
+.info-tooltip-balloon::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--cor-tema, #bd00ff) transparent transparent transparent;
+}
+
+@keyframes fadeInTooltip {
+    from { opacity: 0; transform: translate(-50%, 5px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}

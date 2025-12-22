@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
-import './LoginPage.css';
+import './Styles.css';
 
 import {
   coreAppName,

@@ -38,6 +38,22 @@ html, body {
     --text-muted: #88aacc;
     --glass-bg: rgba(15, 20, 25, 0.9);
     --glass-border: 1px solid #1e3a5f;
+
+    /* CORES DAS ASSIMILAÇÕES */
+  --cor-assim-evolutiva: #ff5555;     /* Vermelho */
+  --cor-assim-inoportuna: #00bbff;    /* Azul Intenso */
+  --cor-assim-singular: #d866ff;      /* Roxo/Lilás */
+
+  /* CORES DAS ASSIMILAÇÕES (Formato RGB para transparência) */
+  --rgb-assim-evolutiva: 255, 85, 85;    /* #ff5555 */
+  --rgb-assim-inoportuna: 0, 187, 255;  /* #00bbff */
+  --rgb-assim-singular: 216, 102, 255;  /* #d866ff */
+  --rgb-padrao-white: 224, 224, 224;    /* #e0e0e0 (Para características) */
+
+  /* Variaveis de cor sólida para uso geral */
+  --cor-assim-evolutiva: rgb(var(--rgb-assim-evolutiva));
+  --cor-assim-inoportuna: rgb(var(--rgb-assim-inoportuna));
+  --cor-assim-singular: rgb(var(--rgb-assim-singular));
 }
 
 /* 3. SCROLLBAR CUSTOMIZADA (TECH STYLE) */
