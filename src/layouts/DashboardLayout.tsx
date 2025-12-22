@@ -38,11 +38,8 @@ function DashboardLayout() {
             <main className="content-area">
                 <header className="dashboard-header">
                     <h1 className="user-role">
-                        Bem-vindo, <span className="highlight">{username || 'Explorador'}</span>
+                        Bem-vindo, <span className="highlight">{username || 'Explorador'}!</span>
                     </h1>
-                    <p className="mode-indicator">
-                        Modo Atual: <strong>{role.toUpperCase()}</strong>
-                    </p>
                 </header>
 
                 <Outlet />

@@ -40,19 +40,36 @@ function LoginPage() {
 
   // LÓGICA: LOGIN REAL
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+     e.preventDefault();
+     console.log("1. Botão clicado. Iniciando tentativa de login...");
+    
+    // Verificação de segurança
+    if (!email || !password) {
+        console.warn("Campos vazios detectados");
+        alert("Preencha email e senha");
+        return;
+    }
+
     setIsLoading(true);
 
     try {
-      await authService.login(email, password);
+      console.log("2. Chamando authService com:", email);
+      const response = await authService.login(email, password);
+      
+      console.log("3. Resposta do Supabase recebida:", response);
+      console.log("4. Redirecionando para dashboard...");
       navigate('/dashboard');
+
     } catch (error: any) {
-      alert("Erro ao entrar: " + error.message);
+      // Aqui vamos ver o erro real no console, não só no alert
+      console.error("ERRO CRÍTICO NO LOGIN:", error);
+      alert("Erro ao entrar: " + (error.message || "Erro desconhecido"));
+
     } finally {
+      console.log("5. Finalizando estado de loading.");
       setIsLoading(false);
     }
   };
-
   // LÓGICA: REGISTRO REAL
   const handleRegisterUser = async (e: React.FormEvent) => {
     e.preventDefault();

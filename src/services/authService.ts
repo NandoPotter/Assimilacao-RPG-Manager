@@ -1,13 +1,8 @@
-/** ============================================================
- *  ARQUIVO: src/services/authService.ts
- *  DESCRIÇÃO: Funções de autenticação (Login, Logout e Sessão).
- *  ============================================================ */
-
 import { supabase } from './supabaseClient';
 import { type UserMode } from '../interfaces/System';
 
 export const authService = {
-  // Login: Usa apenas Email e Senha
+  // Login
   async login(email: string, pass: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -17,57 +12,46 @@ export const authService = {
     return data;
   },
 
-  // FUNÇÃO DE LOGOUT
+  // Logout
   async logout() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   },
 
-  // Cadastro: Email e Senha para Login + Username para Perfil
+  // Cadastro
   async register(email: string, pass: string, username: string) {
-  // ADICIONE ESSE LOG PARA DEBUG
-  console.log("Serviço de Registro iniciado para:", username);
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password: pass,
-    options: {
-      data: {
-        display_name: username,
-        role: 'infectado'
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: pass,
+      options: {
+        data: {
+          display_name: username,
+          role: 'infectado' // Define o padrão inicial no Token
+        }
       }
-    }
-  });
+    });
+    if (error) throw error;
+    return data;
+  },
 
-  if (error) {
-    console.error("Erro no Supabase Auth:", error.message);
-    throw error;
-  }
-  
-  return data;
-},
-
-  // Função para salvar a troca de modo no perfil do usuário
+  // ATUALIZAR MODO (A Mágica acontece aqui)
   async updateUserMode(userId: string, newMode: UserMode) {
-  console.log("Chamando Supabase para ID:", userId, "Novo Modo:", newMode);
+    // 1. Atualiza a Tabela (Para persistência no banco)
+    const dbUpdate = await supabase
+      .from('profiles')
+      .update({ role: newMode })
+      .eq('id', userId);
 
-  const { data, error, status } = await supabase
-    .from('profiles')
-    .update({ role: newMode })
-    .eq('id', userId)
-    .select(); // O select() força o Supabase a retornar o que foi alterado
+    if (dbUpdate.error) throw dbUpdate.error;
 
-  if (error) {
-    console.error("Erro retornado pelo Supabase:", error);
-    throw error;
+    // 2. Atualiza o TOKEN do Usuário (Para persistência na Sessão/Navegador)
+    // Isso evita ter que ir no banco buscar a role toda hora
+    const authUpdate = await supabase.auth.updateUser({
+      data: { role: newMode }
+    });
+
+    if (authUpdate.error) throw authUpdate.error;
+
+    return authUpdate.data;
   }
-
-  if (!data || data.length === 0) {
-    console.warn("Aviso: Nenhuma linha foi alterada. Status:", status);
-    throw new Error("O banco recebeu o comando, mas não encontrou o perfil ou o RLS bloqueou.");
-  }
-
-  console.log("Sucesso no BD! Dados atualizados:", data);
-  return data;
-}
 };

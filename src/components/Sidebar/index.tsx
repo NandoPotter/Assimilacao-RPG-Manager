@@ -1,16 +1,17 @@
 /** ============================================================
  * ARQUIVO: src/components/Sidebar/index.tsx
- * DESCRIÇÃO: Barra lateral com suporte a redirecionamento no Logout.
+ * DESCRIÇÃO: Sidebar de navegação lateral do Dashboard.
  * ============================================================ */
- 
-import { NavLink, useNavigate } from 'react-router-dom'; // ADICIONADO useNavigate
+
+import { NavLink, useNavigate } from 'react-router-dom';
 import { type UserMode } from '../../interfaces/System';
 import { coreAppName, coreAppVersion } from '../../core/SystemConstants';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext'; // Apenas para o Logout
 
 import logoImg from '../../assets/LogoAssimilacao.png';
 import './Sidebar.css';
 
+// Mantivemos a Interface de Props para o DashboardLayout funcionar
 interface SidebarProps {
     mode: UserMode;
     onToggleMode: () => void;
@@ -18,13 +19,12 @@ interface SidebarProps {
 
 export function Sidebar({ mode, onToggleMode }: SidebarProps) {
     const { signOut } = useAuth();
-    const navigate = useNavigate(); // INICIALIZADO
+    const navigate = useNavigate();
 
-    // FUNÇÃO PARA SAIR E REDIRECIONAR
     const handleLogout = async () => {
         try {
-            await signOut();    // 1. Limpa a sessão no Supabase e no Contexto
-            navigate('/login'); // 2. Empurra o usuário para a tela de login
+            await signOut();
+            navigate('/login');
         } catch (error) {
             console.error("Erro ao deslogar:", error);
         }
@@ -48,7 +48,7 @@ export function Sidebar({ mode, onToggleMode }: SidebarProps) {
 
                 <div className="divider"></div>
 
-                {/* Renderização Condicional */}
+                {/* Usamos a prop 'mode' vinda do DashboardLayout */}
                 {mode === 'assimilador' ? (
                     <>
                         <NavLink to="/dashboard/campaigns" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
@@ -70,8 +70,8 @@ export function Sidebar({ mode, onToggleMode }: SidebarProps) {
 
             <div className="sidebar-footer">
                 <div 
-                    className={`dt-switch-housing mode-${mode}`}
-                    onClick={onToggleMode}
+                    className={`dt-switch-housing mode-${mode}`} // Usa prop
+                    onClick={onToggleMode} // Usa prop (função do pai)
                     title="Alternar Perspectiva (Salva no Banco)"
                 >
                     <span className="dt-label label-assimilador">ASSIMILADOR</span>
@@ -83,7 +83,6 @@ export function Sidebar({ mode, onToggleMode }: SidebarProps) {
 
                 <div className="footer-info">
                     <p className="sidebar-version">v {coreAppVersion}</p>
-                    {/* ALTERADO AQUI: agora chama handleLogout */}
                     <button onClick={handleLogout} className="logout-btn">Sair do Sistema</button>
                 </div>
             </div>

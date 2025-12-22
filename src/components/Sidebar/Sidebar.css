@@ -128,7 +128,8 @@
 }
 
 /* POSICIONAMENTO DO LEVER BASEADO NO MODO */
-.mode-infectado .dt-switch-lever { left: calc(50% + 4px); }
+.mode-infectado .dt-switch-lever { right: calc(50% + 4px); }
+.mode-assimilador .dt-switch-lever { left: calc(50% + 4px); }
 .mode-assimilador .label-assimilador { color: var(--cor-assimilador); text-shadow: 0 0 10px var(--cor-assimilador-glow); }
 .mode-infectado .label-infectado { color: var(--cor-infectado); text-shadow: 0 0 10px var(--cor-infectado-glow); }
 
