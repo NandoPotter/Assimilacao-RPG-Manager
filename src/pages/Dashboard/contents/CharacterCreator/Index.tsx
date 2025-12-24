@@ -276,9 +276,9 @@ function CharacterCreatorBoard() {
             // -----------------------------------------------------------
             await characterService.populateInventoryFromKit(draftId, formData.kitName);
 
-            // 2. ATUALIZAR STATUS PARA VIVO
+            // 2. ATUALIZAR STATUS PARA SAUDÁVEL
             await characterService.updateCharacter(draftId, {
-                status: 'Vivo' as CharacterStatus,
+                status: 'Saudável' as CharacterStatus,
                 is_draft: false,
                 kit_name: formData.kitName,
                 characteristics_ids: formData.caracteristicas,
@@ -403,19 +403,49 @@ function CharacterCreatorBoard() {
                                 <h3>Identidade</h3>
                                 <div className="identity-grid">
                                     <div className="identity-col-left">
-                                        <div className="input-group">
-                                            <label>Foto</label>
-                                            <div style={{display:'flex', gap:'10px', alignItems:'center'}}>
-                                                <div style={{width:'60px', height:'60px', background:'#222', borderRadius:'50%', backgroundImage: avatarPreview ? `url(${avatarPreview})` : 'none', backgroundSize:'cover', border:'1px solid #444', display:'flex', alignItems:'center', justifyContent:'center'}}>{!avatarPreview && <span>?</span>}</div>
-                                                <input type="file" accept="image/*" onChange={handleImageChange} style={{color:'#aaa', fontSize:'0.8rem'}}/>
-                                            </div>
-                                        </div>
+                                        
                                         <div className="input-group"><label>Nome</label><input className="input-field" value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} placeholder="Nome" /></div>
                                         <div className="input-group"><label>Geração</label><select className="input-field" value={formData.geracao} onChange={e => setFormData({...formData, geracao: e.target.value as any})}><option>Pré-Colapso</option><option>Colapso</option><option>Pós-Colapso</option></select></div>
                                         <div className="input-group"><label>Ocupação</label><input className="input-field" value={formData.ocupacao} onChange={e => setFormData({...formData, ocupacao: e.target.value})} /></div>
                                         <div className="input-group"><label>Evento Marcante</label><input className="input-field" value={formData.evento} onChange={e => setFormData({...formData, evento: e.target.value})} /></div>
                                     </div>
-                                    <div className="identity-col-right"><label style={{color:'#88aacc', fontSize:'0.85rem', marginBottom:'4px'}}>Descrição</label><textarea className="input-field text-area-full" value={formData.descricao} onChange={e => setFormData({...formData, descricao: e.target.value})} /></div>
+                                    <div className="identity-col-right">
+                                        <div className="input-group">
+                                            <label>Foto</label>
+                                            <div className="avatar-upload-container">
+                                                {/* Área do Preview (Círculo) */}
+                                                <div 
+                                                    className="avatar-preview-circle"
+                                                    style={{ backgroundImage: avatarPreview ? `url(${avatarPreview})` : 'none' }}
+                                                >
+                                                    {!avatarPreview && <span className="avatar-placeholder-icon">?</span>}
+                                                </div>
+                                            
+                                                {/* Área dos Controles */}
+                                                <div className="avatar-controls">
+                                                    {/* O Input fica invisível */}
+                                                    <input 
+                                                        type="file" 
+                                                        id="avatar-upload-input" 
+                                                        accept=".png, .gif, .webp" 
+                                                        onChange={handleImageChange} 
+                                                        style={{ display: 'none' }} 
+                                                    />
+        
+                                                    {/* O Label age como o Botão */}
+                                                    <label htmlFor="avatar-upload-input" className="btn-upload-custom">
+                                                        Escolher Arquivo
+                                                    </label>
+
+                                                    {/* Texto de Ajuda */}
+                                                    <span className="avatar-help-text">
+                                                        Aceita: .WEBP, .PNG, .GIF (Máx 2MB)
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label style={{color:'#88aacc', fontSize:'0.85rem', marginBottom:'5px'}}>Descrição</label>
+                                        <textarea className="input-field text-area-full" value={formData.descricao} onChange={e => setFormData({...formData, descricao: e.target.value})} /></div>
                                 </div>
                             </div>
                             <div className="form-section">

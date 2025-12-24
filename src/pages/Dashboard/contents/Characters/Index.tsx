@@ -83,20 +83,28 @@ function CharactersBoard() {
                   <span className="stat-item" title="Assimilação">ASS {assimilation}</span>
               </div>
 
-              <div className="header-generation">
-                  {char.generation}
+              <div className="header-name">
+                  {char.name}
               </div>
               
               <div className="header-status">
-                  <span style={{ 
-                      color: char.status === 'Vivo' ? '#5f5' : 
-                             char.status === 'Morto' ? '#555' : 
-                             char.status === 'Ferido' ? '#fa0' : '#88aacc',
+                  <p style={{fontSize: '0.75rem'}}>
+                    <span style={{ 
+                      color: char.status === 'Saudável' ? '#5f5' :
+                             char.status === 'Escoriado' ? '#5f5' :
+                             char.status === 'Lacerado' ? '#fa0' :
+                             char.status === 'Ferido' ? '#fa0' :
+                             char.status === 'Debilitado' ? 'rgba(121, 24, 24, 1)' :
+                             char.status === 'Incapacitado' ? 'rgba(121, 24, 24, 1)' :
+                             char.status === 'Morto' ? '#555' :
+                             char.status === 'Em Criação' ? '#88aacc' : '#88aacc' ,
                       fontSize: '1.2rem',
                       lineHeight: 0
-                  }} title={char.status}>
-                      ●
-                  </span>
+                    }} title={char.status}>
+                      ● </span>
+                    {char.status}
+                  </p>
+                  
               </div>
           </div>
 
@@ -108,8 +116,7 @@ function CharactersBoard() {
                   ) : (
                     initialLetter
                   )}
-              </div>
-              <h3 className="char-name">{char.name || "Sem Nome"}</h3>
+              </div>              
           </div>
 
           {/* RODAPÉ (Botões de Ação) */}
@@ -156,7 +163,6 @@ function CharactersBoard() {
       <header className="chars-header">
         <div>
             <h1 className="chars-title">Meus Personagens</h1>
-            <p className="chars-subtitle">{activeChars.length} / {MAX_ACTIVE} Ativos</p>
         </div>
         
         <button className="btn-new-char" onClick={handleNewCharacter}>
@@ -181,13 +187,15 @@ function CharactersBoard() {
           </section>
       )}
 
-      {/* ÁREA DE ATIVOS */}
-      {draftChars.length > 0 && (
-        <div className="active-section-divider">
-            <h2 className="section-label">ATIVOS</h2>
-            <div className="divider-line"></div>
-        </div>
-      )}
+
+      <div className="active-section-divider">
+          <div className="text-group">
+              <h2 className="section-label">ATIVOS</h2>            
+              <p className="chars-subtitle">{activeChars.length} / {MAX_ACTIVE} Ativos</p>
+          </div>
+          
+          <div className="divider-line"></div>
+      </div>
 
       {activeChars.length === 0 ? (
         <div className="empty-state">

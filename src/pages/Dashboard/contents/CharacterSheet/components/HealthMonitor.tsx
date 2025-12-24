@@ -1,6 +1,6 @@
 /** ========================================================================================
- * ARQUIVO: src/pages/Dashboard/components/CharacterSheet/components/HealthMonitor.tsx
- * DESCRIÇÃO: Componente de Monitor de Saúde para Ficha Interativa
+ * ARQUIVO: src/pages/Dashboard/contents/CharacterSheet/components/HealthMonitor.tsx
+ * DESCRIÇÃO: Componente de Monitor de Saúde (Com Cálculo Automático de Status)
  * ========================================================================================= */
 
 import React from 'react';
@@ -16,14 +16,16 @@ interface Props {
     health: HealthData;
     instincts: Instincts; 
     onUpdate: (newHealth: HealthData) => void;
+    // NOVO: Função para avisar a ficha que o status mudou
+    onStatusChange?: (newStatus: string) => void;
 }
 
-function HealthMonitor({ health, instincts, onUpdate }: Props) {
+function HealthMonitor({ health, instincts, onUpdate, onStatusChange }: Props) {
     
     const tempHealth = health.temp || 0;
     const currentReal = health.current;
     
-    // FÓRMULA CORRETA: 1 + Resolução + Potência
+    // FÓRMULA: 1 + Resolução + Potência
     // Define quantos quadradinhos (segmentos) cada caixa de vida tem.
     const segmentsPerBox = 1 + (instincts.resolucao || 0) + (instincts.potencia || 0);
 
@@ -33,37 +35,62 @@ function HealthMonitor({ health, instincts, onUpdate }: Props) {
     
     const totalDisplay = currentReal + tempHealth;
 
+    // --- LÓGICA DE STATUS ---
+    const checkStatusChange = (newCurrent: number) => {
+        if (!onStatusChange) return;
+
+        // Regras de negócio solicitadas:
+        // 0 = Morto
+        // <= 1 caixa (S*1) = Incapacitado
+        // <= 2 caixas (S*2) = Debilitado
+        // <= 3 caixas (S*3) = Ferido
+        // <= 4 caixas (S*4) = Lacerado
+        // <= 5 caixas (S*5) = Escoriado
+        // > 5 caixas = Vivo (Padrão)
+
+        if (newCurrent === 0) {
+            onStatusChange('Morto');
+        } else if (newCurrent <= segmentsPerBox) {
+            onStatusChange('Incapacitado');
+        } else if (newCurrent <= segmentsPerBox * 2) {
+            onStatusChange('Debilitado');
+        } else if (newCurrent <= segmentsPerBox * 3) {
+            onStatusChange('Ferido');
+        } else if (newCurrent <= segmentsPerBox * 4) {
+            onStatusChange('Lacerado');
+        } else if (newCurrent <= segmentsPerBox * 5) {
+            onStatusChange('Escoriado');
+        } else {
+            // Se estiver na última caixa (6) ou cheio
+            onStatusChange('Vivo');
+        }
+    };
+
     // --- HANDLERS ---
     const adjustReal = (delta: number) => {
         const newVal = Math.max(0, Math.min(maxHealth, currentReal + delta));
+        
+        // 1. Atualiza a vida
         onUpdate({ ...health, current: newVal, max: maxHealth, temp: tempHealth });
+        
+        // 2. Verifica se o status mudou baseado no novo valor
+        checkStatusChange(newVal);
     };
 
     const adjustTemp = (delta: number) => {
         const newVal = Math.max(0, tempHealth + delta);
         onUpdate({ ...health, current: currentReal, max: maxHealth, temp: newVal });
+        // Nota: Vida temporária geralmente não altera status de trauma físico (Escoriado, etc), 
+        // mas se quiser que altere, basta chamar checkStatusChange(currentReal) aqui também.
     };
 
     // --- RENDERIZAÇÃO DE UMA CAIXA ---
     const renderHealthBox = (boxNumber: number, label: string, colorClass: 'green' | 'yellow' | 'red') => {
-        
-        // Calcular o intervalo de HP que esta caixa representa.
-        // Caixa 1 (Incapacitação) é a base (HP 1 até X).
-        // Caixa 6 (Saudável) é o topo.
-        
-        // Box 1: HP 1 .. segs
-        // Box 2: HP segs+1 .. 2*segs
-        // ...
-        // Box N: HP (N-1)*segs + 1 .. N*segs
-        
         const startValue = (boxNumber - 1) * segmentsPerBox;
         
         const segments = [];
         for (let s = 1; s <= segmentsPerBox; s++) {
-            // Valor exato deste segmento
             const segmentValue = startValue + s;
-            
-            // O segmento está preenchido se a vida atual for maior ou igual a ele
             const isActive = currentReal >= segmentValue;
             
             segments.push(
@@ -87,7 +114,7 @@ function HealthMonitor({ health, instincts, onUpdate }: Props) {
     return (
         <div className="health-section">
             
-            {/* HEADER */}
+            {/* HEADER */}            
             <div className="health-header-grid">
                 <div className="health-ctrl-group">
                     <span className="health-ctrl-title" style={{color:'#00bbff'}}>Temp</span>
@@ -142,7 +169,7 @@ function HealthMonitor({ health, instincts, onUpdate }: Props) {
                 {/* GRUPO 3: CRÍTICO (2, 1) - VERMELHO */}
                 <div className="health-group-row">
                     <span className="health-group-title">
-                        Não regenera naturalmente.<br/>Necessita de cuidados médico
+                        Necessita de cuidados médico
                     </span>
                     <div className="health-boxes-wrapper">
                         <div className="hp-box-container">

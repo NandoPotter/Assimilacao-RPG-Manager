@@ -6,11 +6,12 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 // Pagina para direcionamento das rotas teste no frontend
-import HomePage from './testEnvironments/TestPage'
+import TestPage from './testEnvironments/TestPage'
 
 // Importação das Páginas
+import RootRedirect from './pages/Auth/Index'
 import NotFoundPage from './pages/NotFoundPage'
-import LoginPage from './pages/Auth/Index'
+import LoginPage from './pages/Login/Index'
 import DashboardLayout from './pages/Dashboard/Index'
 
 // Dashboard Contents
@@ -23,9 +24,13 @@ import CharacterSheetBoard from './pages/Dashboard/contents/CharacterSheet/Index
 
 export const Router = createBrowserRouter([
   {
-    path: '/testenv',
-    element: <HomePage />,
+    path: '/',
+    element: <RootRedirect />,
     errorElement: <NotFoundPage />,
+  },
+  {
+    path: '/testenv',
+    element: <TestPage />,
   },
   {
     path: '/login',

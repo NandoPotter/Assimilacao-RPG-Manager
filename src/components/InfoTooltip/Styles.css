@@ -1,26 +1,25 @@
 /* ARQUIVO: src/components/InfoTooltip/styles.css */
 
+/* --- ÍCONE GATILHO (Mantido Pequeno) --- */
 .info-icon-container {
     display: inline-flex;
     align-items: center; 
     justify-content: center;
-    
-    /* --- EFEITO SOBRESCRITO (SUPERSCRIPT) --- */
-    width: 11px;         /* Bem pequeno */
+
+    width: 11px;
     height: 11px;
-    margin-left: 2px;    /* Colado no texto */
-    transform: translateY(-5px); /* Empurra para cima */
+
+    margin-left: 3px;
+    margin-right: 0px;
+    transform: translateY(-5px);
     
-    /* Estilo Visual */
     border-radius: 50%;
-    border: 1px solid #555;
-    color: #888;
+    border: 1px solid #666;
+    color: #aaa;
     background: rgba(0,0,0,0.3);
-    cursor: help;
+    cursor: pointer; /* Mudado para pointer pois agora é clique */
     transition: 0.3s;
     z-index: 10;
-    
-    /* Para garantir que não quebre linhas */
     flex-shrink: 0; 
 }
 
@@ -32,54 +31,131 @@
 }
 
 .info-icon-symbol {
-    font-size: 0.55rem; /* Letra 'i' minúscula */
-    font-family: 'Courier New', monospace; /* Fonte serifada ou mono fica melhor pro 'i' */
+    font-size: 0.5rem;
+    font-family: 'Courier New', monospace;
     font-weight: bold;
     line-height: 1;
     pointer-events: none;
 }
 
-/* --- BALÃO FLUTUANTE --- */
-.info-tooltip-balloon {
-    position: absolute;
-    /* Ajuste para aparecer centralizado em relação ao ícone */
-    bottom: 160%; 
-    left: 50%;
-    transform: translateX(-50%);
-    
-    width: 220px;
-    background: rgba(15, 18, 21, 0.98);
+/* --- MODAL OVERLAY (Fundo Escuro) --- */
+.info-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 9999; /* Bem alto para ficar em cima de tudo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* --- CONTEÚDO DO MODAL --- */
+.info-modal-content {
+    background: #15171b;
     border: 1px solid var(--cor-tema, #bd00ff);
-    padding: 10px;
-    border-radius: 6px;
-    
+    box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 10px rgba(var(--cor-tema-rgb), 0.2);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 700px; /* Largura máxima confortável para leitura */
+    max-height: 90vh; /* Se for muito grande, scrolla */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: zoomIn 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+/* Header */
+.info-modal-header {
+    background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-modal-title {
+    margin: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: var(--cor-tema, #bd00ff);
+    letter-spacing: 1px;
+}
+
+.info-modal-close {
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 5px;
+}
+.info-modal-close:hover { color: #fff; }
+
+/* Corpo */
+.info-modal-body {
+    padding: 20px;
+    overflow-y: auto;
     color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.info-text { margin-bottom: 10px; text-align: justify; text-indent: 30px;}
+
+.info-text-cent { margin-bottom: 10px; text-align: center; }
+
+.info-text-especial { 
+    margin-top: 15px;
+    margin-bottom: 15px; 
+    text-align: justify;
+    color: #ccc; 
+    font-weight: normal; 
+}
+
+.info-text-especial span {
+    color: var(--cor-tema, #bd00ff); 
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* --- TABELA DE INFORMAÇÃO --- */
+.info-table-wrapper {
+    margin-top: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.info-table th {
+    background: rgba(255,255,255,0.05);
+    color: var(--cor-tema, #bd00ff);
+    text-align: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-weight: bold;
+    text-transform: uppercase;
     font-size: 0.75rem;
-    line-height: 1.4;
-    text-align: left;
-    text-transform: none; /* Garante que o texto não fique UPPERCASE */
-    font-weight: normal;
-    font-family: sans-serif; /* Garante leitura fácil */
-    
-    box-shadow: 0 5px 15px rgba(0,0,0,0.6);
-    pointer-events: none;
-    z-index: 9999;
-    
-    animation: fadeInTooltip 0.2s ease-out;
 }
 
-/* Setinha do balão */
-.info-tooltip-balloon::after {
-    content: '';
-    position: absolute;
-    top: 100%; left: 50%;
-    transform: translateX(-50%);
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--cor-tema, #bd00ff) transparent transparent transparent;
+.info-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #ddd;
 }
 
-@keyframes fadeInTooltip {
-    from { opacity: 0; transform: translate(-50%, 5px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
-}
+.info-table tr:last-child td { border-bottom: none; }
+.info-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Animações */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }

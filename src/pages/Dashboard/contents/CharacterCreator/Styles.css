@@ -59,7 +59,7 @@
 /* --- Componentes de Seção --- */
 .form-section {
     background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px; padding: 15px; margin-bottom: 15px;
+    border-radius: 6px; padding: 10px; margin-bottom: 10px;
 }
 .compact-section { padding: 12px 15px; margin-bottom: 10px; }
 
@@ -87,12 +87,86 @@
 .input-group { margin-bottom: 10px; }
 .input-group label { display: block; color: #88aacc; margin-bottom: 4px; font-size: 0.85rem; }
 .input-field {
-    width: 100%; padding: 8px 12px; background: #0d1116; border: 1px solid #333; margin-bottom: 2px;
+    width: 100%; padding: 8px 12px; background: #0d1116; border: 1px solid #333; margin-bottom: 5px;
     border-radius: 4px; color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s;
 }
 .input-field:focus { border-color: var(--cor-tema); box-shadow: 0 0 5px var(--cor-tema-glow); }
-.text-area-full { flex: 1; resize: none; min-height: 150px; line-height: 1.5; }
+.text-area-full { flex: 0.5; resize: none; min-height: 100px; line-height: 1.0; }
 .subtitle-std { color: #aaa; font-size: 0.85rem; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
+
+/* Imputs de Imagens */
+.avatar-upload-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Círculo do Avatar */
+.avatar-preview-circle {
+    width: 120px; /* Ajustei para 100px para ficar harmonioso, pode voltar pra 120 se preferir */
+    height: 120px;
+    background-color: #15171b;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    flex-shrink: 0;
+}
+
+.avatar-placeholder-icon {
+    font-size: 2rem;
+    color: #444;
+    font-weight: bold;
+}
+
+/* Coluna da Direita (Botão + Texto) */
+.avatar-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+/* O "Botão" (que na verdade é um Label) */
+.btn-upload-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    color: #ccc;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-upload-custom:hover {
+    background: #222;
+    border-color: var(--cor-tema, #bd00ff);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(var(--cor-tema-rgb, 189, 0, 255), 0.3);
+}
+
+.btn-upload-custom:active {
+    transform: translateY(1px);
+}
+
+/* Texto de ajuda */
+.avatar-help-text {
+    font-size: 0.65rem;
+    color: #666;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+}
 
 /* ==========================================================================
    PASSO 2: ATRIBUTOS

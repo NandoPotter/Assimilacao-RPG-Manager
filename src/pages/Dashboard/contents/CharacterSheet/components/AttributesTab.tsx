@@ -135,7 +135,7 @@ function AttributesTab({
                 onClick={() => !isDisabled && handleSelect(key, type)}
             >
                 <div className="mc-left">
-                    <div className="mc-selector" />
+                    <div className="mc-selector" />                    
                     <span className="mini-label">{NAME_MAP[key] || key}</span>
                     <InfoTooltip textKey={key} descriptions={DESCRIPTIONS} />
                 </div>
@@ -164,7 +164,7 @@ function AttributesTab({
                         onClick={handleToggleClick}
                     >
                         <span className="dot-indicator" />
-                        Rolagem Assimilada
+                        Agir por Instinto
                     </button>
 
                     <button className={`btn-edit-small btn-edit-right ${isEditing ? 'saving' : ''}`} onClick={toggleEditMode}>
@@ -223,11 +223,19 @@ function AttributesTab({
                 <div className="dramatic-overlay">
                     <div className="dramatic-box">
                         <span className="dramatic-title">Fusão Neural</span>
+
+                        <p className="dramatic-text">
+                            Ao Agir por Instinto, o infectado elege dois instintos ou usa o mesmo instinto duas vezes, ignorando suas outras Aptidões. 
+                        </p>
+
+                        <p className="dramatic-text">
+                            Todos os D6 são trocados por D12. 
+                        </p>
                         
                         <p className="dramatic-text">
                             Para acessar seus instintos primordiais e agir através da rede, um preço deve ser pago. Como deseja proceder?
                         </p>
-                        
+                                                
                         <div className="dramatic-choices">
                             {/* OPÇÃO 1: ASSIMILAÇÃO */}
                             {currentAssimilation >= 1 && (
@@ -245,7 +253,7 @@ function AttributesTab({
                                 </button>
                             )}
                         </div>
-
+                        
                         <button className="btn-dramatic-cancel" onClick={() => setShowConfirmModal(false)}>
                             Cancelar Conexão
                         </button>

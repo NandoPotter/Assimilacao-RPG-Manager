@@ -5,7 +5,7 @@
 
 // Tipos Literais (String Unions) para garantir segurança no código
 export type GenerationType = 'Pré-Colapso' | 'Colapso' | 'Pós-Colapso';
-export type CharacterStatus = 'Vivo' | 'Ferido' | 'Morto' | 'Em Criação';
+export type CharacterStatus = 'Saudável' | 'Escoriado' | 'Lacerado' | 'Ferido' | 'Debilitado' | 'Incapacitado' | 'Morto' | 'Em Criação';
 
 // Estrutura dos Instintos (Atributos Principais)
 export interface Instincts {

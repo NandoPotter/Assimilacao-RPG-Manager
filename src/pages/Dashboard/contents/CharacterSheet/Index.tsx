@@ -6,7 +6,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { characterService } from '../../../../services/characterService';
-import { type Character } from '../../../../interfaces/Gameplay';
+import { type Character, type CharacterStatus } from '../../../../interfaces/Gameplay';
 import './styles.css';
 
 // Componentes
@@ -185,12 +185,23 @@ function CharacterSheetBoard() {
                         </div>
                         {/* Fim da Seção 2 */}
 
-                        {/* SEÇÃO 3: CARACTERÍSTICAS E ASSIMILAÇÕES (SEPARADO) */}
+                        {/* SEÇÃO 3: CARACTERÍSTICAS E ASSIMILAÇÕES */}
                         <div className="snap-section">
                             <hr style={{borderColor:'rgba(255,255,255,0.05)', margin:'5px 0 15px 0'}} />
                             
                             <div className="split-50-50">
-                                <CharacteristicsTab ids={char.characteristics_ids} />
+                                {/* Lado Esquerdo: Características */}
+                                <CharacteristicsTab 
+                                    ids={char.characteristics_ids} 
+                                    
+                                    // ADICIONE ESTAS DUAS LINHAS:
+                                    instincts={char.instincts} 
+                                    aptitudes={char.aptitudes}
+
+                                    onUpdate={(newIds) => handleUpdate({ characteristics_ids: newIds })}
+                                />
+                                
+                                {/* Lado Direito: Assimilações */}
                                 <AssimilationsTab characterId={char.id} />
                             </div>
                         </div>
@@ -250,6 +261,12 @@ function CharacterSheetBoard() {
                             health={char.vitals.health}
                             instincts={char.instincts} 
                             onUpdate={(newHealth) => handleUpdate({ vitals: { ...char.vitals, health: newHealth } })}
+                            
+                            onStatusChange={(newStatus) => {
+                                if (char.status !== newStatus) {
+                                    handleUpdate({ status: newStatus as CharacterStatus }); 
+                                }
+                            }}
                         />
 
                         <ControlTrack 

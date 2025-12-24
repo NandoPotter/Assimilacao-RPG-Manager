@@ -81,7 +81,7 @@ export const characterService = {
   },
 
   // =================================================================
-  // 7. POPULAR INVENTÁRIO (A MÁGICA DOS KITS)
+  // 7. POPULAR INVENTÁRIO (ATUALIZADO: KIT + MOCHILA PADRÃO)
   // =================================================================
   async populateInventoryFromKit(characterId: string, kitName: string): Promise<void> {
     // A. Busca a "receita" do kit
@@ -93,29 +93,40 @@ export const characterService = {
 
     if (kitError || !kitData) {
       console.error("Erro ao buscar kit:", kitError);
-      // Não damos throw aqui para não travar a criação do personagem, 
-      // apenas logamos o erro e o inventário ficará vazio.
       return; 
     }
 
-    // B. Prepara os dados para inserir no inventário
-    // items_list é: [{"id": "I00034", "qty": 1}, ...]
-    const itemsToInsert = (kitData.items_list as any[]).map((item: any) => ({
+    // B. Prepara os itens do KIT (Vão para a MOCHILA)
+    const kitItems = (kitData.items_list as any[]).map((item: any) => ({
       character_id: characterId,
-      item_id: item.id,     // ID do Item (ex: I00034)
-      quantity: item.qty,   // Quantidade
-      is_equipped: false    // Começa na mochila
+      item_id: item.id,     
+      quantity: item.qty,   
+      location: 'BACKPACK', // Itens do kit ficam guardados
+      is_dropped: false,
+      is_visible: true
     }));
 
-    if (itemsToInsert.length > 0) {
-      const { error: insertError } = await supabase
-        .from('character_inventory')
-        .insert(itemsToInsert);
+    // C. Prepara a MOCHILA SIMPLES OBRIGATÓRIA (Vai EQUIPADA)
+    const defaultBackpack = {
+      character_id: characterId,
+      item_id: 'I00034',    // ID Fixo da Mochila Simples
+      quantity: 1,
+      location: 'EQUIPPED', // Nas costas do personagem
+      is_dropped: false,
+      is_visible: true
+    };
 
-      if (insertError) {
-        console.error("Erro ao inserir itens no inventário:", insertError);
-        throw new Error("Falha ao entregar os itens do kit.");
-      }
+    // D. Junta tudo para inserir de uma vez
+    const finalItemsToInsert = [...kitItems, defaultBackpack];
+
+    // E. Executa a inserção
+    const { error: insertError } = await supabase
+      .from('character_inventory')
+      .insert(finalItemsToInsert);
+
+    if (insertError) {
+      console.error("Erro ao inserir itens no inventário:", insertError);
+      throw new Error("Falha ao entregar os itens iniciais.");
     }
   },
 
@@ -189,6 +200,17 @@ export const characterService = {
             .eq('id', inventoryId);
 
         if (error) throw error;
-    }
+    },
+
+    // 12. BUSCAR TODAS AS CARACTERÍSTICAS (PARA O EDITOR)
+  async getAllCharacteristics() {
+    const { data, error } = await supabase
+      .from('characteristics')
+      .select('*')
+      .order('name', { ascending: true }); // Ordenar alfabeticamente ajuda na busca
+
+    if (error) throw error;
+    return data;
+  }
   
 };

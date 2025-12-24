@@ -1,23 +1,27 @@
 /** ========================================================================================
  * ARQUIVO: src/pages/Dashboard/components/CharacterSheet/components/PaginatedSection.tsx
- * DESCRIÇÃO: Componente de Seção com Paginação para Ficha Interativa
+ * DESCRIÇÃO: Componente de Seção com Paginação (Atualizado para Editor)
  * ========================================================================================= */
 
 import React, { useState } from 'react';
 
+// Atualizado para refletir o DB real
 export interface ItemData {
-    id: number | string;
+    id: number; 
     name: string;
     description: string;
-    type?: 'evolutiva' | 'adaptativa' | 'inoportuna' | 'singular'; 
+    cost: number;
+    requirements: any; // JSONB do banco
+    type?: string; 
 }
 
 interface Props {
     title: string;
     items: ItemData[];
+    onEdit?: () => void; // Função para abrir o modal de edição
 }
 
-function PaginatedSection({ title, items }: Props) {
+function PaginatedSection({ title, items, onEdit }: Props) {
     const [page, setPage] = useState(0);
     const [selectedItem, setSelectedItem] = useState<ItemData | null>(null);
     
@@ -29,28 +33,38 @@ function PaginatedSection({ title, items }: Props) {
 
     const visibleItems = items.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
-    // Helper: Classe de cor do TEXTO
-    const getTitleClass = (item: ItemData) => {
-        if (item.type) return `card-title-${item.type}`;
-        return 'card-title-standard';
-    };
-
-    // NOVO Helper: Classe de GLOW do MODAL
-    const getModalGlowClass = (item: ItemData) => {
-        if (item.type) return `modal-glow-${item.type}`;
-        return 'modal-glow-standard'; // Glow branco para características
+    // Helper simples para texto de requisitos no modal de leitura
+    const formatReqText = (reqs: any) => {
+        if (!reqs || (Array.isArray(reqs) && reqs.length === 0)) return "Nenhum";
+        return JSON.stringify(reqs).substring(0, 50) + "..."; 
+        // Nota: O modal de edição terá um renderizador mais bonito.
     };
 
     return (
         <div className="paginated-wrapper">
-            {/* ... (Header e Body permanecem iguais) ... */}
-            <div className="paginated-header">
-                <span className="group-title" style={{marginBottom:0, borderBottom:'none'}}>
-                    {title} <span className="counter-badge">{items.length}</span>
-                </span>
-                {showControls && (
-                    <span className="page-indicator-text">{page + 1} / {totalPages}</span>
-                )}
+            
+            {/* HEADER COM BOTÃO EDITAR */}
+            <div className="paginated-header" style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                    <span className="group-title" style={{marginBottom:0, borderBottom:'none'}}>
+                        {title} <span className="counter-badge">{items.length}</span>
+                    </span>
+                </div>
+
+                {/* Controles à Direita: Paginação + Botão Editar */}
+                <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                    
+                    {showControls && (
+                        <span className="page-indicator-text" style={{marginRight:'5px'}}>{page + 1} / {totalPages}</span>
+                    )}
+
+                    {/* Botão Editar: Reusando classe do AttributesTab para consistência */}
+                    {onEdit && (
+                        <button className="btn-edit-small" onClick={onEdit}>
+                            EDITAR
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="paginated-body">
@@ -67,7 +81,7 @@ function PaginatedSection({ title, items }: Props) {
                         <div className="paginated-grid-3x2">
                             {visibleItems.map(item => (
                                 <div key={item.id} className="simple-card" onClick={() => setSelectedItem(item)}>
-                                    <span className={`simple-card-text ${getTitleClass(item)}`}>
+                                    <span className="simple-card-text card-title-standard">
                                         {item.name}
                                     </span>
                                 </div>
@@ -83,44 +97,16 @@ function PaginatedSection({ title, items }: Props) {
                 </button>
             </div>
 
-            {/* --- MODAL ATUALIZADO --- */}
+            {/* MODAL DE LEITURA (SIMPLES) */}
             {selectedItem && (
-                <div 
-                    className="detail-overlay-backdrop"
-                    onClick={() => setSelectedItem(null)} 
-                >
-                    {/* Adicionamos a classe de GLOW dinamicamente aqui */}
-                    <div 
-                        className={`detail-card-expanded ${getModalGlowClass(selectedItem)}`} 
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        
-                        {/* Cabeçalho */}
+                <div className="detail-overlay-backdrop" onClick={() => setSelectedItem(null)}>
+                    <div className="detail-card-expanded modal-glow-standard" onClick={(e) => e.stopPropagation()}>
                         <div className="expanded-header-area">
-                            <span className={`expanded-title ${getTitleClass(selectedItem)}`}>
-                                {selectedItem.name}
-                            </span>
-                            {selectedItem.type && (
-                                <span className="expanded-type">Isso é uma Assimilação {selectedItem.type}</span>
-                            )}
-                             {!selectedItem.type && (
-                                <span className="expanded-type">Característica Padrão</span>
-                            )}
+                            <span className="expanded-title card-title-standard">{selectedItem.name}</span>
+                            <span className="expanded-type">Custo: {selectedItem.cost} XP</span>
                         </div>
-                        
-                        {/* Descrição */}
-                        <p className="expanded-desc">
-                            {selectedItem.description}
-                        </p>
-
-                        {/* Botão Fechar Largo na parte inferior */}
-                        <button 
-                            className="btn-close-modal-wide"
-                            onClick={() => setSelectedItem(null)}
-                        >
-                            Fechar
-                        </button>
-
+                        <p className="expanded-desc">{selectedItem.description}</p>
+                        <button className="btn-close-modal-wide" onClick={() => setSelectedItem(null)}>Fechar</button>
                     </div>
                 </div>
             )}
