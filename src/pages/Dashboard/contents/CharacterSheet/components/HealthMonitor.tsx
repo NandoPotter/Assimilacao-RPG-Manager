@@ -3,7 +3,6 @@
  * DESCRIÇÃO: Componente de Monitor de Saúde (Com Cálculo Automático de Status)
  * ========================================================================================= */
 
-import React from 'react';
 import { type Instincts } from '../../../../../interfaces/Gameplay';
 
 interface HealthData {

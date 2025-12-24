@@ -3,10 +3,10 @@
  * DESCRIÇÃO: Aba de Características (Editor Grid 3 Colunas - Sem XP Display)
  * ========================================================================================= */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { type Aptitudes, type Instincts } from '../../../../../interfaces/Gameplay';
 import { characterService } from '../../../../../services/characterService';
 import PaginatedSection, { type ItemData } from './PaginatedSection';
-import { type Instincts, type Aptitudes } from '../../../../../interfaces/Gameplay';
 
 import iconRulesActive from '../../../../../assets/ui/rules-active.svg';
 import iconRulesBroken from '../../../../../assets/ui/rules-broken.svg';

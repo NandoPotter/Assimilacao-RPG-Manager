@@ -3,7 +3,6 @@
  * DESCRIÇÃO: Componente do Cabo de Guerra para Ficha Interativa
  * ========================================================================================= */
 
-import React from 'react';
 
 interface VitalsData {
     current: number;

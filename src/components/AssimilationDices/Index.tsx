@@ -1,12 +1,11 @@
-import React, { Suspense, useState, useEffect, useRef } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
 import { Physics, usePlane } from '@react-three/cannon';
-import { Environment, Html, OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
+import { Environment, OrbitControls } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+import { Suspense, useRef, useState } from 'react';
 
-import PhysicsD6 from './PhysicsD6';
 import PhysicsD10 from './PhysicsD10';
 import PhysicsD12 from './PhysicsD12';
+import PhysicsD6 from './PhysicsD6';
 
 // --- AMBIENTE ---
 function Scene() {

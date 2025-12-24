@@ -3,7 +3,7 @@
  * DESCRIÇÃO: Aba de Origens da Ficha Interativa
  * ================================================================================ */
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { type BackgroundData } from '../../../../../interfaces/Gameplay';
 
 interface Props {

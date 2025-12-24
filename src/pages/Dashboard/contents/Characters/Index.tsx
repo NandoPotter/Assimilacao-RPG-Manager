@@ -3,8 +3,8 @@
  * DESCRIÇÃO: Frontend do Dashboard - Listagem de Personagens (Final)
  * ============================================================ */
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate, NavLink } from 'react-router';
+import { useEffect, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router';
 import { type Character } from '../../../../interfaces/Gameplay';
 import { characterService } from '../../../../services/characterService';
 import './Styles.css';

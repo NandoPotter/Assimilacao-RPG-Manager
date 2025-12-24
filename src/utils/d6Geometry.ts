@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 
 export const createD6Data = (size = 2) => {
   // Tamanho do cubo (meio tamanho, raio)

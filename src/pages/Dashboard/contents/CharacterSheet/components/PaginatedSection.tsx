@@ -3,7 +3,7 @@
  * DESCRIÇÃO: Componente de Seção com Paginação (Atualizado para Editor)
  * ========================================================================================= */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 // Atualizado para refletir o DB real
 export interface ItemData {
@@ -32,13 +32,6 @@ function PaginatedSection({ title, items, onEdit }: Props) {
     const showControls = items.length > itemsPerPage;
 
     const visibleItems = items.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
-
-    // Helper simples para texto de requisitos no modal de leitura
-    const formatReqText = (reqs: any) => {
-        if (!reqs || (Array.isArray(reqs) && reqs.length === 0)) return "Nenhum";
-        return JSON.stringify(reqs).substring(0, 50) + "..."; 
-        // Nota: O modal de edição terá um renderizador mais bonito.
-    };
 
     return (
         <div className="paginated-wrapper">

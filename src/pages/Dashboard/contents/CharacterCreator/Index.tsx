@@ -3,12 +3,12 @@
  * DESCRIÇÃO: Wizard de Criação de Personagem.
  * ============================================================ */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router'; // ADICIONADO useParams
-import { supabase } from '../../../../services/supabaseClient'; 
+import { type Aptitudes, type CharacterStatus, type Instincts } from '../../../../interfaces/Gameplay';
 import { characterService } from '../../../../services/characterService';
-import { type Character, type CharacterStatus, type Aptitudes, type Instincts } from '../../../../interfaces/Gameplay';
-import './styles.css'; 
+import { supabase } from '../../../../services/supabaseClient';
+import './styles.css';
 
 const NAME_MAP: { [key: string]: string } = {
     influencia: 'Influência', percepcao: 'Percepção', potencia: 'Potência',

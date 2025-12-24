@@ -3,7 +3,6 @@
 // Frontend do Dashboard - Overview Principal
 // ============================================================================
 
-import React from 'react';
 
 function OverviewBoard() {
   return (

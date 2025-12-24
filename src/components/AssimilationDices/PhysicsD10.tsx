@@ -3,13 +3,12 @@
  * DESCRIÇÃO: Configurações D10 - Com detecção de dado truncado
  * ============================================================ */
 
-import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useConvexPolyhedron } from '@react-three/cannon';
 import { Edges, Text, useTexture } from '@react-three/drei';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { createD10Data } from '../../utils/d10Geometry';
-import { getResult } from '../../interfaces/DicePoints';
 
 interface Props {
   position?: [number, number, number];

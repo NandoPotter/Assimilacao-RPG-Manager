@@ -3,8 +3,8 @@
  * DESCRIÇÃO: Componente da seção de inventário da ficha de personagem.
  * ========================================================================================= */
 
-import React, { useState, useEffect } from 'react';
-import { characterService } from '../../../../../services/characterService'; 
+import { useEffect, useState } from 'react';
+import { characterService } from '../../../../../services/characterService';
 
 export type ItemLocation = 'EQUIPPED' | 'BACKPACK' | 'REFUGE';
 

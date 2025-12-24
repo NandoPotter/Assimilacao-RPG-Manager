@@ -1,36 +1,27 @@
-// ============================================================================
-// src/router.tsx
-// Configuração das Rotas da Aplicação
-// ============================================================================
+/** ============================================================================
+ * ARQUIVO: src/router.tsx
+ * DESCRIÇÃO: Configuração das Rotas da Aplicação com suporte ao GitHub Pages
+ * ============================================================================ */
 
 import { createBrowserRouter } from 'react-router-dom';
 
-// Pagina para direcionamento das rotas teste no frontend
-import TestPage from './testEnvironments/TestPage'
-
 // Importação das Páginas
-import RootRedirect from './pages/Auth/Index'
-import NotFoundPage from './pages/NotFoundPage'
-import LoginPage from './pages/Login/Index'
-import DashboardLayout from './pages/Dashboard/Index'
+import RootRedirect from './pages/Auth/Index';
+import NotFoundPage from './pages/NotFoundPage';
+import LoginPage from './pages/Login/Index';
+import DashboardLayout from './pages/Dashboard/Index';
 
 // Dashboard Contents
-import OverviewBoard from './pages/Dashboard/contents/OverviewBoard'
-import CharactersPage from './pages/Dashboard/contents/Characters/Index'
-import CharacterCreatorBoard from './pages/Dashboard/contents/CharacterCreator/Index'
-import CharacterSheetBoard from './pages/Dashboard/contents/CharacterSheet/Index'
-
-// Definição das Rotas
+import OverviewBoard from './pages/Dashboard/contents/OverviewBoard';
+import CharactersPage from './pages/Dashboard/contents/Characters/Index';
+import CharacterCreatorBoard from './pages/Dashboard/contents/CharacterCreator/Index';
+import CharacterSheetBoard from './pages/Dashboard/contents/CharacterSheet/Index';
 
 export const Router = createBrowserRouter([
   {
     path: '/',
     element: <RootRedirect />,
     errorElement: <NotFoundPage />,
-  },
-  {
-    path: '/testenv',
-    element: <TestPage />,
   },
   {
     path: '/login',
@@ -58,4 +49,6 @@ export const Router = createBrowserRouter([
       }
     ]
   }
-])
+], {
+  basename: "/Assimilacao-RPG-Manager"
+});

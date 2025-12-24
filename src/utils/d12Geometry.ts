@@ -2,7 +2,6 @@ import * as THREE from 'three';
 
 export const createD12Data = (radius = 1.5) => {
   const t = (1 + Math.sqrt(5)) / 2; // Golden Ratio (Phi)
-  const r = 1 / radius; // Fator de escala inverso
 
   // --- 1. VÉRTICES (20 Pontos baseados na Proporção Áurea) ---
   // Normalizamos para o raio desejado

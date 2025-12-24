@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
-import { Environment, OrbitControls, Html } from '@react-three/drei';
-import * as THREE from 'three';
+import { Environment, OrbitControls } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+import React, { Suspense, useRef, useState } from 'react';
 
-import PhysicsD6 from '../../../../../components/AssimilationDices/PhysicsD6';
+import { InvisibleWalls, Scene } from '../../../../../components/AssimilationDices/DiceSceneElements';
 import PhysicsD10 from '../../../../../components/AssimilationDices/PhysicsD10';
 import PhysicsD12 from '../../../../../components/AssimilationDices/PhysicsD12';
-import { Scene, InvisibleWalls } from '../../../../../components/AssimilationDices/DiceSceneElements';
+import PhysicsD6 from '../../../../../components/AssimilationDices/PhysicsD6';
 
 // Props para receber o que está selecionado na AttributesTab
 interface Props {
