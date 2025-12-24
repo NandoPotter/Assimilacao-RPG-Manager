@@ -1,6 +1,6 @@
 /** =====================================================================================
  * ARQUIVO: src/pages/Dashboard/contents/CharacterSheet/components/AttributesTab.tsx
- * DESCRIÇÃO: Aba de Atributos (Sistema de Custos Dramáticos)
+ * DESCRIÇÃO: Aba de Atributos (Sistema de Custos Dramáticos) Integrado ao DiceMonitor
  * ====================================================================================== */
 
 import React, { useState, useEffect } from 'react';
@@ -11,13 +11,13 @@ import { DESCRIPTIONS } from '../../../../../constants/Descriptions';
 interface Props {
     instincts: Instincts;
     aptitudes: Aptitudes;
-    
     currentAssimilation: number;
     currentDetermination: number;
-    
     onUpdate?: (updates: { instincts?: Instincts; aptitudes?: Aptitudes }) => void;
     onSpendAssimilation?: () => void;
     onSpendDetermination?: (amount: number) => void;
+    // Callback para comunicar com o DiceMonitor via index.tsx
+    onSelectionChange?: (instincts: string[], aptitudes: string[], isAssimilated: boolean) => void;
 }
 
 const NAME_MAP: Record<string, string> = {
@@ -32,18 +32,15 @@ const NAME_MAP: Record<string, string> = {
 function AttributesTab({ 
     instincts, aptitudes, 
     currentAssimilation, currentDetermination, 
-    onUpdate, onSpendAssimilation, onSpendDetermination 
+    onUpdate, onSpendAssimilation, onSpendDetermination,
+    onSelectionChange // <-- Desestruturação adicionada
 }: Props) {
     
-    // --- ESTADOS ---
     const [isEditing, setIsEditing] = useState(false);
     const [isAssimilatedRoll, setIsAssimilatedRoll] = useState(false);
-    
-    // Modais
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
 
-    // Valores Locais & Seleção
     const [localInstincts, setLocalInstincts] = useState<Instincts>(instincts);
     const [localAptitudes, setLocalAptitudes] = useState<Aptitudes>(aptitudes);
     const [selectedInstincts, setSelectedInstincts] = useState<string[]>([]);
@@ -54,7 +51,7 @@ function AttributesTab({
         setLocalAptitudes(aptitudes);
     }, [instincts, aptitudes]);
 
-    // --- HANDLERS BÁSICOS ---
+    // HANDLERS BÁSICOS
     const toggleEditMode = () => {
         if (isEditing) {
             if (onUpdate) onUpdate({ instincts: localInstincts, aptitudes: localAptitudes });
@@ -71,55 +68,60 @@ function AttributesTab({
         }
     };
 
-    // --- LÓGICA DE ATIVAÇÃO ---
+    // LÓGICA DE ATIVAÇÃO MODO AZUL
     const handleToggleClick = () => {
         if (isAssimilatedRoll) {
-            // Desativar
             setIsAssimilatedRoll(false);
             setSelectedInstincts([]);
+            // Notifica o DiceMonitor que resetou
+            if (onSelectionChange) onSelectionChange([], selectedAptitudes, false);
         } else {
-            // Verificar Saldos
             const canPayAssimilation = currentAssimilation >= 1;
             const canPayDetermination = currentDetermination >= 2;
-
-            if (!canPayAssimilation && !canPayDetermination) {
-                setShowErrorModal(true);
-            } else {
-                setShowConfirmModal(true);
-            }
+            if (!canPayAssimilation && !canPayDetermination) setShowErrorModal(true);
+            else setShowConfirmModal(true);
         }
     };
 
     const confirmActivation = (costType: 'assimilation' | 'determination') => {
-        if (costType === 'assimilation' && onSpendAssimilation) {
-            onSpendAssimilation();
-        } else if (costType === 'determination' && onSpendDetermination) {
-            onSpendDetermination(2);
-        }
+        if (costType === 'assimilation' && onSpendAssimilation) onSpendAssimilation();
+        else if (costType === 'determination' && onSpendDetermination) onSpendDetermination(2);
 
         setIsAssimilatedRoll(true);
         setSelectedInstincts([]);
-        setSelectedAptitudes([]);
+        setSelectedAptitudes([]); // Modo instinto ignora aptidões
         setShowConfirmModal(false);
+        
+        // Notifica o DiceMonitor
+        if (onSelectionChange) onSelectionChange([], [], true);
     };
 
-    // --- SELEÇÃO ---
+    // FUNÇÃO DE SELEÇÃO INTEGRADA
     const handleSelect = (key: string, type: 'instinct' | 'aptitude') => {
+        let nextInstincts = [...selectedInstincts];
+        let nextAptitudes = [...selectedAptitudes];
+
         if (type === 'instinct') {
             if (selectedInstincts.includes(key)) {
-                setSelectedInstincts(prev => prev.filter(k => k !== key));
-                return;
-            }
-            if (isAssimilatedRoll) {
-                if (selectedInstincts.length < 2) setSelectedInstincts(prev => [...prev, key]);
-                else setSelectedInstincts(prev => [prev[1], key]); 
+                nextInstincts = selectedInstincts.filter(k => k !== key);
+            } else if (isAssimilatedRoll) {
+                if (selectedInstincts.length < 2) nextInstincts = [...selectedInstincts, key];
+                else nextInstincts = [selectedInstincts[1], key];
             } else {
-                setSelectedInstincts([key]);
+                nextInstincts = [key];
             }
         } else {
-            if (isAssimilatedRoll) return; 
-            if (selectedAptitudes.includes(key)) setSelectedAptitudes([]);
-            else setSelectedAptitudes([key]);
+            if (isAssimilatedRoll) return;
+            if (selectedAptitudes.includes(key)) nextAptitudes = [];
+            else nextAptitudes = [key];
+        }
+
+        setSelectedInstincts(nextInstincts);
+        setSelectedAptitudes(nextAptitudes);
+
+        // AVISA O PAI (index.tsx)
+        if (onSelectionChange) {
+            onSelectionChange(nextInstincts, nextAptitudes, isAssimilatedRoll);
         }
     };
 
@@ -135,7 +137,7 @@ function AttributesTab({
                 onClick={() => !isDisabled && handleSelect(key, type)}
             >
                 <div className="mc-left">
-                    <div className="mc-selector" />                    
+                    <div className="mc-selector" />                     
                     <span className="mini-label">{NAME_MAP[key] || key}</span>
                     <InfoTooltip textKey={key} descriptions={DESCRIPTIONS} />
                 </div>
@@ -151,7 +153,6 @@ function AttributesTab({
     return (
         <div style={{display:'flex', flexDirection:'column', gap:'5px', height:'100%'}}>
             
-            {/* GRUPO 1: INSTINTOS */}
             <div className="attr-group-container">
                 <div className="instincts-header-grid">
                     <div style={{display:'flex', alignItems:'center'}}>
@@ -176,7 +177,6 @@ function AttributesTab({
                 </div>
             </div>
 
-            {/* --- GRUPO 2: CONHECIMENTOS --- */}
             <div 
                 className="attr-group-container" 
                 style={{
@@ -189,7 +189,6 @@ function AttributesTab({
                     <span className="group-title">Conhecimentos</span>
                     <InfoTooltip textKey="knowledge" descriptions={DESCRIPTIONS} />
                 </div>
-                
                 <div className="grid-aptitudes">
                     {['biologia','erudicao','engenharia','geografia','medicina','seguranca'].map(k => 
                         renderMiniCard(k, (localAptitudes as any)[k], 'aptitude')
@@ -197,7 +196,6 @@ function AttributesTab({
                 </div>
             </div>
 
-            {/* --- GRUPO 3: PRÁTICAS --- */}
             <div 
                 className="attr-group-container" 
                 style={{
@@ -210,7 +208,6 @@ function AttributesTab({
                     <span className="group-title">Práticas</span>
                     <InfoTooltip textKey="practices" descriptions={DESCRIPTIONS} />
                 </div>
-                
                 <div className="grid-aptitudes">
                     {['armas','atletismo','expressao','furtividade','manufaturas','sobrevivencia'].map(k => 
                         renderMiniCard(k, (localAptitudes as any)[k], 'aptitude')
@@ -218,34 +215,20 @@ function AttributesTab({
                 </div>
             </div>
 
-            {/* --- MODAL DRAMÁTICO DE CONFIRMAÇÃO --- */}
             {showConfirmModal && (
                 <div className="dramatic-overlay">
                     <div className="dramatic-box">
                         <span className="dramatic-title">Fusão Neural</span>
-
-                        <p className="dramatic-text">
-                            Ao Agir por Instinto, o infectado elege dois instintos ou usa o mesmo instinto duas vezes, ignorando suas outras Aptidões. 
-                        </p>
-
-                        <p className="dramatic-text">
-                            Todos os D6 são trocados por D12. 
-                        </p>
-                        
-                        <p className="dramatic-text">
-                            Para acessar seus instintos primordiais e agir através da rede, um preço deve ser pago. Como deseja proceder?
-                        </p>
-                                                
+                        <p className="dramatic-text">Ao Agir por Instinto, o infectado elege dois instintos ou usa o mesmo instinto duas vezes, ignorando suas outras Aptidões.</p>
+                        <p className="dramatic-text">Todos os D6 são trocados por D12.</p>
+                        <p className="dramatic-text">Para acessar seus instintos primordiais e agir através da rede, um preço deve ser pago.</p>
                         <div className="dramatic-choices">
-                            {/* OPÇÃO 1: ASSIMILAÇÃO */}
                             {currentAssimilation >= 1 && (
                                 <button className="btn-choice cost-assimilation" onClick={() => confirmActivation('assimilation')}>
                                     <span>Fundir Consciência</span>
                                     <span style={{fontSize:'0.7rem', opacity:0.8}}>1 Ponto de Assimilação</span>
                                 </button>
                             )}
-
-                            {/* OPÇÃO 2: DETERMINAÇÃO */}
                             {currentDetermination >= 2 && (
                                 <button className="btn-choice cost-determination" onClick={() => confirmActivation('determination')}>
                                     <span>Forçar Limites</span>
@@ -253,32 +236,20 @@ function AttributesTab({
                                 </button>
                             )}
                         </div>
-                        
-                        <button className="btn-dramatic-cancel" onClick={() => setShowConfirmModal(false)}>
-                            Cancelar Conexão
-                        </button>
+                        <button className="btn-dramatic-cancel" onClick={() => setShowConfirmModal(false)}>Cancelar Conexão</button>
                     </div>
                 </div>
             )}
 
-            {/* --- MODAL DE ERRO --- */}
             {showErrorModal && (
                 <div className="dramatic-overlay">
                     <div className="dramatic-box error-mode">
                         <span className="dramatic-title error">Falha Crítica</span>
-                        
-                        <p className="dramatic-text">
-                            Sua mente está fragmentada e sua vontade esgotada.<br/><br/>
-                            Você não possui <strong>1 Ponto de Assimilação</strong> ou <strong>2 Pontos de Determinação</strong> para Agir por Instinto.
-                        </p>
-                        
-                        <button className="btn-warning-close" onClick={() => setShowErrorModal(false)}>
-                            Retornar
-                        </button>
+                        <p className="dramatic-text">Sua mente está fragmentada e sua vontade esgotada.<br/><br/>Você não possui recursos para Agir por Instinto.</p>
+                        <button className="btn-warning-close" onClick={() => setShowErrorModal(false)}>Retornar</button>
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

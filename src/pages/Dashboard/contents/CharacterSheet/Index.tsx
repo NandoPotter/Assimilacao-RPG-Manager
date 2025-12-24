@@ -6,7 +6,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { characterService } from '../../../../services/characterService';
-import { type Character, type CharacterStatus } from '../../../../interfaces/Gameplay';
+import { type Character, type CharacterStatus, type Instincts, type Aptitudes } from '../../../../interfaces/Gameplay';
 import './styles.css';
 
 // Componentes
@@ -18,6 +18,7 @@ import AttributesTab from './components/AttributesTab';
 import AssimilationsTab from './components/AssimilationsTab';
 import CharacteristicsTab from './components/CharacteristicsTab';
 import InventoryTab from './components/InventoryTab';
+import DiceMonitor from './components/DiceMonitor';
 
 function CharacterSheetBoard() {
     const { id } = useParams();
@@ -26,6 +27,13 @@ function CharacterSheetBoard() {
     
     const [char, setChar] = useState<Character | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Estado que conecta a Seleção de Atributos com a Mesa de Dados
+    const [selectedPool, setSelectedPool] = useState({
+        instincts: [] as { key: string, value: number }[],
+        aptitudes: [] as { key: string, value: number }[],
+        isAssimilated: false
+    });
 
     // Carregar Dados
     useEffect(() => {
@@ -45,7 +53,6 @@ function CharacterSheetBoard() {
         load();
     }, [id, navigate]);
 
-    // Salvar Dados Genérico (Para updates diretos como Vida, XP, etc)
     const handleUpdate = async (updates: Partial<Character>) => {
         if (!char) return;
         setChar(prev => prev ? { ...prev, ...updates } : null);
@@ -56,7 +63,6 @@ function CharacterSheetBoard() {
         }
     };
 
-    // Salvar Origens (Objeto completo vindo do OriginsTab)
     const handleBackgroundSave = async (newBg: any) => {
         if (!char) return;
         setChar(prev => prev ? { ...prev, background: newBg } : null);
@@ -67,32 +73,25 @@ function CharacterSheetBoard() {
         }
     };
 
-    // Função Genérica para alterar campos do Background (Desc/Notes/etc) ---
     const handleBackgroundChange = (field: string, value: string) => {
         setChar(prev => {
             if (!prev) return null;
             return {
                 ...prev,
-                background: {
-                    ...prev.background,
-                    [field]: value
-                }
+                background: { ...prev.background, [field]: value }
             };
         });
     };
 
-    // --- CORREÇÃO AQUI: Função para Salvar o Background ao sair do campo (onBlur) ---
     const saveSheet = async () => {
         if (!char) return;
         try {
-            // Salva o objeto background inteiro atualizado
             await characterService.updateCharacter(char.id, { background: char.background });
         } catch (err) {
             console.error("Erro ao salvar dados de texto:", err);
         }
     };
 
-    // Upload Avatar
     const handleImageClick = () => { if (fileInputRef.current) fileInputRef.current.click(); };
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0] && char) {
@@ -109,7 +108,6 @@ function CharacterSheetBoard() {
 
     return (
         <div className="sheet-container">
-            
             <SheetHeader 
                 name={char.name}
                 generation={char.generation}
@@ -122,86 +120,89 @@ function CharacterSheetBoard() {
             <div className="sheet-scrollable-area">
                 <div className="sheet-grid">
                     
-                    {/* --- COLUNA PRINCIPAL (Conteúdo) --- */}
                     <main className="sheet-content">
 
                         {/* SEÇÃO 1: ORIGENS */}
                         <div className="snap-section">
-                            <OriginsTab 
-                                background={char.background}
-                                onSave={handleBackgroundSave}
-                            />
+                            <OriginsTab background={char.background} onSave={handleBackgroundSave} />
                         </div>
 
                         <hr style={{borderColor:'rgba(255,255,255,0.05)', margin:'5px 0 15px 0'}} />
 
-                        {/* SEÇÃO 2: ATRIBUTOS E DADOS */}
+                        {/* SEÇÃO 2: ATRIBUTOS E DADOS INTEGRADOS */}
                         <div className="snap-section">
                             <div className="sheet-content-top">
                                 <AttributesTab 
                                     instincts={char.instincts}
                                     aptitudes={char.aptitudes}
-                                    
-                                    // Sincronizando Saldos
                                     currentAssimilation={char.vitals.assimilation.current}
                                     currentDetermination={char.vitals.determination.current}
-
-                                    // Função Gasto Assimilação
                                     onSpendAssimilation={() => {
                                         const newVal = Math.max(0, char.vitals.assimilation.current - 1);
-                                        handleUpdate({ 
-                                            vitals: { 
-                                                ...char.vitals, 
-                                                assimilation: { ...char.vitals.assimilation, current: newVal } 
-                                            } 
-                                        });
+                                        handleUpdate({ vitals: { ...char.vitals, assimilation: { ...char.vitals.assimilation, current: newVal } } });
                                     }}
-
-                                    // Função Gasto Determinação
                                     onSpendDetermination={(amount) => {
                                         const newVal = Math.max(0, char.vitals.determination.current - amount);
-                                        handleUpdate({ 
-                                            vitals: { 
-                                                ...char.vitals, 
-                                                determination: { ...char.vitals.determination, current: newVal } 
-                                            } 
-                                        });
+                                        handleUpdate({ vitals: { ...char.vitals, determination: { ...char.vitals.determination, current: newVal } } });
                                     }}
+                                    onUpdate={(updates) => handleUpdate({ instincts: updates.instincts, aptitudes: updates.aptitudes })}
+                                    onSelectionChange={(instinctKeys, aptitudeKeys, isBlue) => {
+                                        let poolI: { key: string, value: number }[] = [];
 
-                                    onUpdate={(updates) => handleUpdate({ 
-                                        instincts: updates.instincts, 
-                                        aptitudes: updates.aptitudes 
-                                    })}
+                                        // Lógica Especial para Agir por Instinto (Modo Azul)
+                                        if (isBlue && instinctKeys.length > 0) {
+                                            if (instinctKeys.length === 1) {
+                                                // Se selecionou apenas 1, duplica o valor (Instinto x 2)
+                                                const val = char.instincts[instinctKeys[0] as keyof Instincts];
+                                                poolI = [
+                                                    { key: instinctKeys[0], value: val },
+                                                    { key: `${instinctKeys[0]}_clone`, value: val }
+                                                ];
+                                            } else {
+                                                // Se selecionou 2 diferentes, pega o valor de cada um
+                                                poolI = instinctKeys.map(k => ({ 
+                                                    key: k, 
+                                                    value: char.instincts[k as keyof Instincts] 
+                                                }));
+                                            }
+                                        } else {
+                                            // Modo Normal: Mapeamento simples 1 para 1
+                                            poolI = instinctKeys.map(k => ({ 
+                                                key: k, 
+                                                value: char.instincts[k as keyof Instincts] 
+                                            }));
+                                        }
+
+                                        const poolA = aptitudeKeys.map(k => ({ 
+                                            key: k, 
+                                            value: char.aptitudes[k as keyof Aptitudes] 
+                                        }));
+
+                                        setSelectedPool({ instincts: poolI, aptitudes: poolA, isAssimilated: isBlue });
+                                    }}
                                 />
                                 
-                                {/* A Mesa de Dados fecha AQUI */}
+                                {/* MESA DE DADOS 3D */}
                                 <div className="dice-stage-container">
-                                    <span className="dice-placeholder-text">Mesa de Dados</span>
-                                    <div style={{textAlign:'center', color:'#555', fontSize:'0.8rem'}}>
-                                        (Three.js)
-                                    </div>
+                                    <DiceMonitor 
+                                        selectedInstincts={selectedPool.instincts}
+                                        selectedAptitudes={selectedPool.aptitudes}
+                                        isAssimilatedMode={selectedPool.isAssimilated}
+                                    />
                                 </div>
                             </div>
                         </div>
-                        {/* Fim da Seção 2 */}
 
                         {/* SEÇÃO 3: CARACTERÍSTICAS E ASSIMILAÇÕES */}
                         <div className="snap-section">
                             <hr style={{borderColor:'rgba(255,255,255,0.05)', margin:'5px 0 15px 0'}} />
-                            
                             <div className="split-50-50">
-                                {/* Lado Esquerdo: Características */}
                                 <CharacteristicsTab 
                                     ids={char.characteristics_ids} 
-                                    
-                                    // ADICIONE ESTAS DUAS LINHAS:
                                     instincts={char.instincts} 
                                     aptitudes={char.aptitudes}
-
                                     onUpdate={(newIds) => handleUpdate({ characteristics_ids: newIds })}
                                 />
-                                
-                                {/* Lado Direito: Assimilações */}
                                 <AssimilationsTab characterId={char.id} />
                             </div>
                         </div>
@@ -215,7 +216,6 @@ function CharacterSheetBoard() {
                         {/* SEÇÃO 5: DESCRIÇÃO E ANOTAÇÕES */}
                         <div className="snap-section">
                             <hr style={{borderColor:'rgba(255,255,255,0.05)', margin:'5px 0 15px 0'}} />
-
                             <div className="split-50-50" style={{alignItems: 'stretch'}}>
                                 <div className="desc-box-container" style={{height: '100%', background: 'rgba(0,0,0,0.2)'}}>
                                     <span className="section-title">Descrição Visual</span>
@@ -227,7 +227,6 @@ function CharacterSheetBoard() {
                                         placeholder="Aparência física, vestimentas e traços visíveis..."
                                     />
                                 </div>
-
                                 <div className="desc-box-container" style={{height: '100%', background: 'rgba(0,0,0,0.2)'}}>
                                     <span className="section-title">Anotações / Diário</span>
                                     <textarea 
@@ -243,10 +242,7 @@ function CharacterSheetBoard() {
 
                     </main>
 
-                    {/* --- SIDEBAR (FIXA/STICKY) --- */}
                     <aside className="sheet-sidebar">
-                        
-                        {/* Imagem */}
                         <div className="char-avatar-box" onClick={handleImageClick}>
                             {char.avatar_url ? (
                                 <img src={char.avatar_url} alt="Avatar" className="char-avatar-img" />
@@ -256,12 +252,10 @@ function CharacterSheetBoard() {
                             <div className="char-avatar-overlay">Alterar</div>
                         </div>
 
-                        {/* Controles */}
                         <HealthMonitor 
                             health={char.vitals.health}
                             instincts={char.instincts} 
                             onUpdate={(newHealth) => handleUpdate({ vitals: { ...char.vitals, health: newHealth } })}
-                            
                             onStatusChange={(newStatus) => {
                                 if (char.status !== newStatus) {
                                     handleUpdate({ status: newStatus as CharacterStatus }); 
@@ -274,7 +268,6 @@ function CharacterSheetBoard() {
                             assimilation={char.vitals.assimilation}
                             onUpdate={(newVitals) => handleUpdate({ vitals: { ...char.vitals, ...newVitals } })}
                         />
-
                     </aside>
 
                 </div>

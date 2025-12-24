@@ -1,6 +1,6 @@
 /** ============================================================
  * ARQUIVO: src/contexts/AuthContext.tsx
- * DESCRIÇÃO: Auth Otimizado (Lê Metadata direto da Sessão)
+ * DESCRIÇÃO: Auth Otimizado
  * ============================================================ */
 
 import React, { createContext, useContext, useEffect, useState } from 'react';

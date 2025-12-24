@@ -1,3 +1,8 @@
+/** ============================================================
+ * ARQUIVO: src/components/AssimilationDices/PhysicsD12.tsx
+ * DESCRIÇÃO: Configurações D12 - Com detecção de dado truncado
+ * ============================================================ */
+
 import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useConvexPolyhedron } from '@react-three/cannon';
 import { Edges, Text, useTexture } from '@react-three/drei';
@@ -13,7 +18,7 @@ interface Props {
 const getFacePath = (value: number) => {
   const base = '/assets/facesD12'; 
   switch (value) {
-    case 1: return `${base}/face_1-2.svg`; // Ajuste conforme seus arquivos reais
+    case 1: return `${base}/face_1-2.svg`;
     case 2: return `${base}/face_1-2.svg`;
     case 3: return `${base}/face_3-4.svg`;
     case 4: return `${base}/face_3-4.svg`;
@@ -45,33 +50,31 @@ const FaceSticker = ({
 }) => {
     const texturePath = getFacePath(value);
     const texture = useTexture(texturePath);
+    
     texture.center.set(0.5, 0.5);
     texture.repeat.set(1, 1);
 
     const isWinner = detectedValue === value;
     const color = isWinner ? '#39ff14' : '#ffffffff';
-    
-    // Flutuação: D12 é bem redondo, 2% de offset é seguro
-    const offsetPosition = new THREE.Vector3(...position).multiplyScalar(1.02);
+
+    const offsetPosition = new THREE.Vector3(...position).multiplyScalar(0.96);
 
     return (
         <mesh 
             position={offsetPosition} 
-            rotation={new THREE.Euler(...rotation)}
+            rotation={rotation}
         >
-            {/* D12 tem faces pentagonais. 1.2 deve caber bem dentro */}
-            <planeGeometry args={[1.2, 1.2]} /> 
+            <planeGeometry args={[0.9, 0.9]} />
             
             <meshStandardMaterial 
                 map={texture}
                 transparent={true} 
-                side={THREE.FrontSide} 
+                side={THREE.DoubleSide}
                 color={color} 
                 emissive={color}
-                emissiveIntensity={isWinner ? 3 : 1}
+                emissiveIntensity={isWinner ? 4 : 2}
                 toneMapped={false}
                 roughness={0.1}
-                depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
                 polygonOffsetFactor={-4}
@@ -84,12 +87,10 @@ const PhysicsD12: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
   const { vertices, indices, physicsFaces, faceData } = useMemo(() => createD12Data(1.5), []);
 
   const geoArgs = useMemo(() => {
-    // Formatar Vértices para o Cannon [[x,y,z], ...]
     const v: number[][] = [];
     for (let i = 0; i < vertices.length; i += 3) {
       v.push([vertices[i], vertices[i + 1], vertices[i + 2]]);
     }
-    // PhysicsFaces já vem como array de arrays [[0,1,2,3,4], ...] do nosso utils
     return [v, physicsFaces];
   }, [vertices, physicsFaces]);
 
@@ -103,72 +104,104 @@ const PhysicsD12: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
   }));
 
   const velocity = useRef([0, 0, 0]);
-  const isRolling = useRef(false);
+  const isRolling = useRef(true);
+  
   const faceRefs = useRef<(THREE.Object3D | null)[]>([]);
   if (faceRefs.current.length !== 12) faceRefs.current = Array(12).fill(null);
   const [detectedValue, setDetectedValue] = useState<number | null>(null);
 
+  // Arremesso Automático ao Montar
+  useEffect(() => {
+      api.wakeUp();
+      
+      const impulseForce: [number, number, number] = [
+        (Math.random() - 0.5) * 4, // X aleatório
+        12 + Math.random() * 5,    // Y (Altura do arco)
+        -25 - Math.random() * 10   // Z (A força que joga para o fundo)
+      ];
+      
+      api.applyImpulse(impulseForce, [Math.random(), -1, Math.random()]);
+  
+      api.applyTorque([
+          (Math.random() - 0.5) * 35, 
+          (Math.random() - 0.5) * 35, 
+          (Math.random() - 0.5) * 35
+      ]);
+    }, [api]);
+  
   useEffect(() => api.velocity.subscribe((v) => (velocity.current = v)), [api.velocity]);
 
+  // Detector de Parada com Verificação de Inclinação (Dado Truncado)
   useEffect(() => {
     const tempVec = new THREE.Vector3();
+    const tempQuat = new THREE.Quaternion();
+    const tempNormal = new THREE.Vector3();
+
     const interval = setInterval(() => {
       if (!isRolling.current) return;
       const v = velocity.current;
+
       if (Math.abs(v[0]) < 0.05 && Math.abs(v[1]) < 0.05 && Math.abs(v[2]) < 0.05) {
-        isRolling.current = false; 
         if (ref.current) {
             let highestY = -Infinity;
-            let winnerValue = 0;
+            let winnerIndex = -1;
+
             faceRefs.current.forEach((obj, index) => {
                 if (obj) {
                     obj.getWorldPosition(tempVec);
                     if (tempVec.y > highestY) {
                         highestY = tempVec.y;
-                        winnerValue = faceData[index].value;
+                        winnerIndex = index;
                     }
                 }
             });
-            const rpgResult = getResult(winnerValue);
-            console.log(`D12 Face: ${winnerValue} | Resultado: ${rpgResult.label}`);
-            setDetectedValue(winnerValue);
-            if (onStop) onStop(winnerValue);
+
+            if (winnerIndex !== -1) {
+                const winnerObj = faceRefs.current[winnerIndex]!;
+                winnerObj.getWorldQuaternion(tempQuat);
+                
+                // Calcula a normal da face vencedora no espaço do mundo
+                tempNormal.set(0, 0, 1).applyQuaternion(tempQuat);
+
+                // Se Y for menor que 0.9, o dado parou "torto"
+                if (tempNormal.y < 0.9) {
+                    console.log("⚠️ D12 Truncado! Rerolando...");
+                    api.wakeUp();
+                    api.applyImpulse([0, 7, 0], [Math.random()*0.1, -1, Math.random()*0.1]);
+                    return;
+                }
+
+                isRolling.current = false; 
+                const winnerValue = faceData[winnerIndex].value;
+                const rpgResult = getResult(winnerValue);
+                console.log(`✅ D12 Estável: ${winnerValue} | Resultado: ${rpgResult.label}`);
+                setDetectedValue(winnerValue);
+                if (onStop) onStop(winnerValue);
+            }
         }
       }
     }, 200); 
     return () => clearInterval(interval);
-  }, [faceData, onStop]);
-
-  const roll = () => {
-    setDetectedValue(null); 
-    isRolling.current = true;
-    if (onStop) onStop(0); 
-    api.wakeUp(); 
-    const x = position[0];
-    const z = position[2];
-    api.applyImpulse([-x * 3 + (Math.random()-0.5)*5, 10, -z * 3 + (Math.random()-0.5)*5], [0, -1, 0]);
-    api.applyTorque([(Math.random()-0.5)*20, (Math.random()-0.5)*20, (Math.random()-0.5)*20]);
-  };
+  }, [faceData, onStop, api]);
 
   return (
-    <mesh ref={ref as any} onClick={roll} castShadow receiveShadow>
+    <mesh ref={ref as any} castShadow receiveShadow>
       <bufferGeometry onUpdate={(self) => self.computeVertexNormals()}>
         <bufferAttribute attach="attributes-position" count={vertices.length / 3} itemSize={3} array={vertices} args={[vertices, 3]} />
         <bufferAttribute attach="index" count={indices.length} itemSize={1} array={new Uint16Array(indices)} args={[new Uint16Array(indices), 1]} />
       </bufferGeometry>
 
-      {/* MATERIAL: PEDRA AMETISTA GALVANIZADA (ROXO) */}
       <meshPhysicalMaterial 
-                color="#1a1a3a"
-                metalness={1.0} 
-                roughness={0.3}
-          
-                clearcoat={1.0} 
-                clearcoatRoughness={0.7}
-      
-                envMapIntensity={1.5}
-                side={THREE.DoubleSide}
-                flatShading={true}
+        color="#1a1a3a"
+        transmission={0.95}
+        thickness={2}
+        roughness={0.1}
+        metalness={0}
+        ior={1.5}
+        clearcoat={1}
+        side={THREE.BackSide}
+        flatShading={true}
+        transparent={true}
       />
       
       <Edges threshold={30} color="#ffffffff" />
