@@ -9,6 +9,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { createD6Data } from '../../utils/d6Geometry';
+import face_1_2 from '../../assets/facesD6/face_1-2.svg'
+import face_3_4 from '../../assets/facesD6/face_3-4.svg'
+import face_5 from '../../assets/facesD6/face_5.svg'
+import face_6 from '../../assets/facesD6/face_6.svg'
 
 interface Props {
   position?: [number, number, number];
@@ -18,20 +22,19 @@ interface Props {
 
 // ... (Função getFacePath e FaceSticker permanecem iguais ao seu código) ...
 const getFacePath = (value: number) => {
-  const base = './assets/facesD6'; 
 
   switch (value) {
-    case 1: return `${base}/face_1-2.svg`;
-    case 2: return `${base}/face_1-2.svg`;
-    case 3: return `${base}/face_3-4.svg`;
-    case 4: return `${base}/face_3-4.svg`;
-    case 5: return `${base}/face_5.svg`;
-    case 6: return `${base}/face_6.svg`;
-    default: return `${base}/face_1-2.svg`;
+    case 1: return face_1_2;
+    case 2: return face_1_2;
+    case 3: return face_3_4;
+    case 4: return face_3_4;
+    case 5: return face_5;
+    case 6: return face_6;
+    default: return face_1_2;
   }
 };
 
-useTexture.preload(`./assets/facesD6/face_1-2.svg`);
+useTexture.preload(face_1_2);
 
 const FaceSticker = ({ value, detectedValue, position, rotation }: any) => {
     const texturePath = getFacePath(value);

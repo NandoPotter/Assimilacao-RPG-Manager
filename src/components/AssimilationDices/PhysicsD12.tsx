@@ -7,8 +7,20 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useConvexPolyhedron } from '@react-three/cannon';
 import { Edges, Text, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
+
 import { createD12Data } from '../../utils/d12Geometry';
 import { getResult } from '../../interfaces/DicePoints';
+
+import face_1_2 from '../../assets/facesD12/face_1-2.svg'
+import face_3_4 from '../../assets/facesD12/face_3-4.svg'
+import face_5 from '../../assets/facesD12/face_5.svg'
+import face_6 from '../../assets/facesD12/face_6.svg'
+import face_7 from '../../assets/facesD12/face_7.svg'
+import face_8 from '../../assets/facesD12/face_8.svg'
+import face_9 from '../../assets/facesD12/face_9.svg'
+import face_10 from '../../assets/facesD12/face_10.svg'
+import face_11 from '../../assets/facesD12/face_11.svg'
+import face_12 from '../../assets/facesD12/face_12.svg'
 
 interface Props {
   position?: [number, number, number];
@@ -19,23 +31,23 @@ const getFacePath = (value: number) => {
   const base = './assets/facesD12'; 
  
   switch (value) {
-    case 1: return `${base}/face_1-2.svg`;
-    case 2: return `${base}/face_1-2.svg`;
-    case 3: return `${base}/face_3-4.svg`;
-    case 4: return `${base}/face_3-4.svg`;
-    case 5: return `${base}/face_5.svg`;
-    case 6: return `${base}/face_6.svg`;
-    case 7: return `${base}/face_7.svg`;
-    case 8: return `${base}/face_8.svg`;
-    case 9: return `${base}/face_9.svg`;
-    case 10: return `${base}/face_10.svg`;
-    case 11: return `${base}/face_11.svg`;
-    case 12: return `${base}/face_12.svg`;
-    default: return `${base}/face_1-2.svg`;
+    case 1: return face_1_2;
+    case 2: return face_1_2;
+    case 3: return face_3_4;
+    case 4: return face_3_4;
+    case 5: return face_5;
+    case 6: return face_6;
+    case 7: return face_7;
+    case 8: return face_8;
+    case 9: return face_9;
+    case 10: return face_10;
+    case 11: return face_11;
+    case 12: return face_12;
+    default: return face_1_2;
   }
 };
 
-useTexture.preload(`./assets/facesD12/face_1-2.svg`);
+useTexture.preload(face_1_2);
 
 // --- COMPONENTE DO ADESIVO ---
 const FaceSticker = ({ 
