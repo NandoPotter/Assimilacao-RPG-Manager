@@ -9,7 +9,6 @@ import { Edges, Text, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 import { createD12Data } from '../../utils/d12Geometry';
-import { getResult } from '../../interfaces/DicePoints';
 
 // Importação dos Assets (Caminho atualizado para src/assets)
 import face_1_2 from '../../assets/facesD12/face_1-2.svg'
