@@ -1,9 +1,9 @@
 /** ============================================================================
  * ARQUIVO: src/router.tsx
- * DESCRIÇÃO: Configuração das Rotas da Aplicação com suporte ao GitHub Pages
+ * DESCRIÇÃO: Configuração das Rotas com HashRouter (suporte total GitHub Pages)
  * ============================================================================ */
 
-import { createBrowserRouter } from 'react-router-dom';
+import { createHashRouter } from 'react-router-dom';
 
 // Importação das Páginas
 import RootRedirect from './pages/Auth/Index';
@@ -17,7 +17,7 @@ import CharactersPage from './pages/Dashboard/contents/Characters/Index';
 import CharacterCreatorBoard from './pages/Dashboard/contents/CharacterCreator/Index';
 import CharacterSheetBoard from './pages/Dashboard/contents/CharacterSheet/Index';
 
-export const Router = createBrowserRouter([
+export const Router = createHashRouter([
   {
     path: '/',
     element: <RootRedirect />,
@@ -49,6 +49,4 @@ export const Router = createBrowserRouter([
       }
     ]
   }
-], {
-  basename: "/Assimilacao-RPG-Manager"
-});
+]);
