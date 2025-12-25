@@ -1,6 +1,6 @@
 /** ============================================================
  * ARQUIVO: src/components/AssimilationDices/PhysicsD6.tsx
- * DESCRIÇÃO: Configurações D6 - Com detecção de dado truncado
+ * DESCRIÇÃO: D6 com Controle Individual de Escala por Face
  * ============================================================ */
 
 import { useBox } from '@react-three/cannon';
@@ -14,47 +14,50 @@ import face_3_4 from '../../assets/facesD6/face_3-4.svg'
 import face_5 from '../../assets/facesD6/face_5.svg'
 import face_6 from '../../assets/facesD6/face_6.svg'
 
+// 1. MAPA DE CONFIGURAÇÃO DAS FACES
+// Controle de tamanho individual dos SVG
+const FACE_CONFIG: Record<number, { path: string, scale: number }> = {
+  1: { path: face_1_2, scale: 1 },
+  2: { path: face_1_2, scale: 1 },
+  3: { path: face_3_4, scale: 1.5 },
+  4: { path: face_3_4, scale: 1.5 },
+  5: { path: face_5,   scale: 1.9 },
+  6: { path: face_6,   scale: 1.5 },
+};
+
 interface Props {
   position?: [number, number, number];
   onStop?: (resultValue: number) => void;
-  // moveTo removido conforme solicitado
 }
 
-// ... (Função getFacePath e FaceSticker permanecem iguais ao seu código) ...
-const getFacePath = (value: number) => {
-
-  switch (value) {
-    case 1: return face_1_2;
-    case 2: return face_1_2;
-    case 3: return face_3_4;
-    case 4: return face_3_4;
-    case 5: return face_5;
-    case 6: return face_6;
-    default: return face_1_2;
-  }
-};
-
+// Preload da face principal
 useTexture.preload(face_1_2);
 
 const FaceSticker = ({ value, detectedValue, position, rotation }: any) => {
-    const texturePath = getFacePath(value);
-    const texture = useTexture(texturePath);
+    const config = FACE_CONFIG[value] || FACE_CONFIG[1];
+    const texture = useTexture(config.path);
+    
+    // Configurações da textura para evitar repetição e centralizar
     texture.center.set(0.5, 0.5);
     texture.repeat.set(1, 1); 
+
     const isWinner = detectedValue === value;
-    const color = isWinner ? '#39ff14' : '#ffffffff';
-    const offsetPosition = new THREE.Vector3(...position).multiplyScalar(0.98);
+    const color = isWinner ? '#39ff14' : '#ffffff';
+    
+    // Multiplicador 0.98 para a face não "piscar" com o corpo do dado (Z-fighting)
+    const offsetPosition = new THREE.Vector3(...position).multiplyScalar(0.99);
 
     return (
         <mesh position={offsetPosition} rotation={rotation}>
-            <planeGeometry args={[1, 1]} /> 
+            {/* O segredo está aqui: o scale da geometria usa o valor da nossa config */}
+            <planeGeometry args={[config.scale, config.scale]} /> 
             <meshStandardMaterial 
                 map={texture}
                 transparent={true}
                 side={THREE.DoubleSide}
                 color={color} 
                 emissive={color}
-                emissiveIntensity={isWinner ? 4 : 2} // Intensidade aumentada no brilho
+                emissiveIntensity={isWinner ? 4 : 2}
                 toneMapped={false}
                 roughness={0.1}
                 depthWrite={false}
@@ -84,28 +87,19 @@ const PhysicsD6: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
   
   const [detectedValue, setDetectedValue] = useState<number | null>(null);
 
-  // 1. Efeito de Arremesso Automático
   useEffect(() => {
     api.wakeUp();
-    
     const impulseForce: [number, number, number] = [
-      (Math.random() - 0.5) * 4, // X aleatório
-      12 + Math.random() * 5,    // Y (Altura do arco)
-      -25 - Math.random() * 10   // Z (A força que joga para o fundo)
+      (Math.random() - 0.5) * 4,
+      12 + Math.random() * 5,
+      -25 - Math.random() * 10
     ];
-    
     api.applyImpulse(impulseForce, [Math.random(), -1, Math.random()]);
-
-    api.applyTorque([
-        (Math.random() - 0.5) * 35, 
-        (Math.random() - 0.5) * 35, 
-        (Math.random() - 0.5) * 35
-    ]);
+    api.applyTorque([(Math.random()-0.5)*35, (Math.random()-0.5)*35, (Math.random()-0.5)*35]);
   }, [api]);
 
   useEffect(() => api.velocity.subscribe((v) => (velocity.current = v)), [api.velocity]);
 
-  // 2. LOGICA DE DETECÇÃO COM VERIFICAÇÃO DE DADO TRUNCADO
   useEffect(() => {
     const tempVec = new THREE.Vector3();
     const tempQuat = new THREE.Quaternion();
@@ -115,13 +109,11 @@ const PhysicsD6: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
       if (!isRolling.current) return;
       const v = velocity.current;
 
-      // Se o dado estiver quase parado (velocidade baixa)
       if (Math.abs(v[0]) < 0.05 && Math.abs(v[1]) < 0.05 && Math.abs(v[2]) < 0.05) {
         if (ref.current) {
           let highestY = -Infinity;
           let winnerIndex = -1;
 
-          // Acha qual face está mais alta no mundo
           faceRefs.current.forEach((obj, index) => {
             if (obj) {
               obj.getWorldPosition(tempVec);
@@ -134,21 +126,15 @@ const PhysicsD6: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
 
           if (winnerIndex !== -1) {
             const winnerObj = faceRefs.current[winnerIndex]!;
-            
-            // Pega a rotação da face vencedora e calcula o vetor normal dela
             winnerObj.getWorldQuaternion(tempQuat);
             tempNormal.set(0, 0, 1).applyQuaternion(tempQuat);
 
-            // VERIFICAÇÃO DE INCLINAÇÃO (NormalY < 0.9 significa dado "de lado")
             if (tempNormal.y < 0.9) {
-              console.log("🎲 Dado Truncado detectado! Dando um pulo...");
               api.wakeUp();
-              // Aplica um pequeno pulo para forçar o dado a cair certo
               api.applyImpulse([0, 6, 0], [Math.random()*0.1, -1, Math.random()*0.1]);
-              return; // Continua o loop sem setar resultado
+              return;
             }
 
-            // Se chegou aqui, o dado está plano
             isRolling.current = false;
             const val = faceData[winnerIndex].value;
             setDetectedValue(val);
@@ -176,11 +162,10 @@ const PhysicsD6: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
         ior={1.5}
         clearcoat={1}
         side={THREE.BackSide}
-        flatShading={true}
         transparent={true}
       />
             
-      <Edges threshold={30} color="#ffffffff" />
+      <Edges threshold={30} color="#ffffff" />
 
       {faceData.map((face, i) => (
         <React.Fragment key={i}>

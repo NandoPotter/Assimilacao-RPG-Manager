@@ -1,6 +1,6 @@
 /** ============================================================
  * ARQUIVO: src/components/AssimilationDices/PhysicsD10.tsx
- * DESCRIÇÃO: Configurações D10 - Com detecção de dado truncado
+ * DESCRIÇÃO: D10 com Controle Individual de Escala e Assets via Import
  * ============================================================ */
 
 import { useConvexPolyhedron } from '@react-three/cannon';
@@ -10,6 +10,7 @@ import * as THREE from 'three';
 
 import { createD10Data } from '../../utils/d10Geometry';
 
+// Importação dos Assets (Vite gerencia os caminhos no GitHub Pages)
 import face_1_2 from '../../assets/facesD10/face_1-2.svg'
 import face_3_4 from '../../assets/facesD10/face_3-4.svg'
 import face_5 from '../../assets/facesD10/face_5.svg'
@@ -19,43 +20,42 @@ import face_8 from '../../assets/facesD10/face_8.svg'
 import face_9 from '../../assets/facesD10/face_9.svg'
 import face_10 from '../../assets/facesD10/face_10.svg'
 
+// 1. MAPA DE CONFIGURAÇÃO INDIVIDUAL DAS FACES DO D10
+// Ajuste o 'scale' para cada valor para que preencham bem a face do dado
+const FACE_CONFIG: Record<number, { path: string, scale: number }> = {
+  1:  { path: face_1_2, scale: 1 },
+  2:  { path: face_1_2, scale: 1 },
+  3:  { path: face_3_4, scale: 1 },
+  4:  { path: face_3_4, scale: 1 },
+  5:  { path: face_5,   scale: 1.2 },
+  6:  { path: face_6,   scale: 1 },
+  7:  { path: face_7,   scale: 1.2 },
+  8:  { path: face_8,   scale: 1.2 },
+  9:  { path: face_9,   scale: 1.3 },
+  10: { path: face_10,  scale: 1.3 }, // Geralmente o '0' precisa ser um pouco maior
+};
+
 interface Props {
   position?: [number, number, number];
   onStop?: (resultValue: number) => void;
 }
 
-const getFacePath = (value: number) => {
-
-  switch (value) {
-    case 1: return face_1_2;
-    case 2: return face_1_2;
-    case 3: return face_3_4;
-    case 4: return face_3_4;
-    case 5: return face_5;
-    case 6: return face_6;
-    case 7: return face_7;
-    case 8: return face_8;
-    case 9: return face_9;
-    case 10: return face_10;
-    default: return face_1_2;
-  }
-};
-
-useTexture.preload(face_1_2);
-
 const FaceSticker = ({ value, detectedValue, position, rotation }: any) => {
-    const texturePath = getFacePath(value);
-    const texture = useTexture(texturePath);
+    const config = FACE_CONFIG[value] || FACE_CONFIG[1];
+    const texture = useTexture(config.path);
+    
     texture.center.set(0.5, 0.5);
     texture.repeat.set(1, 1);
 
     const isWinner = detectedValue === value;
-    const color = isWinner ? '#39ff14' : '#ffffffff';
-    const offsetPosition = new THREE.Vector3(...position).multiplyScalar(0.96);
+    const color = isWinner ? '#39ff14' : '#ffffff';
+    
+    // Multiplicador menor (0.96) para o D10 para evitar que a textura "entre" no dado
+    const offsetPosition = new THREE.Vector3(...position).multiplyScalar(0.97);
 
     return (
         <mesh position={offsetPosition} rotation={rotation}>
-            <planeGeometry args={[0.9, 0.9]} />
+            <planeGeometry args={[config.scale, config.scale]} />
             <meshStandardMaterial 
                 map={texture}
                 transparent={true}
@@ -104,28 +104,19 @@ const PhysicsD10: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
   
   const [detectedValue, setDetectedValue] = useState<number | null>(null);
 
-  // Arremesso Automático
   useEffect(() => {
       api.wakeUp();
-      
       const impulseForce: [number, number, number] = [
-        (Math.random() - 0.5) * 4, // X aleatório
-        12 + Math.random() * 5,    // Y (Altura do arco)
-        -25 - Math.random() * 10   // Z (A força que joga para o fundo)
+        (Math.random() - 0.5) * 4,
+        12 + Math.random() * 5,
+        -25 - Math.random() * 10
       ];
-      
       api.applyImpulse(impulseForce, [Math.random(), -1, Math.random()]);
-  
-      api.applyTorque([
-          (Math.random() - 0.5) * 35, 
-          (Math.random() - 0.5) * 35, 
-          (Math.random() - 0.5) * 35
-      ]);
+      api.applyTorque([(Math.random()-0.5)*35, (Math.random()-0.5)*35, (Math.random()-0.5)*35]);
     }, [api]);
 
   useEffect(() => api.velocity.subscribe((v) => (velocity.current = v)), [api.velocity]);
 
-  // Detector de Parada com Verificação de Inclinação
   useEffect(() => {
     const tempVec = new THREE.Vector3();
     const tempQuat = new THREE.Quaternion();
@@ -153,13 +144,9 @@ const PhysicsD10: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
           if (winnerIndex !== -1) {
             const winnerObj = faceRefs.current[winnerIndex]!;
             winnerObj.getWorldQuaternion(tempQuat);
-            
-            // Vetor normal da face (Z+ do objeto transformado pela rotação mundial)
             tempNormal.set(0, 0, 1).applyQuaternion(tempQuat);
 
-            // Se Y for baixo, significa que a face está muito inclinada (dado truncado)
             if (tempNormal.y < 0.9) {
-              console.log("⚠️ D10 Truncado! Aplicando reroll...");
               api.wakeUp();
               api.applyImpulse([0, 8, 0], [Math.random()*0.1, -1, Math.random()*0.1]);
               return;
@@ -192,11 +179,10 @@ const PhysicsD10: React.FC<Props> = ({ position = [0, 5, 0], onStop }) => {
         ior={1.5}
         clearcoat={1}
         side={THREE.FrontSide} 
-        flatShading={true}
         transparent={true}
       />
             
-      <Edges threshold={30} color="#ffffffff" />
+      <Edges threshold={30} color="#ffffff" />
 
       {faceData.map((face, i) => (
         <React.Fragment key={i}>
