@@ -16,7 +16,8 @@ interface Props {
 }
 
 const getFacePath = (value: number) => {
-  const base = '/assets/facesD10'; 
+  const base = './assets/facesD10';
+
   switch (value) {
     case 1: return `${base}/face_1-2.svg`;
     case 2: return `${base}/face_1-2.svg`;
@@ -32,7 +33,7 @@ const getFacePath = (value: number) => {
   }
 };
 
-useTexture.preload('/assets/facesD10/face_1-2.svg');
+useTexture.preload(`./assets/facesD10/face_1-2.svg`);
 
 const FaceSticker = ({ value, detectedValue, position, rotation }: any) => {
     const texturePath = getFacePath(value);

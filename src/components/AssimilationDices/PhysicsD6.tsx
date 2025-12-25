@@ -18,7 +18,8 @@ interface Props {
 
 // ... (Função getFacePath e FaceSticker permanecem iguais ao seu código) ...
 const getFacePath = (value: number) => {
-  const base = '/assets/facesD6'; 
+  const base = './assets/facesD6'; 
+
   switch (value) {
     case 1: return `${base}/face_1-2.svg`;
     case 2: return `${base}/face_1-2.svg`;
@@ -30,7 +31,7 @@ const getFacePath = (value: number) => {
   }
 };
 
-useTexture.preload('/assets/facesD6/face_1-2.svg');
+useTexture.preload(`./assets/facesD6/face_1-2.svg`);
 
 const FaceSticker = ({ value, detectedValue, position, rotation }: any) => {
     const texturePath = getFacePath(value);

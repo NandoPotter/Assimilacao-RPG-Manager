@@ -16,7 +16,8 @@ interface Props {
 }
 
 const getFacePath = (value: number) => {
-  const base = '/assets/facesD12'; 
+  const base = './assets/facesD12'; 
+ 
   switch (value) {
     case 1: return `${base}/face_1-2.svg`;
     case 2: return `${base}/face_1-2.svg`;
@@ -34,7 +35,7 @@ const getFacePath = (value: number) => {
   }
 };
 
-useTexture.preload('/assets/facesD12/face_1-2.svg');
+useTexture.preload(`./assets/facesD12/face_1-2.svg`);
 
 // --- COMPONENTE DO ADESIVO ---
 const FaceSticker = ({ 
@@ -64,7 +65,7 @@ const FaceSticker = ({
             position={offsetPosition} 
             rotation={rotation}
         >
-            <planeGeometry args={[0.9, 0.9]} />
+            <planeGeometry args={[1, 1]} />
             
             <meshStandardMaterial 
                 map={texture}
