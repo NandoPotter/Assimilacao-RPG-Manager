@@ -28,7 +28,6 @@ interface Props {
 }
 
 const getFacePath = (value: number) => {
-  const base = './assets/facesD12'; 
  
   switch (value) {
     case 1: return face_1_2;
