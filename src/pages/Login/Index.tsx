@@ -29,9 +29,9 @@ function LoginPage() {
 
   // SEÇÃO: ESTADOS DOS MODAIS
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [showSendEmail, setShowSendEmail] = useState(false);
+  //  const [showSendEmail, setShowSendEmail] = useState(false);              // Voltar depois se for aprovado
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [showRegisterSuccess, setShowRegisterSuccess] = useState(false);
+  //  const [showRegisterSuccess, setShowRegisterSuccess] = useState(false);  // Voltar depois se for aprovado
   
   // Modal de serviço indisponível
   const [showUnavailableModal, setShowUnavailableModal] = useState(false);
