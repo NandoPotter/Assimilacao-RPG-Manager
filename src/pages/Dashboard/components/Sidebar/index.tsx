@@ -45,7 +45,7 @@ export function Sidebar({ mode, onToggleMode }: SidebarProps) {
                 <NavLink to="/dashboard/characters" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
                     Personagens
                 </NavLink>
-
+                
                 <div className="divider"></div>
 
                 {/* Usamos a prop 'mode' vinda do DashboardLayout */}
@@ -57,9 +57,12 @@ export function Sidebar({ mode, onToggleMode }: SidebarProps) {
                         <NavLink to="/dashboard/npcs" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
                             Criação de NPCs
                         </NavLink>
-                        <NavLink to="/dashboard/threats" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
-                            Criação de Ameaças
-                        </NavLink>
+                          <NavLink 
+                      to="/dashboard/ameacas" 
+                        className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}
+                          >
+                             Criador de conflitos
+                                 </NavLink>
                     </>
                 ) : (
                     <NavLink to="/dashboard/campaignsview" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
