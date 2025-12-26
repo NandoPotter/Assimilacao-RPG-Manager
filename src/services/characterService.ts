@@ -55,7 +55,7 @@ export const characterService = {
     return data.publicUrl;
   },
 
-  // 5. CRIAR PERSONAGEM (INSERT)
+  // 5. CRIAR PERSONAGEM
   async createCharacter(charData: Partial<Character>): Promise<Character> {
     const { data, error } = await supabase
       .from('characters')
@@ -67,7 +67,7 @@ export const characterService = {
     return data as Character;
   },
 
-  // 6. ATUALIZAR PERSONAGEM (UPDATE)
+  // 6. ATUALIZAR PERSONAGEM
   async updateCharacter(id: string, updates: Partial<Character>): Promise<Character> {
     const { data, error } = await supabase
       .from('characters')
@@ -80,11 +80,36 @@ export const characterService = {
     return data as Character;
   },
 
+  // 7. BUSCAR CARACTERÍSTICAS POR LISTA DE IDS
+  async getCharacteristicsByIds(ids: number[]) {
+    if (!ids || ids.length === 0) return [];
+    
+    const { data, error } = await supabase
+      .from('characteristics')
+      .select('*')
+      .in('id', ids); 
+
+    if (error) throw error;
+    return data;
+  },
+
+  // 8. BUSCAR TODAS AS CARACTERÍSTICAS (PARA O EDITOR)
+  async getAllCharacteristics() {
+      const { data, error } = await supabase
+      .from('characteristics')
+      .select('*')
+      .order('name', { ascending: true });
+
+      if (error) throw error;
+      return data;
+  },
+
   // =================================================================
-  // 7. POPULAR INVENTÁRIO (ATUALIZADO: KIT + MOCHILA PADRÃO)
+  //  FUNÇÕES DE INVENTÁRIO (CORE)
   // =================================================================
+
+  // 8. POPULAR INVENTÁRIO (KITS INICIAIS)
   async populateInventoryFromKit(characterId: string, kitName: string): Promise<void> {
-    // A. Busca a "receita" do kit
     const { data: kitData, error: kitError } = await supabase
       .from('starting_kits')
       .select('items_list')
@@ -96,121 +121,179 @@ export const characterService = {
       return; 
     }
 
-    // B. Prepara os itens do KIT (Vão para a MOCHILA)
     const kitItems = (kitData.items_list as any[]).map((item: any) => ({
       character_id: characterId,
       item_id: item.id,     
       quantity: item.qty,   
-      location: 'BACKPACK', // Itens do kit ficam guardados
+      location: 'BACKPACK',
       is_dropped: false,
       is_visible: true
     }));
 
-    // C. Prepara a MOCHILA SIMPLES OBRIGATÓRIA (Vai EQUIPADA)
     const defaultBackpack = {
       character_id: characterId,
-      item_id: 'I00034',    // ID Fixo da Mochila Simples
+      item_id: 'I00034',    // ID Mochila Simples
       quantity: 1,
-      location: 'EQUIPPED', // Nas costas do personagem
+      location: 'EQUIPPED',
       is_dropped: false,
       is_visible: true
     };
 
-    // D. Junta tudo para inserir de uma vez
     const finalItemsToInsert = [...kitItems, defaultBackpack];
 
-    // E. Executa a inserção
     const { error: insertError } = await supabase
       .from('character_inventory')
       .insert(finalItemsToInsert);
 
     if (insertError) {
-      console.error("Erro ao inserir itens no inventário:", insertError);
+      console.error("Erro ao inserir itens:", insertError);
       throw new Error("Falha ao entregar os itens iniciais.");
     }
   },
 
-  // 8. BUSCAR CARACTERÍSTICAS POR LISTA DE IDS
-  async getCharacteristicsByIds(ids: number[]) {
-    if (!ids || ids.length === 0) return [];
-    
+  // 9. BUSCAR INVENTÁRIO DO PERSONAGEM
+  async getCharacterInventory(characterId: string) {
     const { data, error } = await supabase
-      .from('characteristics')
-      .select('*')
-      .in('id', ids); // Busca apenas os IDs que estão no array
+      .from('character_inventory')
+      .select(`
+        *,
+        items (
+          id,
+          name,
+          description,
+          category,
+          slots,
+          traits
+        )
+      `)
+      .eq('character_id', characterId)
+      .order('created_at', { ascending: true });
 
     if (error) throw error;
-    return data;
+
+    return data.map((row: any) => ({
+      inventory_id: row.id,
+      character_id: row.character_id,
+      location: row.location,
+      quantity: row.quantity,
+      notes: row.notes,
+      is_dropped: row.is_dropped, 
+      is_visible: row.is_visible,
+      
+      item_id: row.items.id,
+      name: row.items.name,
+      description: row.items.description,
+      category: row.items.category,
+      slots: row.items.slots || 1, 
+      traits: row.items.traits || {} 
+    }));
   },
 
-  // 9. BUSCAR ITENS NO INVENTÁRIO DO USUARIO
-  async getCharacterInventory(characterId: string) {
-
-        const { data, error } = await supabase
-            .from('character_inventory')
-            .select(`
-                *,
-                items (
-                    id,
-                    name,
-                    description,
-                    category,
-                    slots,
-                    traits
-                )
-            `)
-            .eq('character_id', characterId)
-            .order('created_at', { ascending: true });
-
-        if (error) throw error;
-
-        // Mapeamos para ficar 'plano' (flat) facilitando o uso no componente
-        return data.map((row: any) => ({
-            inventory_id: row.id,
-            character_id: row.character_id,
-            location: row.location,
-            quantity: row.quantity,
-            notes: row.notes,
-            
-            // Dados vindos da tabela 'items' (JOIN)
-            item_id: row.items.id,
-            name: row.items.name,
-            description: row.items.description,
-            category: row.items.category,
-            slots: row.items.slots || 1, // Garante padrão 1 se nulo
-            traits: row.items.traits || {} // Garante objeto vazio se nulo
-        }));
-    },
-
-    // 10. UPDATE DE INVENTÁRIO
-    async updateGenericInventory(inventoryId: string, updates: any) {
-        const { error } = await supabase
-            .from('character_inventory')
-            .update(updates)
-            .eq('id', inventoryId);
-
-        if (error) throw error;
-    },
-
-    // 11. MOVER ITEM (ATUALIZAR LOCATION)
-    async updateItemLocation(inventoryId: string, newLocation: string) {
-        const { error } = await supabase
-            .from('character_inventory')
-            .update({ location: newLocation })
-            .eq('id', inventoryId);
-
-        if (error) throw error;
-    },
-
-    // 12. BUSCAR TODAS AS CARACTERÍSTICAS (PARA O EDITOR)
-  async getAllCharacteristics() {
-    const { data, error } = await supabase
-      .from('characteristics')
-      .select('*')
-      .order('name', { ascending: true }); // Ordenar alfabeticamente ajuda na busca
+  // 10. UPDATE GENÉRICO (STATUS, VISIBILIDADE)
+  async updateGenericInventory(inventoryId: string, updates: any) {
+    const { error } = await supabase
+      .from('character_inventory')
+      .update(updates)
+      .eq('id', inventoryId);
 
     if (error) throw error;
-    return data;
+  },
+
+  // 11. MOVER ITEM SIMPLES (LEGADO - PREFERIR TRANSFERITEM)
+  async updateItemLocation(inventoryId: string, newLocation: string) {
+    const { error } = await supabase
+      .from('character_inventory')
+      .update({ location: newLocation })
+      .eq('id', inventoryId);
+
+    if (error) throw error;
+  },
+
+  // 12. TRANSFERÊNCIA INTELIGENTE (MOVE + SPLIT + STACK)
+  async transferItem(
+    inventoryId: string, 
+    qtyToMove: number, 
+    targetLocation: string
+  ): Promise<void> {
+    
+    // A. Busca Origem
+    const { data: sourceItem, error: sourceError } = await supabase
+      .from('character_inventory')
+      .select('*')
+      .eq('id', inventoryId)
+      .single();
+
+    if (sourceError || !sourceItem) throw new Error("Item de origem não encontrado.");
+    if (sourceItem.quantity < qtyToMove) throw new Error("Quantidade insuficiente.");
+
+    // B. Busca Destino (Para empilhar)
+    const { data: existingStack } = await supabase
+      .from('character_inventory')
+      .select('*')
+      .eq('character_id', sourceItem.character_id)
+      .eq('item_id', sourceItem.item_id)
+      .eq('location', targetLocation)
+      .eq('is_dropped', false) 
+      .maybeSingle();
+
+    // C. CENÁRIO 1: EMPILHAR (MERGE)
+    if (existingStack) {
+      // Soma no destino
+      const newStackQty = existingStack.quantity + qtyToMove;
+      const { error: updateStackError } = await supabase
+        .from('character_inventory')
+        .update({ quantity: newStackQty })
+        .eq('id', existingStack.id);
+      
+      if (updateStackError) throw updateStackError;
+
+      // Subtrai ou Deleta da Origem
+      if (sourceItem.quantity === qtyToMove) {
+        await supabase.from('character_inventory').delete().eq('id', inventoryId);
+      } else {
+        await supabase
+          .from('character_inventory')
+          .update({ quantity: sourceItem.quantity - qtyToMove })
+          .eq('id', inventoryId);
+      }
+    } 
+    // D. CENÁRIO 2: MOVER/CRIAR NOVO (MOVE/SPLIT)
+    else {
+      // Mover Tudo
+      if (sourceItem.quantity === qtyToMove) {
+        const { error: moveError } = await supabase
+          .from('character_inventory')
+          .update({ location: targetLocation })
+          .eq('id', inventoryId);
+        
+        if (moveError) throw moveError;
+      } 
+      // Mover Parcial (Split)
+      else {
+        // Reduz origem
+        await supabase
+          .from('character_inventory')
+          .update({ quantity: sourceItem.quantity - qtyToMove })
+          .eq('id', inventoryId);
+
+        // Cria novo
+        const newItemData = {
+          character_id: sourceItem.character_id,
+          item_id: sourceItem.item_id,
+          quantity: qtyToMove,
+          location: targetLocation,
+          is_dropped: false,
+          is_visible: true,
+          notes: sourceItem.notes
+        };
+
+        const { error: insertError } = await supabase
+          .from('character_inventory')
+          .insert([newItemData]);
+        
+        if (insertError) throw insertError;
+      }
+    }
   }
-  
+
 };

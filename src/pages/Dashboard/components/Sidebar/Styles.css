@@ -1,8 +1,14 @@
 /* =================================================================
-    Arquivo: src/pages/Dashboard/components/Sidebar/Styles.css
-    ESTILOS INTERNOS DA SIDEBAR E SWITCH
+   Arquivo: src/pages/Dashboard/components/Sidebar/Styles.css
+   ESTILOS DA SIDEBAR E NAVBAR MOBILE
    ================================================================= */
 
+/* NAVBAR MOBILE (Escondida no Desktop) */
+.mobile-navbar {
+    display: none;
+}
+
+/* SIDEBAR BASE (Desktop) */
 .sidebar {
     width: var(--sidebar-width);
     height: 100vh;
@@ -17,147 +23,109 @@
     flex-direction: column;
     padding: 25px 20px;
     box-shadow: 5px 0 30px rgba(0,0,0,0.8);
-    transition: border-color 0.5s;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.5s;
     overflow-y: auto;
 }
 
-/* LOGO E HEADER */
-.sidebar-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
+/* ... (MANTENHA OS ESTILOS DE LOGO, NAV, FOOTER, SWITCH IGUAIS AO ANTERIOR) ... */
+/* ... Copie os estilos de .sidebar-header, .nav-btn, .dt-switch, .logout-btn aqui ... */
+/* Vou resumir para focar na mudança mobile abaixo */
 
-.sidebar-logo {
-    max-height: 150px;
-    margin-bottom: 20px;
-    filter: drop-shadow(0 0 10px var(--cor-tema-glow));
-    transition: filter 0.5s;
-}
-
-/* NAVEGAÇÃO */
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex: 1;
-}
-
-.nav-btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    color: var(--text-muted);
-    text-decoration: none;
-    border-radius: 5px;
-    transition: 0.3s;
-    font-size: 1rem;
-}
-
-.nav-btn:hover, .nav-btn.active {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--cor-tema);
-    padding-left: 20px;
-}
-
-.nav-btn.active {
-    border-left: 3px solid var(--cor-tema);
-    font-weight: bold;
-}
-
-.divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #333, transparent);
-    margin: 15px 0;
-}
-
-/* SWITCH DE MODO (FOOTER) */
-.sidebar-footer {
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.dt-switch-housing {
-    position: relative;
-    width: 100%;
-    height: 50px;
-    background: #0a0e13;
-    border-radius: 6px;
-    cursor: pointer;
-    border: 1px solid #1e2a3a;
-    overflow: hidden;
-}
-
-.dt-label {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 50%;
-    text-align: center;
-    font-weight: 800;
-    font-size: 0.6rem;
-    color: #444;
-    transition: 0.4s;
-    z-index: 1;
-}
-
-.label-assimilador { left: 0; }
-.label-infectado { right: 0; }
-
-.dt-switch-lever {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: calc(50% - 8px);
-    height: calc(100% - 8px);
-    background: linear-gradient(to bottom, #4a5a6a, #2a3a4a);
-    border-radius: 4px;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
-    z-index: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid var(--cor-tema);
-}
-
-.dt-lever-led {
-    width: 12px;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--cor-tema);
-    box-shadow: 0 0 8px var(--cor-tema-glow);
-}
-
-/* POSICIONAMENTO DO LEVER BASEADO NO MODO */
-.mode-infectado .dt-switch-lever { right: calc(50% + 4px); }
-.mode-assimilador .dt-switch-lever { left: calc(50% + 4px); }
+.sidebar-header { text-align: center; margin-bottom: 40px; }
+.sidebar-logo { max-height: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--cor-tema-glow)); transition: filter 0.5s; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.nav-btn { display: block; width: 100%; padding: 12px; color: var(--text-muted); text-decoration: none; border-radius: 5px; transition: 0.3s; font-size: 1rem; }
+.nav-btn:hover, .nav-btn.active { background: rgba(255, 255, 255, 0.05); color: var(--cor-tema); padding-left: 20px; }
+.nav-btn.active { border-left: 3px solid var(--cor-tema); font-weight: bold; }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, #333, transparent); margin: 15px 0; }
+.sidebar-footer { padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.dt-switch-housing { position: relative; width: 100%; height: 50px; background: #0a0e13; border-radius: 6px; cursor: pointer; border: 1px solid #1e2a3a; overflow: hidden; }
+.dt-label { position: absolute; top: 50%; transform: translateY(-50%); width: 50%; text-align: center; font-weight: 800; font-size: 0.6rem; color: #444; transition: 0.4s; z-index: 1; }
+.label-assimilador { left: 0; } .label-infectado { right: 0; }
+.dt-switch-lever { position: absolute; top: 4px; left: 4px; width: calc(50% - 8px); height: calc(100% - 8px); background: linear-gradient(to bottom, #4a5a6a, #2a3a4a); border-radius: 4px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); z-index: 2; display: flex; justify-content: center; align-items: center; border: 2px solid var(--cor-tema); }
+.dt-lever-led { width: 12px; height: 4px; border-radius: 2px; background: var(--cor-tema); box-shadow: 0 0 8px var(--cor-tema-glow); }
+.mode-infectado .dt-switch-lever { right: calc(50% + 4px); } .mode-assimilador .dt-switch-lever { left: calc(50% + 4px); }
 .mode-assimilador .label-assimilador { color: var(--cor-assimilador); text-shadow: 0 0 10px var(--cor-assimilador-glow); }
 .mode-infectado .label-infectado { color: var(--cor-infectado); text-shadow: 0 0 10px var(--cor-infectado-glow); }
+.sidebar-version { color: #555; font-size: 0.8rem; text-align: center; margin-top: 15px; }
+.logout-btn { background: transparent; border: 1px solid #333; color: #888; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: all 0.3s ease; width: 100%; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+.logout-btn:hover { border-color: var(--cor-assimilador); color: #fff; box-shadow: 0 0 10px rgba(255, 85, 85, 0.2); }
 
-.sidebar-version {
-    color: #555;
-    font-size: 0.8rem;
-    text-align: center;
-    margin-top: 15px;
+/* --- OVERLAY (Fundo escuro no mobile) --- */
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+    z-index: 1100; /* Abaixo da sidebar aberta, mas acima do conteúdo */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
-/* Estilo para o botão de Logout na Sidebar */
-.logout-btn {
-    background: transparent;
-    border: 1px solid #333;
-    color: #888;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 100%;
-    margin-top: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.sidebar-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
 }
 
-.logout-btn:hover {
-    border-color: var(--cor-assimilador); /* Brilho vermelho ao tentar sair */
-    color: #fff;
-    box-shadow: 0 0 10px rgba(255, 85, 85, 0.2);
+/* =================================================================
+   RESPONSIVIDADE (MOBILE)
+   ================================================================= */
+@media (max-width: 768px) {
+    
+    /* 1. CONFIGURAÇÃO DA BARRA SUPERIOR FIXA */
+    .mobile-navbar {
+        display: flex;
+        align-items: center;
+        position: fixed; /* Fixa no topo */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px; /* Altura da barra */
+        background: #0d1116; /* Fundo sólido para não ver o conteúdo passando atrás */
+        border-bottom: 1px solid var(--cor-tema);
+        z-index: 1050; /* Acima do conteúdo normal */
+        padding: 0 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    /* 2. BOTÃO HAMBURGUER (Agora dentro da navbar) */
+    .mobile-toggle-btn {
+        background: transparent;
+        border: none;
+        color: var(--cor-tema);
+        font-size: 1.8rem;
+        cursor: pointer;
+        padding: 5px;
+        margin-right: 15px;
+        line-height: 1;
+    }
+
+    /* 3. MARCA NO MOBILE */
+    .mobile-brand {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #fff;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    /* 4. SIDEBAR (GAVETA) */
+    .sidebar {
+        width: 280px; 
+        transform: translateX(-100%); /* Esconde à esquerda */
+        background: #0d1116; 
+        border-right: 1px solid var(--cor-tema);
+        top: 0; /* Ocupa altura total, cobrindo até a navbar se abrir */
+        z-index: 1200; /* Acima da navbar mobile */
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0); /* Desliza para dentro */
+        box-shadow: 10px 0 50px rgba(0,0,0,0.9);
+    }
+
+    .sidebar-header {
+        margin-bottom: 20px;
+    }
 }

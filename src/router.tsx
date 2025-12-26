@@ -7,12 +7,12 @@ import { createHashRouter } from 'react-router-dom';
 
 // Importação das Páginas
 import RootRedirect from './pages/Auth/Index';
-import NotFoundPage from './pages/NotFoundPage';
+import NotFoundPage from './pages/NotFoundPage/Index';
 import LoginPage from './pages/Login/Index';
 import DashboardLayout from './pages/Dashboard/Index';
 
 // Dashboard Contents
-import OverviewBoard from './pages/Dashboard/contents/OverviewBoard';
+import OverviewBoard from './pages/Dashboard/OverviewBoard/Index';
 import CharactersPage from './pages/Dashboard/contents/Characters/Index';
 import CharacterCreatorBoard from './pages/Dashboard/contents/CharacterCreator/Index';
 import CharacterSheetBoard from './pages/Dashboard/contents/CharacterSheet/Index';

@@ -1,6 +1,6 @@
 /* =================================================================
-    Arquivo: src/styles/DashboardLayout.css
-    ESTRUTURA DE LAYOUT E TEMAS GLOBAIS
+   Arquivo: src/styles/DashboardLayout.css
+   ESTRUTURA DE LAYOUT E TEMAS GLOBAIS
    ================================================================= */
 
 /* MAPEAMENTO DE TEMAS */
@@ -19,7 +19,7 @@
     display: flex;
     min-height: 100vh;
     background-image: var(--bg-gradient);
-    padding-left: var(--sidebar-width); /* Reserva espaço para a sidebar fixa */
+    padding-left: var(--sidebar-width); /* Espaço da sidebar no Desktop */
     transition: all 0.5s ease;
 }
 
@@ -27,6 +27,9 @@
 .content-area {
     flex: 1;
     padding: 40px;
+    /* Garante que o container ocupe a largura correta */
+    width: 100%; 
+    box-sizing: border-box; 
     overflow-y: auto;
 }
 
@@ -37,15 +40,28 @@
     text-transform: uppercase;
     text-shadow: 0 0 10px var(--cor-tema-glow);
     margin-bottom: 20px;
+    font-size: 1.5rem; /* Ajuste para não quebrar em telas pequenas */
 }
 
-/* RESPONSIVIDADE */
+/* =================================================================
+   RESPONSIVIDADE (MOBILE)
+   ================================================================= */
 @media (max-width: 768px) {
     .dashboard-container {
         flex-direction: column;
-        padding-left: 0;
+        padding-left: 0; /* Remove o espaço lateral da sidebar */
     }
+
     .content-area {
         padding: 20px;
+        
+        /* O FIX PARA A BARRA SUPERIOR: */
+        /* 60px (altura da barra fixa) + 20px (respiro) = 80px */
+        padding-top: 80px !important; 
+    }
+
+    .user-role {
+        font-size: 1.2rem; /* Texto um pouco menor no celular */
+        margin-top: 0;
     }
 }

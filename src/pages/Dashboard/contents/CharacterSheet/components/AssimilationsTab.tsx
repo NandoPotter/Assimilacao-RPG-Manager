@@ -8,7 +8,7 @@ interface Props {
 }
 
 function AssimilationsTab({ characterId }: Props) {
-    // Usamos o characterId no log apenas para o TypeScript não reclamar que a variável está ociosa
+    // Usamos o characterId no log apenas para o TypeScript não checar a variável ociosa
     console.log("Aba de assimilações preparada para o personagem:", characterId);
 
     return (

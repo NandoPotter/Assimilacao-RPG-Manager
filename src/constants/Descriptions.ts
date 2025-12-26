@@ -20,6 +20,60 @@ export const DESCRIPTIONS: Record<string, DescriptionData> = {
     //                               INTINTOS
     //  ====================================================================
 
+    generation: {
+        title: "Geração",
+        text1: "Determina a época em que um(a) Infectado(a) nasceu em relação ao Colapso. Infectados da Geração Pré-Colapso nasceram e foram criados antes do evento; a Geração-Colapso passou pelo Colapso entre os 5 e 12 anos; já a Geração Pós-Colapso nasceu depois ou tinha menos de 5 anos durante o evento."
+    },
+
+    occupation: {
+        title: "Ocupação",
+        text1: "Refere-se a sua função, o empenho diário em sua vida. Ajuda a delinear melhor suas rotinas e sua posição perante o grupo de Infectados e as comunidades que o conhecem.",
+        table: {
+            headers: ["Exemplos:"],
+            rows: [
+                ["Negociador(a) pilantra"],
+                ["Clinico(a) geral"],
+                ["Fazendeiro(a) bairrista"],
+                ["Aristocrata decadente"],
+                ["Mercenario(a) por necessidade"]
+            ]
+        }
+    },
+
+    defining_event: {
+        title: "Evento Marcante",
+        text1: "Refere-se a um evento do passado que moldou a forma como o(a) Infectado(a) vê o mundo. Pode se referir a uma tragédia pessoal, um momento de superação ou um fato isolado que o impactou.",
+        table: {
+            headers: ["Exemplos:"],
+            rows: [
+                ["Sobrevivente da queda de São Leopoldo"],
+                ["Abandonado(a) por seus companheiros"],
+                ["Líder destronado(a) pelo irmão"],
+                ["Caçado(a) pelos motoqueiros do Pico Verde"],
+                ["Viveu escondido(a) entre o lixo"]
+            ]
+        }
+    },
+
+    purposes: {
+        title: "Propósitos",
+        text1: "Metas de uma personagem Infectada que, ao concluídas, geram um momento de Clareza de Propósito."
+    },
+
+    characteristics: {
+        title: "Características",
+        text1: "Traços únicos que definem detalhes e particularidades do personagem. Elas permitem personalizar o(a) Infectado(a) além dos números da Ficha, destacando talentos, comportamentos, adaptações e conexões com o mundo ao seu redor."
+    },
+
+    starting_kit: {
+        title: "Kits Iniciais",
+        text1: "Define as posses iniciais do seu Infectado, ou seja, seus equipamentos iniciais para começar suas aventuras."
+    },
+
+    //  ====================================================================
+    //                               INTINTOS
+    //  ====================================================================
+
     instincts: {
         title: "Instintos",
         text1: "Os Instintos representam as características inerentes dos seres vivos, seja através de força muscular, raciocínio, ou até mesmo os 5 sentidos. Estes são os atributos que regem o mundo animal.",

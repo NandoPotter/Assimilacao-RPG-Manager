@@ -1,6 +1,6 @@
 /** ============================================================
  * ARQUIVO: src/pages/Auth/LoginPage.tsx
- * DESCRIÇÃO: Interface de autenticação integrada ao Supabase.
+ * DESCRIÇÃO: Interface de autenticação
  * ============================================================ */
 
 import React, { useState } from 'react';
@@ -32,20 +32,21 @@ function LoginPage() {
   const [showSendEmail, setShowSendEmail] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showRegisterSuccess, setShowRegisterSuccess] = useState(false);
+  
+  // Modal de serviço indisponível
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
 
   // SEÇÃO: ESTADOS DE CADASTRO
   const [newUserName, setNewUserName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  // LÓGICA: LOGIN REAL
+  // LÓGICA: LOGIN
   const handleLogin = async (e: React.FormEvent) => {
-     e.preventDefault();
-     console.log("1. Botão clicado. Iniciando tentativa de login...");
+      e.preventDefault();
     
-    // Verificação de segurança
     if (!email || !password) {
-        console.warn("Campos vazios detectados");
         alert("Preencha email e senha");
         return;
     }
@@ -53,47 +54,54 @@ function LoginPage() {
     setIsLoading(true);
 
     try {
-      console.log("2. Chamando authService com:", email);
-      const response = await authService.login(email, password);
-      
-      console.log("3. Resposta do Supabase recebida:", response);
-      console.log("4. Redirecionando para dashboard...");
+      await authService.login(email, password);
       navigate('/dashboard');
 
     } catch (error: any) {
-      // Aqui vamos ver o erro real no console, não só no alert
       console.error("ERRO CRÍTICO NO LOGIN:", error);
       alert("Erro ao entrar: " + (error.message || "Erro desconhecido"));
 
     } finally {
-      console.log("5. Finalizando estado de loading.");
       setIsLoading(false);
     }
   };
-  // LÓGICA: REGISTRO REAL
+
+  // LÓGICA: REGISTRO (BLOQUEADA)
   const handleRegisterUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      await authService.register(newEmail, newPassword, newUserName);
-      setShowRegisterModal(false);
-      setShowRegisterSuccess(true);
-    } catch (error: any) {
-      alert("Erro ao cadastrar: " + error.message);
-    } finally {
-      setIsLoading(false);
+    
+    if (newPassword !== confirmPassword) {
+        alert("As senhas não coincidem. Por favor, verifique.");
+        return;
     }
+
+    setIsLoading(true);
+    
+    // Simula delay e mostra indisponível
+    setTimeout(() => {
+        setIsLoading(false);
+        setShowRegisterModal(false);
+        setShowUnavailableModal(true);
+    }, 800);
   };
 
+  // LÓGICA: RECUPERAÇÃO DE SENHA (BLOQUEADA)
   const handleSendEmail = (e: React.FormEvent) => {
     e.preventDefault();
-    setShowForgotModal(false);
-    setShowSendEmail(true);
+    
+    setIsLoading(true);
+
+    // Simula delay e mostra indisponível
+    setTimeout(() => {
+        setIsLoading(false);
+        setShowForgotModal(false);
+        // Ao invés de sucesso, mostra o modal de indisponível
+        setShowUnavailableModal(true);
+    }, 800);
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       
       {/* OVERLAY DE CARREGAMENTO */}
       {isLoading && (
@@ -103,7 +111,8 @@ function LoginPage() {
         </div>
       )}
 
-      <div className="auth-container">
+      {/* ALTERAÇÃO AQUI: Adicionado display flex column para garantir que fiquem um embaixo do outro */}
+      <div className="auth-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div className="auth-box">
           
           {/* CABEÇALHO */}
@@ -164,12 +173,37 @@ function LoginPage() {
             </div>
           </form>
 
-          {/* RODAPÉ */}
+          {/* RODAPÉ DO BOX */}
           <div className="auth-footer">
             <span>© {new Date().getFullYear()} - {coreAppAuthor}</span>
             <span>Versão {coreAppVersion}</span>
           </div>
         </div>
+
+        {/* --- DISCLAIMER / AVISO LEGAL --- */}
+        <div style={{
+            marginTop: '2rem',
+            maxWidth: '500px',
+            textAlign: 'center',
+            color: '#6b7280', 
+            fontSize: '0.75rem',
+            lineHeight: '1.4',
+            borderTop: '1px solid #374151',
+            paddingTop: '1rem'
+        }}>
+            {/* ALTERAÇÃO AQUI: Cor vermelha adicionada */}
+            <p style={{ fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '0.5rem', color: '#ef4444' }}>
+                Aviso Legal / Disclaimer
+            </p>
+            <p>
+                Este é um projeto <strong>não oficial (Fan-Made)</strong>, sem fins lucrativos, 
+                desenvolvido para fins de estudo e apoio à comunidade. 
+            </p>
+            <p style={{ marginTop: '0.5rem' }}>
+                "Assimilação RPG", seus logotipos e terminologias são propriedade intelectual de seus criadores.
+            </p>
+        </div>
+
       </div>
 
       {/* MODAL: CADASTRO */}
@@ -199,6 +233,18 @@ function LoginPage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
+              <input
+                type="password"
+                placeholder="Confirme sua senha"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                style={{ 
+                    marginTop: '10px',
+                    borderColor: (confirmPassword && newPassword !== confirmPassword) ? 'red' : '' 
+                }}
+              />
+              
               <div className="modal-password-buttons">
                 <button type="submit" className="auth-button">Cadastrar</button>
                 <button type="button" className="modal-cancel-btn" onClick={() => setShowRegisterModal(false)}>Cancelar</button>
@@ -224,23 +270,27 @@ function LoginPage() {
         </div>
       )}
 
-      {/* MODAIS DE SUCESSO */}
-      {showRegisterSuccess && (
+      {/* NOVO MODAL: SERVIÇO INDISPONÍVEL (GENÉRICO PARA CADASTRO E RECOVERY) */}
+      {showUnavailableModal && (
         <div className="modal-overlay">
-          <div className="modal-box">
-            <h2 className="modal-title">Cadastro Realizado!</h2>
-            <p>Sua conta foi criada. Faça login para continuar.</p>
-            <button type="button" className="auth-button" onClick={() => setShowRegisterSuccess(false)}>Fechar</button>
-          </div>
-        </div>
-      )}
-
-      {showSendEmail && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h2 className="modal-title">Email Enviado!</h2>
-            <p>Verifique sua caixa de entrada.</p>
-            <button type="button" className="auth-button" onClick={() => setShowSendEmail(false)}>Fechar</button>
+          <div className="modal-box" style={{ border: '1px solid #eab308' }}>
+            <h2 className="modal-title" style={{ color: '#eab308' }}>Funcionalidade Indisponível</h2>
+            <p style={{ marginTop: '1rem', color: '#d1d5db' }}>
+                Obrigado pelo interesse!
+                <br /><br />
+                No momento, o <strong>registro de novos usuários</strong> e a <strong>recuperação de conta</strong> estão desabilitados, pois estamos em fase de testes fechados (Protótipo Alpha).
+            </p>
+            <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#9ca3af' }}>
+                Se você faz parte da equipe oficial do Assimilação, utilize as credenciais de teste fornecidas.
+            </p>
+            <button 
+                type="button" 
+                className="auth-button" 
+                style={{ marginTop: '1.5rem', backgroundColor: '#374151' }}
+                onClick={() => setShowUnavailableModal(false)}
+            >
+                Entendi
+            </button>
           </div>
         </div>
       )}

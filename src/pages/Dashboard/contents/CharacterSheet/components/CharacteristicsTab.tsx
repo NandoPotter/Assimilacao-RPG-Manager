@@ -1,6 +1,6 @@
 /** ========================================================================================
  * ARQUIVO: src/pages/Dashboard/contents/CharacterSheet/components/CharacteristicsTab.tsx
- * DESCRIÇÃO: Aba de Características (Editor Grid 3 Colunas - Sem XP Display)
+ * DESCRIÇÃO: Aba de Características
  * ========================================================================================= */
 
 import { useEffect, useState } from 'react';
@@ -98,7 +98,6 @@ function CharacteristicsTab({ ids, instincts, aptitudes, onUpdate }: Props) {
         return reqs.map((req, idx) => {
             const isMet = breakRequirements ? true : checkSingleReq(req);
             const label = req.key ? (NAME_MAP[req.key] || req.key) : 'Req';
-            // Formato curto: "Armas 2" em vez de "Armas: 2" para economizar espaço no card
             const text = req.type === 'ou' ? 'Opções...' : `${label} ${req.val}`;
             
             return (
@@ -146,7 +145,6 @@ function CharacteristicsTab({ ids, instincts, aptitudes, onUpdate }: Props) {
                             <button 
                                 className={`btn-req-break ${breakRequirements ? 'broken' : ''}`}
                                 onClick={() => setBreakRequirements(!breakRequirements)}
-                                // O title (tooltip nativo) é importante agora que não tem texto
                                 title={breakRequirements ? "Regras Ignoradas (Permite tudo)" : "Regras Ativas (Valida requisitos)"}
                             >
                                 <img 
@@ -164,8 +162,6 @@ function CharacteristicsTab({ ids, instincts, aptitudes, onUpdate }: Props) {
                                 const isOwned = myFeatures.some(my => my.id === feat.id);
                                 const canAdd = checkAllReqs(feat.requirements);
                                 
-                                // NOVO: Define se o card está visualmente "Trancado"
-                                // Trancado se: Não tenho E (Não posso adicionar E regra não está quebrada)
                                 const isLocked = !isOwned && !canAdd && !breakRequirements;
 
                                 return (
@@ -187,7 +183,7 @@ function CharacteristicsTab({ ids, instincts, aptitudes, onUpdate }: Props) {
                                         <div className="char-edit-actions">
                                             <button 
                                                 className="btn-feat-action add" 
-                                                disabled={isOwned || isLocked} // Desabilita se tiver ou se estiver trancado
+                                                disabled={isOwned || isLocked}
                                                 onClick={() => handleAdd(feat)}
                                                 title={isOwned ? "Adquirido" : (isLocked ? "Requisito Insuficiente" : "Adicionar")}
                                             >

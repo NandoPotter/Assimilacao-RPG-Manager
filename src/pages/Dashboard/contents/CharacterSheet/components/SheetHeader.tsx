@@ -1,3 +1,7 @@
+/** ========================================================================================
+ * ARQUIVO: src/pages/Dashboard/components/CharacterSheet/components/SheetHeader.tsx
+ * DESCRIÇÃO: Componente do Cabeçalho da Ficha Interativa
+ * ========================================================================================= */
 
 interface Props {
     name: string;

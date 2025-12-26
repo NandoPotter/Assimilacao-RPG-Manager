@@ -1,6 +1,6 @@
 /** ========================================================================================
  * ARQUIVO: src/pages/Dashboard/components/CharacterSheet/components/PaginatedSection.tsx
- * DESCRIÇÃO: Componente de Seção com Paginação (Atualizado para Editor)
+ * DESCRIÇÃO: Componente de Seção com Paginação
  * ========================================================================================= */
 
 import { useState } from 'react';

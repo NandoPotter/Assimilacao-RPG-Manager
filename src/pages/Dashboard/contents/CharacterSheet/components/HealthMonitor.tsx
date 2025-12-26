@@ -1,6 +1,6 @@
 /** ========================================================================================
  * ARQUIVO: src/pages/Dashboard/contents/CharacterSheet/components/HealthMonitor.tsx
- * DESCRIÇÃO: Componente de Monitor de Saúde (Com Cálculo Automático de Status)
+ * DESCRIÇÃO: Componente de Monitor de Saúde
  * ========================================================================================= */
 
 import { type Instincts } from '../../../../../interfaces/Gameplay';
@@ -79,8 +79,6 @@ function HealthMonitor({ health, instincts, onUpdate, onStatusChange }: Props) {
     const adjustTemp = (delta: number) => {
         const newVal = Math.max(0, tempHealth + delta);
         onUpdate({ ...health, current: currentReal, max: maxHealth, temp: newVal });
-        // Nota: Vida temporária geralmente não altera status de trauma físico (Escoriado, etc), 
-        // mas se quiser que altere, basta chamar checkStatusChange(currentReal) aqui também.
     };
 
     // --- RENDERIZAÇÃO DE UMA CAIXA ---

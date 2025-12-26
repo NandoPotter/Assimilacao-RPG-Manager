@@ -1,7 +1,7 @@
-/** ============================================================
+/** ==================================================================
  * ARQUIVO: src/pages/Dashboard/components/CharacterSheet/index.tsx
- * DESCRIÇÃO: Layout Principal da Ficha Interativa (Final Corrigido)
- * ============================================================ */
+ * DESCRIÇÃO: Layout Principal da Ficha Interativa
+ * =================================================================== */
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router';
@@ -182,13 +182,16 @@ function CharacterSheetBoard() {
                                     }}
                                 />
                                 
-                                {/* MESA DE DADOS 3D */}
-                                <div className="dice-stage-container">
-                                    <DiceMonitor 
-                                        selectedInstincts={selectedPool.instincts}
-                                        selectedAptitudes={selectedPool.aptitudes}
-                                        isAssimilatedMode={selectedPool.isAssimilated}
-                                    />
+                                {/* MESA DE DADOS 3D (COM TÍTULO) */}
+                                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                    <span className="section-title">Monitor de Dados</span>
+                                    <div className="dice-stage-container">
+                                        <DiceMonitor 
+                                            selectedInstincts={selectedPool.instincts}
+                                            selectedAptitudes={selectedPool.aptitudes}
+                                            isAssimilatedMode={selectedPool.isAssimilated}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

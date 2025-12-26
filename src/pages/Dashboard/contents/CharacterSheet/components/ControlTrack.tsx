@@ -17,13 +17,11 @@ interface Props {
 
 function ControlTrack({ determination, assimilation, onUpdate }: Props) {
     
-    const DET_COLOR = "var(--cor-assim-evolutiva)";   // Vermelho
-    const ASS_COLOR = "var(--cor-assim-inoportuna)";  // Azul
+    const DET_COLOR = "var(--cor-assim-evolutiva)";
+    const ASS_COLOR = "var(--cor-assim-inoportuna)"; 
     const STROKE_WIDTH = 2;
 
-    // --- LÓGICA DE BOTÕES INVERTIDA ---
-    
-    // Botão < (Esquerda): Empurra os triângulos para esquerda (Azul cresce)
+    // --- LÓGICA DE BOTÕES ---
     // Aumenta Assimilação, Diminui Determinação
     const pushLeft = () => {
         if (determination.max > 0) {
@@ -35,7 +33,6 @@ function ControlTrack({ determination, assimilation, onUpdate }: Props) {
     };
 
     // Botão > (Direita): Empurra os triângulos para direita (Vermelho cresce)
-    // Aumenta Determinação, Diminui Assimilação
     const pushRight = () => {
         if (assimilation.max > 0) {
             onUpdate({
@@ -46,7 +43,6 @@ function ControlTrack({ determination, assimilation, onUpdate }: Props) {
     };
 
     // --- LÓGICA DE CLIQUE NOS TRIÂNGULOS ---
-
     // Determinação (Vermelho) - Esquerda -> Direita
     const handleDetClick = (index: number) => {
         const value = index + 1;

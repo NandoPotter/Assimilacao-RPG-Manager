@@ -8,9 +8,21 @@
     width: 100%;
     margin: 0 auto;
     animation: fadeIn 0.4s ease-out;
-    height: calc(100vh - 170px);
+    /* Ajuste para mobile: Altura automática para permitir scroll nativo */
+    height: auto; 
+    min-height: calc(100vh - 100px); /* Garante altura mínima mas não trava */
     display: flex;
     flex-direction: column;
+    padding-bottom: 80px; /* Espaço para não colar no fundo no mobile */
+}
+
+@media (min-width: 769px) {
+    /* No Desktop, mantemos o comportamento de "app" sem scroll na janela principal */
+    .creator-container {
+        height: calc(100vh - 140px);
+        overflow: hidden;
+        padding-bottom: 0;
+    }
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -42,41 +54,93 @@
 }
 
 /* ==========================================================================
-   CONTEÚDO
+   CONTEÚDO (Scrollável no Desktop)
    ========================================================================== */
 .wizard-content {
-    flex: 1; overflow-y: auto; padding-right: 10px; width: 100%;
+    width: 100%;
     display: flex; flex-direction: column;
-    scrollbar-width: thin; scrollbar-color: var(--cor-tema) #111;
+}
+
+@media (min-width: 769px) {
+    .wizard-content {
+        flex: 1; 
+        overflow-y: auto; 
+        padding-right: 10px;
+        scrollbar-width: thin; scrollbar-color: var(--cor-tema) #111;
+    }
 }
 
 .wizard-wrapper {
     width: 100%; max-width: 1200px; margin: 0 auto;
-    height: 100%;
-    display: flex; flex-direction: column; justify-content: center;
+    /* No mobile, altura automática. No desktop, centralizado verticalmente */
+    height: auto;
+    display: flex; flex-direction: column; justify-content: flex-start;
+}
+
+@media (min-width: 769px) {
+    .wizard-wrapper {
+        height: 100%;
+        justify-content: center;
+    }
 }
 
 /* --- Componentes de Seção --- */
 .form-section {
-    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px; padding: 10px; margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.03); 
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px; 
+    padding: 10px; 
+    margin-bottom: 15px; /* Aumentei a margem inferior para mobile */
 }
-.compact-section { padding: 12px 15px; margin-bottom: 10px; }
+.compact-section { padding: 12px 15px; margin-bottom: 15px; }
 
+/* TÍTULOS PADRÃO */
 .form-section h3 {
-    color: #fff; border-bottom: 1px solid #333; padding-bottom: 5px;
-    margin-bottom: 15px; font-size: 1rem; text-transform: uppercase; font-weight: 600;
+    color: var(--cor-tema);
+    margin: 0;
+    font-size: 1rem; 
+    text-transform: uppercase; 
+    font-weight: 600;
+    border-bottom: none;
+    padding-bottom: 0;
 }
+
+/* HEADER COMPACTO */
 .header-compact {
-    margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px;
+    margin-bottom: 10px; 
+    padding-bottom: 8px; 
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-.header-compact h3 { margin-bottom: 0; font-size: 0.95rem; }
+
+.header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Subtítulos */
+.subtitle-std { 
+    color: var(--cor-tema);
+    font-size: 0.85rem; 
+    margin: 0; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+}
+
+.subtitle-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
 
 /* Texto de Custo (Passo 3) */
 .evolution-hint {
     font-size: 0.8rem; color: #666; font-style: italic;
-    margin-top: 10px; /* Espaço em cima */
-    margin-bottom: 5px; /* Espaço embaixo */
+    margin-top: 5px; margin-bottom: 5px;
 }
 
 /* ==========================================================================
@@ -87,14 +151,14 @@
 .input-group { margin-bottom: 10px; }
 .input-group label { display: block; color: #88aacc; margin-bottom: 4px; font-size: 0.85rem; }
 .input-field {
-    width: 100%; padding: 8px 12px; background: #0d1116; border: 1px solid #333; margin-bottom: 5px;
+    width: 100%; padding: 10px 12px; /* Aumentei padding para toque */
+    background: #0d1116; border: 1px solid #333; margin-bottom: 5px;
     border-radius: 4px; color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s;
 }
 .input-field:focus { border-color: var(--cor-tema); box-shadow: 0 0 5px var(--cor-tema-glow); }
-.text-area-full { flex: 0.5; resize: none; min-height: 100px; line-height: 1.0; }
-.subtitle-std { color: #aaa; font-size: 0.85rem; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
+.text-area-full { flex: 0.5; resize: none; min-height: 120px; line-height: 1.4; }
 
-/* Imputs de Imagens */
+/* Avatar */
 .avatar-upload-container {
     display: flex;
     gap: 15px;
@@ -102,10 +166,9 @@
     margin-bottom: 10px;
 }
 
-/* Círculo do Avatar */
 .avatar-preview-circle {
-    width: 120px; /* Ajustei para 100px para ficar harmonioso, pode voltar pra 120 se preferir */
-    height: 120px;
+    width: 100px;
+    height: 100px;
     background-color: #15171b;
     border-radius: 50%;
     background-size: cover;
@@ -118,76 +181,45 @@
     flex-shrink: 0;
 }
 
-.avatar-placeholder-icon {
-    font-size: 2rem;
-    color: #444;
-    font-weight: bold;
-}
+.avatar-placeholder-icon { font-size: 2rem; color: #444; font-weight: bold; }
+.avatar-controls { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 
-/* Coluna da Direita (Botão + Texto) */
-.avatar-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: flex-start;
-}
-
-/* O "Botão" (que na verdade é um Label) */
 .btn-upload-custom {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 10px 16px; /* Botão maior para mobile */
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #444;
-    color: #ccc;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    border: 1px solid #444; color: #ccc; border-radius: 4px;
+    font-size: 0.8rem; font-weight: bold; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s ease;
 }
-
-.btn-upload-custom:hover {
-    background: #222;
-    border-color: var(--cor-tema, #bd00ff);
-    color: #fff;
-    box-shadow: 0 0 8px rgba(var(--cor-tema-rgb, 189, 0, 255), 0.3);
-}
-
-.btn-upload-custom:active {
-    transform: translateY(1px);
-}
-
-/* Texto de ajuda */
-.avatar-help-text {
-    font-size: 0.65rem;
-    color: #666;
-    font-family: monospace;
-    letter-spacing: 0.5px;
-}
+.btn-upload-custom:hover { background: #222; border-color: var(--cor-tema); color: #fff; }
+.avatar-help-text { font-size: 0.65rem; color: #666; font-family: monospace; }
 
 /* ==========================================================================
    PASSO 2: ATRIBUTOS
    ========================================================================== */
 .stats-grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 .stats-grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
 .stat-row {
     display: flex; justify-content: space-between; align-items: center;
-    background: #151a20; padding: 4px 8px; margin-bottom: 4px;
-    border-radius: 4px; border: 1px solid #252a30; min-height: 32px;
+    background: #151a20; padding: 8px 10px; /* Mais área de toque */
+    margin-bottom: 4px;
+    border-radius: 4px; border: 1px solid #252a30; min-height: 40px; /* Altura mínima para mobile */
 }
-.stat-name { color: #ccc; font-size: 0.8rem; }
-.stat-value { width: 20px; text-align: center; font-weight: bold; color: var(--cor-tema); }
-.points-remaining { font-size: 0.85rem; color: #ffaa00; }
-.stat-control { display: flex; align-items: center; gap: 8px; }
+.stat-name { color: #ccc; font-size: 0.85rem; }
+.stat-value { width: 30px; text-align: center; font-weight: bold; color: var(--cor-tema); font-size: 1rem; }
+.points-remaining { font-size: 0.9rem; color: #ffaa00; font-weight: bold; }
+.stat-control { display: flex; align-items: center; gap: 10px; }
+
 .btn-mini {
-    width: 20px; height: 20px; border: 1px solid #444; background: #222; color: #fff;
-    border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: 0.2s; font-size: 0.8rem; line-height: 1;
+    width: 30px; height: 30px; /* Botões maiores para mobile */
+    border: 1px solid #444; background: #222; color: #fff;
+    border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: 0.2s; font-size: 1rem; line-height: 1;
 }
 .btn-mini:hover { background: var(--cor-tema); color: #000; }
+
 .aptitudes-split-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
 .compact-col { padding: 10px; background: rgba(0,0,0,0.2); border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); }
 .stats-list-vertical { display: flex; flex-direction: column; gap: 0; }
@@ -199,122 +231,94 @@
     display: grid; 
     grid-template-columns: 0.9fr 1.3fr; 
     gap: 20px;
-    height: 100%; overflow: hidden;
+    height: auto;
 }
 
-/* Coluna Esquerda */
-.step3-col-left { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+@media (min-width: 769px) {
+    .step3-grid { height: 100%; overflow: hidden; }
+}
 
-/* Margem Inferior da Caixa */
+/* Coluna Esquerda (Características) */
+.step3-col-left { display: flex; flex-direction: column; height: auto; }
+@media (min-width: 769px) { .step3-col-left { height: 100%; overflow: hidden; } }
+
 .characteristics-container { 
-    flex: 1; 
-    min-height: 0;
-    display: flex; 
-    flex-direction: column; 
-    margin-bottom: 15px; /* Ajuste conforme necessário (15px solicitado) */
+    flex: 1; min-height: 400px; display: flex; flex-direction: column; margin-bottom: 15px;
 }
 
 .characteristics-list {
-    flex: 1; overflow-y: auto; padding-right: 5px;
+    flex: 1; padding-right: 5px;
     border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2);
     border-radius: 4px; padding: 10px;
-    scrollbar-width: thin; scrollbar-color: var(--cor-tema) #111;
+    
+    /* Mobile: Scroll Nativo */
+    overflow-y: visible;
+}
+
+@media (min-width: 769px) {
+    .characteristics-list { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--cor-tema) #111; }
 }
 
 /* Item de Característica */
 .carac-row {
-    display: flex; 
-    align-items: flex-start; 
-    gap: 12px;
-    padding: 10px;
-    padding-bottom: 28px; 
-    margin-bottom: 5px; 
-    cursor: pointer;
-    background: rgba(255,255,255,0.02); 
-    border-radius: 4px; 
-    border: 1px solid transparent;
-    transition: 0.2s;
-    position: relative;
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px; padding-bottom: 35px; /* Espaço para o custo */
+    margin-bottom: 8px; cursor: pointer;
+    background: rgba(255,255,255,0.02); border-radius: 4px; border: 1px solid transparent;
+    transition: 0.2s; position: relative;
 }
 .carac-row:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+.carac-row.locked { opacity: 0.6; cursor: not-allowed; background: rgba(0,0,0,0.3); }
 
-/* ESTADO TRAVADO (Não atende requisitos) */
-.carac-row.locked {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: rgba(0,0,0,0.3);
-}
-
-/* Checkbox Circular */
-.circular-checkbox-container {
-    position: relative; display: inline-block; width: 18px; height: 18px; cursor: pointer; margin-top: 2px;
-    pointer-events: none;
-}
+/* Checkbox */
+.circular-checkbox-container { position: relative; display: inline-block; width: 22px; height: 22px; cursor: pointer; margin-top: 2px; pointer-events: none; }
 .circular-checkbox-container input { opacity: 0; width: 0; height: 0; }
-.circular-checkmark {
-    position: absolute; top: 0; left: 0; height: 18px; width: 18px;
-    background-color: transparent; border: 2px solid #555; border-radius: 50%;
-    transition: 0.2s;
-}
+.circular-checkmark { position: absolute; top: 0; left: 0; height: 22px; width: 22px; background-color: transparent; border: 2px solid #555; border-radius: 50%; transition: 0.2s; }
 .circular-checkbox-container input:checked ~ .circular-checkmark { background-color: var(--cor-tema); border-color: var(--cor-tema); }
 .circular-checkmark.locked-check { border-color: #444; }
 
-.carac-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.carac-name { font-weight: bold; font-size: 0.9rem; }
-.carac-desc { font-size: 0.75rem; color: #aaa; line-height: 1.3; }
-
-.carac-req { 
-    font-size: 0.7rem; 
-    font-family: monospace; 
-    margin-top: 4px; 
-}
-
-.req-static {
-    color: #666;
-}
-
-.req-success {
-    color: #00ff88; /* Verde brilhante */
-    text-shadow: 0 0 2px rgba(0, 255, 136, 0.3);
-}
-
-.req-fail {
-    color: #ff4444;
-}
+.carac-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.carac-name { font-weight: bold; font-size: 1rem; }
+.carac-desc { font-size: 0.85rem; color: #aaa; line-height: 1.4; }
+.carac-req { font-size: 0.75rem; font-family: monospace; margin-top: 4px; }
+.req-static { color: #666; }
+.req-success { color: #00ff88; text-shadow: 0 0 2px rgba(0, 255, 136, 0.3); }
+.req-fail { color: #ff4444; }
 
 .carac-cost { 
-    font-weight: bold; 
-    font-size: 0.9rem;
-    color: #ffaa00; 
-    white-space: nowrap; 
-    position: absolute;
-    bottom: 8px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 2px 6px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 170, 0, 0.3);
+    font-weight: bold; font-size: 0.9rem; color: #ffaa00; white-space: nowrap; 
+    position: absolute; bottom: 8px; right: 10px;
+    background: rgba(0, 0, 0, 0.6); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255, 170, 0, 0.3);
 }
 
-/* Coluna Direita */
-.step3-col-right { display: flex; flex-direction: column; height: 100%; gap: 15px; overflow: hidden; padding-bottom: 5px; }
+/* Coluna Direita (Evolução + Kit) */
+.step3-col-right { display: flex; flex-direction: column; height: auto; gap: 15px; padding-bottom: 5px; }
+@media (min-width: 769px) { .step3-col-right { height: 100%; overflow: hidden; } }
 
 .xp-panel {
     background: #0d1116; border: 1px solid var(--cor-tema); border-radius: 6px;
-    padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5); flex-shrink: 0;
+    padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5); flex-shrink: 0; margin-bottom: 10px;
 }
-.xp-label { color: #aaa; font-size: 0.9rem; font-weight: bold; letter-spacing: 1px; }
-.xp-value { color: var(--cor-tema); font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 5px var(--cor-tema-glow); }
+.xp-label { color: #aaa; font-size: 1rem; font-weight: bold; letter-spacing: 1px; }
+.xp-value { color: var(--cor-tema); font-size: 1.8rem; font-weight: bold; text-shadow: 0 0 5px var(--cor-tema-glow); }
 
-.expanded-section { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; min-height: 0; overflow: hidden; }
-.expanded-section .stats-list-vertical { overflow-y: auto; scrollbar-width: thin; }
+.expanded-section { 
+    flex: 1; display: flex; flex-direction: column; margin-bottom: 0; min-height: 0; 
+}
+@media (min-width: 769px) { .expanded-section { overflow: hidden; } }
+
+.expanded-section .stats-list-vertical { 
+    /* No mobile, altura automática */
+    height: auto; 
+}
+@media (min-width: 769px) { .expanded-section .stats-list-vertical { overflow-y: auto; scrollbar-width: thin; } }
 
 /* Kit Inicial */
-.kit-section { display: flex; flex-direction: column; margin-top: auto; flex-shrink: 0; }
+.kit-section { display: flex; flex-direction: column; margin-top: 10px; flex-shrink: 0; }
 .kit-items-display {
-    margin-top: 10px; background: #0a0f14; padding: 10px; border-radius: 4px;
-    border: 1px solid #333; color: #ccc; font-size: 0.85rem; min-height: 40px;
+    margin-top: 10px; background: #0a0f14; padding: 15px; border-radius: 4px;
+    border: 1px solid #333; color: #ccc; font-size: 0.9rem; min-height: 60px; line-height: 1.5;
 }
 
 /* Helpers Evolução */
@@ -322,69 +326,148 @@
 .math-symbol { color: #444; } .math-base { color: #888; } .math-total { color: #fff; font-weight: bold; }
 .math-added { color: #555; transition: 0.3s; }
 .math-added.active { color: var(--cor-tema); font-weight: bold; text-shadow: 0 0 5px var(--cor-tema-glow); }
-.next-cost-preview { font-size: 0.65rem; color: #ffaa00; width: 25px; text-align: center; }
+.next-cost-preview { font-size: 0.75rem; color: #ffaa00; width: 30px; text-align: center; }
 
 /* ==========================================================================
    MODAL PERSONALIZADO
    ========================================================================== */
 .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(4px);
-    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000;
     animation: fadeIn 0.2s ease-out;
 }
 
 .modal-box {
-    background: #0d1116; border: 1px solid var(--cor-tema);
-    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 10px var(--cor-tema-glow);
-    padding: 25px; width: 90%; max-width: 400px; border-radius: 6px;
-    text-align: center; color: #fff; transform: scale(1);
+    background: #0d1116;
+    border: 1px solid var(--cor-tema);
+    box-shadow: 0 0 40px rgba(0,0,0,0.8), 0 0 15px var(--cor-tema-glow);
+    padding: 30px;
+    width: 90%; max-width: 400px;
+    border-radius: 8px;
+    text-align: center;
+    color: #fff;
+    transform: scale(1);
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .modal-title {
-    color: var(--cor-tema); font-size: 1.2rem; font-weight: bold;
-    text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 10px;
+    color: var(--cor-tema);
+    font-size: 1.5rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 15px;
 }
 
-.modal-message { font-size: 0.95rem; line-height: 1.5; color: #ccc; margin-bottom: 25px; }
+.modal-message {
+    font-size: 1rem; line-height: 1.6; color: #ccc;
+    margin-bottom: 30px;
+}
 
+/* ESTILO DO BOTÃO CORRIGIDO */
 .modal-btn {
-    background: var(--cor-tema); color: #000; border: none; padding: 10px 25px;
-    font-weight: bold; text-transform: uppercase; cursor: pointer; border-radius: 4px;
-    transition: 0.3s; width: 100%;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    background: var(--cor-tema);
+    color: #000;
+    font-size: 1rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 10px var(--cor-tema-glow);
 }
-.modal-btn:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--cor-tema-glow); }
 
-@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-btn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px var(--cor-tema-glow);
+}
+
+.modal-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 5px var(--cor-tema-glow);
+}
+
+@keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
 
 /* ==========================================================================
-   RODAPÉ
+   RODAPÉ DE NAVEGAÇÃO
    ========================================================================== */
 .creator-footer {
     display: flex; justify-content: space-between;
-    margin-top: auto; padding-top: 15px;
+    margin-top: 20px; padding-top: 15px;
     border-top: 1px solid rgba(255,255,255,0.1);
     flex-shrink: 0;
+    /* No mobile, fixa no fundo para fácil acesso? Ou ao final do scroll? 
+       Vamos manter ao final do scroll para não comer tela */
 }
-.btn-nav { padding: 10px 25px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: 0.3s; text-transform: uppercase; }
+.btn-nav { padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; text-transform: uppercase; }
 .btn-back { background: transparent; border: 1px solid #444; color: #888; }
 .btn-back:hover { border-color: #fff; color: #fff; }
 .btn-next { background: var(--cor-tema); border: none; color: #000; box-shadow: 0 0 10px var(--cor-tema-glow); }
 .btn-next:hover { filter: brightness(1.2); box-shadow: 0 0 20px var(--cor-tema-glow); }
 
 /* ==========================================================================
-   RESPONSIVIDADE
+   RESPONSIVIDADE (MEDIA QUERIES)
    ========================================================================== */
 @media (max-width: 900px) {
-    .step3-grid { grid-template-columns: 1fr; overflow-y: auto; }
-    .step3-col-left, .characteristics-container { height: 400px; margin-bottom: 0; }
-    .step3-col-right { overflow-y: visible; height: auto; }
+    /* Tablet/Laptop pequeno */
+    .step3-grid { grid-template-columns: 1fr; }
+    .step3-col-left { margin-bottom: 20px; }
+    .characteristics-container { min-height: 300px; max-height: 400px; }
 }
 
 @media (max-width: 768px) {
-    .identity-grid, .stats-grid-3col, .aptitudes-split-row { grid-template-columns: 1fr; }
+    /* Mobile */
+    .identity-grid { grid-template-columns: 1fr; }
+    .stats-grid-3col { grid-template-columns: 1fr; } /* Instintos em 1 coluna */
+    .aptitudes-split-row { grid-template-columns: 1fr; } /* Aptidões em 1 coluna */
+    
+    .wizard-steps { width: 120px; }
+    .wizard-title { font-size: 1.1rem; }
+    
     .text-area-full { min-height: 100px; }
-    .wizard-steps { width: 100px; }
+    
+    /* Ajuste para o Wizard ocupar a tela toda com scroll */
+    .creator-container {
+        height: auto;
+        display: block; /* Remove flex para permitir scroll natural */
+    }
+    
+    .wizard-content {
+        overflow: visible;
+        height: auto;
+    }
+    
+    .wizard-wrapper {
+        justify-content: flex-start;
+        height: auto;
+    }
+    
+    .step3-grid {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* No passo 3, garantir que as listas não fiquem minusculas */
+    .characteristics-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    /* Ajuste do botão de upload */
+    .avatar-upload-container {
+        flex-direction: row; /* Mantém lado a lado se couber */
+    }
+
+    
 }

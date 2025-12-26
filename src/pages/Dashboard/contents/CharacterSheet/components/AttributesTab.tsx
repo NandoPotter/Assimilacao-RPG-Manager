@@ -1,6 +1,6 @@
 /** =====================================================================================
  * ARQUIVO: src/pages/Dashboard/contents/CharacterSheet/components/AttributesTab.tsx
- * DESCRIÇÃO: Aba de Atributos (Sistema de Custos Dramáticos) Integrado ao DiceMonitor
+ * DESCRIÇÃO: Aba de Atributos - Integrado ao DiceMonitor
  * ====================================================================================== */
 
 import React, { useState, useEffect } from 'react';
@@ -220,8 +220,8 @@ function AttributesTab({
                     <div className="dramatic-box">
                         <span className="dramatic-title">Fusão Neural</span>
                         <p className="dramatic-text">Ao Agir por Instinto, o infectado elege dois instintos ou usa o mesmo instinto duas vezes, ignorando suas outras Aptidões.</p>
-                        <p className="dramatic-text">Todos os D6 são trocados por D12.</p>
-                        <p className="dramatic-text">Para acessar seus instintos primordiais e agir através da rede, um preço deve ser pago.</p>
+                        <p className="dramatic-text">Todos os D6 serão trocados por D12.</p>
+                        <p className="dramatic-text">Para acessar seus instintos primordiais e agir através do Parasita, um preço deve ser pago.</p>
                         <div className="dramatic-choices">
                             {currentAssimilation >= 1 && (
                                 <button className="btn-choice cost-assimilation" onClick={() => confirmActivation('assimilation')}>

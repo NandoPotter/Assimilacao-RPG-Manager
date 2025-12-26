@@ -1,4 +1,9 @@
-import { usePlane, useBox } from '@react-three/cannon';
+/** =========================================================================
+ * ARQUIVO: src/components/AssimilationDices/DiceSceneElements.tsx
+ * DESCRIÇÃO: Elementos de cena (COLISORES)
+ * ========================================================================= */
+
+import { usePlane } from '@react-three/cannon';
 
 export function Scene() {
     const [ref] = usePlane(() => ({ 
@@ -19,19 +24,22 @@ export function Scene() {
 }
 
 export function InvisibleWalls() {
-    usePlane(() => ({ position: [0, 0, 4], rotation: [0, -Math.PI, 0] })); 
-    usePlane(() => ({ position: [-8, 0, 0], rotation: [0, Math.PI / 2, 0] })); 
-    usePlane(() => ({ position: [8, 0, 0], rotation: [0, -Math.PI / 2, 0] }));  
+    // === AJUSTE DE DIMENSÕES (Para Câmera Y=20 / FOV=40) ===
+    // Expandido para preencher a tela widescreen (16:9) nessa altura.
+    // Largura (X): +/- 11 (Total 22)
+    // Altura (Z): +/- 6 (Total 12)
 
-    const [backWallRef] = useBox(() => ({
-        type: 'Static',
-        args: [20, 10, 1],
-        position: [0, 5, -8.5], 
-    }));
+    // Fundo (Z negativo)
+    usePlane(() => ({ position: [0, 0, -6], rotation: [0, 0, 0] })); 
+    
+    // Frente (Z positivo)
+    usePlane(() => ({ position: [0, 0, 6], rotation: [0, -Math.PI, 0] })); 
+    
+    // Esquerda (X negativo)
+    usePlane(() => ({ position: [-11, 0, 0], rotation: [0, Math.PI / 2, 0] })); 
+    
+    // Direita (X positivo)
+    usePlane(() => ({ position: [11, 0, 0], rotation: [0, -Math.PI / 2, 0] }));  
 
-    return (
-        <mesh ref={backWallRef as any} visible={false}>
-            <boxGeometry args={[20, 10, 1]} />
-        </mesh>
-    );
+    return null;
 }

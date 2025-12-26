@@ -1,0 +1,144 @@
+/* =================================================================
+   Arquivo: src/pages/NotFound/Styles.css
+   ESTILOS DA PÁGINA 404 - (Glassmorphism)
+   ================================================================= */
+
+.not-found-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Padrão do Login */
+    background-image: var(--bg-gradient); 
+    color: #eee;
+    font-size: 14px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fundo Pulsante (Sutil atrás do vidro) */
+.pulse-background {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vw;
+    height: 60vw;
+    /* Usa a cor do tema para pulsação, mas bem suave */
+    background: radial-gradient(circle, var(--cor-tema) 0%, transparent 70%);
+    opacity: 0.08; 
+    filter: blur(80px);
+    animation: bio-pulse 6s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* CAIXA PRINCIPAL (Estilo .auth-box do Login) */
+.content-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 500px; /* Um pouco mais largo que o login para o texto caber bem */
+    
+    /* Variáveis Glass do seu sistema */
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: var(--glass-border);
+    
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    
+    animation: slideUp 0.5s ease;
+}
+
+/* --- TÍTULO 404 --- */
+.hallucination-wrapper {
+    margin-bottom: 20px;
+}
+
+.hallucination-text {
+    font-size: 6rem; /* Menor que antes para caber na caixa */
+    font-weight: 800;
+    letter-spacing: 5px;
+    margin: 0;
+    
+    /* Gradiente no texto igual ao título do login */
+    background: linear-gradient(90deg, var(--cor-neon-azul), #0061ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3));
+    animation: double-vision 4s infinite ease-in-out;
+}
+
+/* Subtítulos */
+.status-text {
+    font-size: 1.2rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.visceral-description {
+    font-size: 1rem;
+    color: var(--text-muted); /* Mesma cor de texto secundário do login */
+    line-height: 1.6;
+    margin-bottom: 0;
+    font-style: italic;
+}
+
+/* Área de Ação */
+.action-area {
+    margin-top: 40px; /* Espaçamento solicitado */
+    width: 100%;
+}
+
+/* --- BOTÃO (Cópia exata do .auth-button do Login) --- */
+.btn-resist {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    
+    /* Gradiente Azul Padrão do Login */
+    background: linear-gradient(90deg, #0061ff, var(--cor-neon-azul));
+    color: #000;
+    
+    transition: 0.3s;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.btn-resist:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 20px rgba(0, 195, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* --- ANIMAÇÕES --- */
+@keyframes bio-pulse {
+    0% { opacity: 0.05; transform: translate(-50%, -50%) scale(0.9); }
+    50% { opacity: 0.15; transform: translate(-50%, -50%) scale(1.1); }
+    100% { opacity: 0.05; transform: translate(-50%, -50%) scale(0.9); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes double-vision {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.2)); }
+    50% { filter: drop-shadow(-3px 0 10px rgba(0, 242, 255, 0.5)); }
+}
