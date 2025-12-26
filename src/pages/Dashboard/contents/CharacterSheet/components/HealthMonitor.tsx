@@ -60,8 +60,7 @@ function HealthMonitor({ health, instincts, onUpdate, onStatusChange }: Props) {
         } else if (newCurrent <= segmentsPerBox * 5) {
             onStatusChange('Escoriado');
         } else {
-            // Se estiver na última caixa (6) ou cheio
-            onStatusChange('Vivo');
+            onStatusChange('Saudável');
         }
     };
 
