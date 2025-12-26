@@ -1,0 +1,190 @@
+/* Divisões principais do container */
+.threat-container {
+    padding: 2rem;
+    color: #e0e0e0;
+}
+
+.threat-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+/* Painel Central de Ameaça */
+.threat-card {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #333;
+    margin-top: 2rem;
+    max-width: 600px;
+}
+
+.level-number {
+    font-size: 4rem;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Barra de Progresso Estilizada */
+.progress-bar-bg {
+    width: 100%;
+    height: 15px;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Botões de Ação */
+.threat-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.threat-controls button {
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    background-color: #2d2d2d;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.threat-controls button:hover {
+    background-color: #444;
+}
+/* Layout em Grid para separar medidor do formulário */
+.threat-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.setup-card {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #333;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.form-group input, .obj-section input {
+    background: #0d0d0d;
+    border: 1px solid #333;
+    padding: 0.8rem;
+    color: white;
+    border-radius: 6px;
+    outline: none;
+}
+
+.form-group input:focus, .obj-section input:focus {
+    border-color: #ff9900;
+}
+
+.objectives-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.obj-section h4 {
+    font-size: 0.85rem;
+    color: #ff9900;
+    margin-bottom: 1rem;
+}
+
+.obj-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* Responsividade básica */
+@media (max-width: 1000px) {
+    .threat-main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* Container de Seleção do Menu */
+.menu-selection-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.selection-card {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.selection-card:hover {
+    border-color: #ff9900;
+    transform: translateY(-5px);
+    background: #222;
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.selection-card h2 {
+    color: #ff9900;
+    margin-bottom: 1rem;
+}
+
+.selection-card p {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Botão de Voltar */
+.back-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.back-btn:hover {
+    color: #fff;
+}
+
+.center-card {
+    max-width: 500px;
+    margin: 0 auto;
+}

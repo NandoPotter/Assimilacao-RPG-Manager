@@ -16,6 +16,8 @@ import OverviewBoard from './pages/Dashboard/OverviewBoard/Index';
 import CharactersPage from './pages/Dashboard/contents/Characters/Index';
 import CharacterCreatorBoard from './pages/Dashboard/contents/CharacterCreator/Index';
 import CharacterSheetBoard from './pages/Dashboard/contents/CharacterSheet/Index';
+/* Ajustado para a pasta 'contentesAssimilator' que aparece no seu VS Code */
+import { ThreatCreator } from './pages/Dashboard/contentesAssimilator/ThreatCreator/index';
 
 export const Router = createHashRouter([
   {
@@ -39,6 +41,10 @@ export const Router = createHashRouter([
         path: 'characters',
         element: <CharactersPage />,
       },
+      {
+            path: 'ameacas',
+            element: <ThreatCreator />,
+        },
       {
         path: 'character-creator/:id?',
         element: <CharacterCreatorBoard />,

@@ -87,30 +87,30 @@ export function Sidebar({ mode, onToggleMode }: SidebarProps) {
                     
                     <div className="divider"></div>
 
-                    {mode === 'assimilador' ? (
-                        <>
-                            <NavLink to="/dashboard/campaigns" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"} onClick={handleLinkClick}>
-                                Gestão de Campanhas
-                            </NavLink>
-                            <NavLink to="/dashboard/npcs" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"} onClick={handleLinkClick}>
-                                Criação de NPCs
-                            </NavLink>
-                            <NavLink to="/dashboard/threats" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"} onClick={handleLinkClick}>
-                                Criação de Ameaças
-                            </NavLink>
-                        </>
-                    ) : (
-                        <>
-                            <NavLink to="/dashboard/characters" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"} onClick={handleLinkClick}>
-                                Personagens
-                            </NavLink>
-
-                            <NavLink to="/dashboard/campaignsview" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"} onClick={handleLinkClick}>
-                                Ver Campanhas
-                            </NavLink>
-                        </>
-                    )}
-                </nav>
+                {/* Usamos a prop 'mode' vinda do DashboardLayout */}
+                {mode === 'assimilador' ? (
+                    <>
+                        <NavLink to="/dashboard/campaigns" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
+                            Gestão de Campanhas
+                        </NavLink>
+                        <NavLink to="/dashboard/npcs" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
+                            Criação de NPCs
+                        </NavLink>
+                        <NavLink to="/dashboard/ameacas" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
+                            Criador de conflitos
+                        </NavLink>
+                    </>
+                ) : (
+                    <>
+                        <NavLink to="/dashboard/characters" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"} onClick={handleLinkClick}>
+                            Personagens
+                        </NavLink>
+                        <NavLink to="/dashboard/campaignsview" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
+                            Ver Campanhas
+                        </NavLink>
+                    </>
+                )}
+            </nav>
 
                 <div className="sidebar-footer">
                     <div 
