@@ -95,7 +95,7 @@ function OverviewBoard() {
                             </div>
 
                             <div className="card-actions">
-                                <button className="btn-primary-action" onClick={() => navigate(`/dashboard/sheet/${lastChar.id}`)}>
+                                <button className="btn-primary-action" onClick={() => navigate(`/dashboard/ficha-interativa/${lastChar.id}`)}>
                                     Abrir Ficha
                                 </button>
                             </div>
@@ -103,7 +103,7 @@ function OverviewBoard() {
                     ) : (
                         <div className="empty-survivor">
                             <p>Nenhum registro encontrado nos escombros.</p>
-                            <button className="btn-create-action" onClick={() => navigate('/dashboard/character-creator')}>
+                            <button className="btn-create-action" onClick={() => navigate('/dashboard/criador-de-infectado')}>
                                 Criar Personagem
                             </button>
                         </div>
@@ -131,10 +131,10 @@ function OverviewBoard() {
                         <span className="card-label">Acesso Rápido</span>
                     </div>
                     <div className="shortcuts-list">
-                        <button className="shortcut-item" onClick={() => navigate('/dashboard/character-creator')}>
+                        <button className="shortcut-item" onClick={() => navigate('/dashboard/criador-de-infectado')}>
                             <span className="sc-icon">+</span> Novo Personagem
                         </button>
-                        <button className="shortcut-item" onClick={() => navigate('/dashboard/characters')}>
+                        <button className="shortcut-item" onClick={() => navigate('/dashboard/infectados')}>
                             <span className="sc-icon">≡</span> Meus Personagens
                         </button>
                         <button className="shortcut-item" disabled style={{opacity: 0.5, cursor: 'not-allowed'}}>

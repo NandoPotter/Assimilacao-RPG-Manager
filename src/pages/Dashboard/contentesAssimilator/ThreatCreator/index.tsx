@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Styles.css';
 
-export function ThreatCreator() {
+function ThreatCreator() {
     // Estado para saber qual tela mostrar: 'menu', 'conflitos' ou 'ameacas'
     const [view, setView] = useState<'menu' | 'conflitos' | 'ameacas'>('menu');
     
@@ -98,3 +98,5 @@ export function ThreatCreator() {
         </div>
     );
 }
+
+export default ThreatCreator

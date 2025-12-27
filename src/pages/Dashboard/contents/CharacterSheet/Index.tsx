@@ -45,7 +45,7 @@ function CharacterSheetBoard() {
                 setChar(data);
             } catch (error) {
                 console.error(error);
-                navigate('/dashboard/characters');
+                navigate('/dashboard/infectados');
             } finally {
                 setIsLoading(false);
             }
@@ -112,7 +112,7 @@ function CharacterSheetBoard() {
                 name={char.name}
                 generation={char.generation}
                 occupation={char.background.occupation}
-                onBack={() => navigate('/dashboard/characters')}
+                onBack={() => navigate('/dashboard/infectados')}
             />
 
             <input type="file" ref={fileInputRef} style={{display:'none'}} accept="image/*" onChange={handleFileChange} />

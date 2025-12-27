@@ -55,7 +55,7 @@ function CharactersBoard() {
         alert("Limite de personagens ativos atingido.");
         return;
     }
-    navigate('/dashboard/character-creator');
+    navigate('/dashboard/criador-de-infectado');
   };
 
   // 3. LÓGICA DE DELETE (MODAL)
@@ -152,7 +152,7 @@ function CharactersBoard() {
               
               {isDraft ? (
                   <NavLink 
-                      to={`/dashboard/character-creator/${char.id}`} 
+                      to={`/dashboard/criador-de-infectado/${char.id}`} 
                       className="btn-card-action btn-continue"
                       style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                   >
@@ -160,7 +160,7 @@ function CharactersBoard() {
                   </NavLink>
               ) : (
                   <NavLink 
-                      to={`/dashboard/sheet/${char.id}`}
+                      to={`/dashboard/ficha-interativa/${char.id}`}
                       className="btn-card-action btn-play"
                       style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                   >

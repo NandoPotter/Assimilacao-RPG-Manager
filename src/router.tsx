@@ -16,8 +16,10 @@ import OverviewBoard from './pages/Dashboard/OverviewBoard/Index';
 import CharactersPage from './pages/Dashboard/contents/Characters/Index';
 import CharacterCreatorBoard from './pages/Dashboard/contents/CharacterCreator/Index';
 import CharacterSheetBoard from './pages/Dashboard/contents/CharacterSheet/Index';
-/* Ajustado para a pasta 'contentesAssimilator' que aparece no seu VS Code */
-import { ThreatCreator } from './pages/Dashboard/contentesAssimilator/ThreatCreator/index';
+
+// Dashboard Assimilator Contentes
+import ThreatCreator from './pages/Dashboard/contentesAssimilator/ThreatCreator';
+import ItemManager from './pages/Dashboard/contentesAssimilator/ItemManager'
 
 export const Router = createHashRouter([
   {
@@ -38,20 +40,27 @@ export const Router = createHashRouter([
         element: <OverviewBoard />,
       },
       {
-        path: 'characters',
+        path: 'infectados',
         element: <CharactersPage />,
       },
       {
-            path: 'ameacas',
-            element: <ThreatCreator />,
-        },
-      {
-        path: 'character-creator/:id?',
+        path: 'criador-de-infectado/:id?',
         element: <CharacterCreatorBoard />,
       },
       {
-        path: 'sheet/:id',
+        path: 'ficha-interativa/:id',
         element: <CharacterSheetBoard />,
+      },
+
+      // ASSIMILADOR
+      
+      {
+        path: 'gestao-de-ameacas',
+        element: <ThreatCreator />,
+      },
+      {
+        path: 'gestao-de-itens',
+        element: <ItemManager />
       }
     ]
   }

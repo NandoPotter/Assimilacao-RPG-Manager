@@ -93,16 +93,16 @@ export function Sidebar({ mode, onToggleMode }: SidebarProps) {
                         <NavLink to="/dashboard/campaigns" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
                             Gestão de Campanhas
                         </NavLink>
-                        <NavLink to="/dashboard/npcs" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
-                            Criação de NPCs
+                        <NavLink to="/dashboard/gestao-de-itens" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
+                            Gestão de Itens
                         </NavLink>
-                        <NavLink to="/dashboard/ameacas" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
+                        <NavLink to="/dashboard/gestao-de-ameacas" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
                             Criador de conflitos
                         </NavLink>
                     </>
                 ) : (
                     <>
-                        <NavLink to="/dashboard/characters" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"} onClick={handleLinkClick}>
+                        <NavLink to="/dashboard/infectados" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"} onClick={handleLinkClick}>
                             Personagens
                         </NavLink>
                         <NavLink to="/dashboard/campaignsview" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>

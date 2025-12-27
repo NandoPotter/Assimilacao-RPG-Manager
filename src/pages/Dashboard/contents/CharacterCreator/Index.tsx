@@ -328,7 +328,7 @@ function CharacterCreatorBoard() {
     const showModal = (title: string, message: string, type: string) => setModalState({ isOpen: true, title, message, type });
     const closeModal = () => {
         setModalState(p => ({ ...p, isOpen: false }));
-        if (modalState.title === 'Sucesso') navigate('/dashboard/characters');
+        if (modalState.title === 'Sucesso') navigate('/dashboard/infectados');
     };
 
     const renderRequirementLabel = (reqs: Requirement[]) => {
@@ -626,7 +626,7 @@ function CharacterCreatorBoard() {
             </div>
 
             <div className="creator-footer">
-                <button className="btn-nav btn-back" onClick={() => step > 1 ? setStep(step-1) : navigate('/dashboard/characters')} disabled={isSaving}>
+                <button className="btn-nav btn-back" onClick={() => step > 1 ? setStep(step-1) : navigate('/dashboard/infectados')} disabled={isSaving}>
                     {step === 1 ? 'Cancelar' : 'Voltar'}
                 </button>
                 <button className="btn-nav btn-next" onClick={handleNext} disabled={isSaving} style={{cursor: isSaving ? 'wait' : 'pointer', opacity: isSaving ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '10px'}}>
