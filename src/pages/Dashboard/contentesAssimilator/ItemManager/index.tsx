@@ -4,171 +4,139 @@
  * ============================================================ */
 
 import { useEffect, useState } from 'react';
-import { itemLibraryService, type ItemLibrary, type Item } from '../../../../services/itemLibraryService';
-import './styles.css';
+import { itemLibraryService, type ItemLibrary, type Item, type ItemTrait } from '../../../../services/itemLibraryService';
+import './Styles.css';
 
-// Componente simples de Modal para criar/editar Biblioteca
-const LibraryModal = ({ isOpen, onClose, onSave, initialData }: any) => {
-    const [name, setName] = useState('');
-    const [desc, setDesc] = useState('');
-    const [isPublic, setIsPublic] = useState(false);
-
-    useEffect(() => {
-        if (initialData) {
-            setName(initialData.name);
-            setDesc(initialData.description || '');
-            setIsPublic(initialData.is_public);
-        } else {
-            setName(''); setDesc(''); setIsPublic(false);
-        }
-    }, [initialData, isOpen]);
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <h3 className="modal-title">{initialData ? 'EDITAR ARSENAL' : 'NOVO ARSENAL'}</h3>
-                <input className="input-dark-sheet mb-2" placeholder="Nome da Coleção" value={name} onChange={e => setName(e.target.value)} autoFocus />
-                <textarea className="input-dark-sheet mb-2" placeholder="Descrição" rows={3} value={desc} onChange={e => setDesc(e.target.value)} />
-                
-                <div className="checkbox-row">
-                    <input type="checkbox" id="chk-public" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
-                    <label htmlFor="chk-public">Disponibilizar para a Comunidade</label>
-                </div>
-
-                <div className="modal-actions">
-                    <button className="btn-secondary-action" onClick={onClose}>CANCELAR</button>
-                    <button className="btn-primary-action" onClick={() => onSave({ name, description: desc, is_public: isPublic })}>SALVAR</button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// Componente simples de Modal para criar/editar Item
-const ItemModal = ({ isOpen, onClose, onSave, initialData }: any) => {
-    const [formData, setFormData] = useState<Item>({
-        name: '', description: '', slots: 1, category: 'Geral', traits: {}, library_id: ''
-    });
-
-    useEffect(() => {
-        if (initialData) setFormData(initialData);
-        else setFormData({ name: '', description: '', slots: 1, category: 'Geral', traits: {}, library_id: '' });
-    }, [initialData, isOpen]);
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <h3 className="modal-title">{initialData ? 'EDITAR ITEM' : 'NOVO ITEM'}</h3>
-                <input className="input-dark-sheet mb-2" placeholder="Nome do Item" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-                <div className="grid-2col mb-2">
-                    <input type="number" className="input-dark-sheet" placeholder="Espaços (Slots)" value={formData.slots} onChange={e => setFormData({...formData, slots: Number(e.target.value)})} />
-                    <select className="input-dark-sheet" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
-                        <option>Geral</option>
-                        <option>Arma</option>
-                        <option>Proteção</option>
-                        <option>Consumível</option>
-                        <option>Ferramenta</option>
-                    </select>
-                </div>
-                <textarea className="input-dark-sheet mb-2" placeholder="Descrição e Efeitos" rows={4} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
-                
-                <div className="modal-actions">
-                    <button className="btn-secondary-action" onClick={onClose}>CANCELAR</button>
-                    <button className="btn-primary-action" onClick={() => onSave(formData)}>SALVAR</button>
-                </div>
-            </div>
-        </div>
-    );
-};
+// Componentes
+import { TraitModal } from './components/TraitModal';
+import { ItemModal } from './components/ItemModal';
+import { LibraryModal } from './components/LibraryModal';
+import { CommunityModal } from './components/CommunityModal';
 
 function ItemManager() {
     const [viewMode, setViewMode] = useState<'libraries' | 'items'>('libraries');
-    const [activeTab, setActiveTab] = useState<'mine' | 'public'>('mine');
-    
-    const [libraries, setLibraries] = useState<ItemLibrary[]>([]);
+    const [myLibraries, setMyLibraries] = useState<ItemLibrary[]>([]);
+    const [favLibraries, setFavLibraries] = useState<ItemLibrary[]>([]);
     const [selectedLib, setSelectedLib] = useState<ItemLibrary | null>(null);
+    const [innerTab, setInnerTab] = useState<'items' | 'traits' | 'kits'>('items');
+    
     const [items, setItems] = useState<Item[]>([]);
+    const [traits, setTraits] = useState<ItemTrait[]>([]);
     
     // Modais
     const [showLibModal, setShowLibModal] = useState(false);
     const [showItemModal, setShowItemModal] = useState(false);
+    const [showTraitModal, setShowTraitModal] = useState(false);
+    const [showCommunityModal, setShowCommunityModal] = useState(false);
+    
+    // Objeto genérico de edição (pode ser Item, Library ou Trait)
     const [editingObj, setEditingObj] = useState<any>(null);
 
-    useEffect(() => {
-        if (viewMode === 'libraries') loadLibraries();
-    }, [activeTab, viewMode]);
+    // Initial Load
+    useEffect(() => { if (viewMode === 'libraries') loadAllLists(); }, [viewMode]);
 
+    // Detail Load
     useEffect(() => {
-        if (viewMode === 'items' && selectedLib) loadItems(selectedLib.id);
-    }, [viewMode, selectedLib]);
+        if (viewMode === 'items' && selectedLib) {
+            loadTraits(selectedLib.id); 
+            if (innerTab === 'items') loadItems(selectedLib.id);
+        }
+    }, [viewMode, selectedLib, innerTab]);
 
-    const loadLibraries = async () => {
+    const loadAllLists = async () => {
         try {
-            const data = activeTab === 'mine' 
-                ? await itemLibraryService.getMyLibraries()
-                : await itemLibraryService.getPublicLibraries();
-            setLibraries(data as ItemLibrary[]);
+            const [mine, favs] = await Promise.all([itemLibraryService.getMyLibraries(), itemLibraryService.getMyFavorites()]);
+            setMyLibraries(mine); setFavLibraries(favs);
         } catch (error) { console.error(error); }
     };
 
     const loadItems = async (libId: string) => {
-        try {
-            const data = await itemLibraryService.getItemsByLibrary(libId);
-            setItems(data);
-        } catch (error) { console.error(error); }
+        try { const data = await itemLibraryService.getItemsByLibrary(libId); setItems(data); } catch (error) { console.error(error); }
     };
 
-    // --- HANDLERS LIBRARIES ---
+    const loadTraits = async (libId: string) => {
+        try { const data = await itemLibraryService.getTraitsByLibrary(libId); setTraits(data); } catch (error) { console.error(error); }
+    };
+
+    // --- HANDLERS ---
     const handleSaveLib = async (data: any) => {
         try {
             if (editingObj) await itemLibraryService.updateLibrary(editingObj.id, data);
             else await itemLibraryService.createLibrary(data);
-            setShowLibModal(false);
-            loadLibraries();
-        } catch (e) { alert("Erro ao salvar arsenal."); }
+            setShowLibModal(false); loadAllLists();
+        } catch (e) { alert("Erro ao salvar."); }
     };
 
     const handleDeleteLib = async (id: string) => {
-        if(!confirm("Tem certeza? Todos os itens deste arsenal serão apagados.")) return;
-        await itemLibraryService.deleteLibrary(id);
-        loadLibraries();
-    };
-
-    // --- HANDLERS ITEMS ---
-    const handleEnterLibrary = (lib: ItemLibrary) => {
-        setSelectedLib(lib);
-        setViewMode('items');
+        if(!confirm("Tem certeza?")) return;
+        await itemLibraryService.deleteLibrary(id); loadAllLists();
     };
 
     const handleSaveItem = async (data: Item) => {
         try {
-            if (editingObj) await itemLibraryService.updateItem(editingObj.id, data);
-            else await itemLibraryService.createItem({ ...data, library_id: selectedLib!.id });
-            setShowItemModal(false);
+            if (editingObj && editingObj.id) { // Verifica se é edição
+                await itemLibraryService.updateItem(editingObj.id, data);
+            } else {
+                // Garante que o library_id esteja presente
+                await itemLibraryService.createItem({ ...data, library_id: selectedLib!.id });
+            }
+            setShowItemModal(false); 
             loadItems(selectedLib!.id);
-        } catch (e) { alert("Erro ao salvar item."); }
+        } catch (e) { 
+            console.error(e);
+            alert("Erro ao salvar item."); 
+        }
     };
 
     const handleDeleteItem = async (id: string) => {
         if(!confirm("Apagar item?")) return;
-        await itemLibraryService.deleteItem(id);
-        loadItems(selectedLib!.id);
+        await itemLibraryService.deleteItem(id); loadItems(selectedLib!.id);
     };
+
+    const handleSaveTrait = async (data: ItemTrait) => {
+        try {
+            await itemLibraryService.saveTrait({ ...data, library_id: selectedLib!.id });
+            setShowTraitModal(false); loadTraits(selectedLib!.id);
+        } catch (e) { alert("Erro ao salvar característica."); }
+    };
+
+    const handleDeleteTrait = async (id: string) => {
+        if(!confirm("Apagar característica?")) return;
+        await itemLibraryService.deleteTrait(id); loadTraits(selectedLib!.id);
+    };
+
+    // Função auxiliar para abrir o criador de traits a partir do modal de itens
+    const openTraitCreatorFromItem = () => {
+        setShowItemModal(false); // Fecha o de item temporariamente
+        setEditingObj(null);     // Limpa edição para criar nova trait
+        setShowTraitModal(true); // Abre o de trait
+        setInnerTab('traits');   // Muda a aba visualmente para traits
+    };
+
+    const renderLibCard = (lib: ItemLibrary, isMine: boolean) => (
+        <div key={lib.id} className={`im-card ${lib.is_official ? 'official' : ''}`}>
+            <div className="im-card-header">
+                <span className="im-card-title">{lib.name}</span>
+                {lib.is_public && <span className="badge-public">PÚBLICO</span>}
+                {lib.is_official && <span className="badge-official">SISTEMA</span>}
+            </div>
+            <div className="im-card-body"><p>{lib.description || "Sem descrição."}</p></div>
+            <div className="im-card-footer">
+                <button className="btn-open-lib" onClick={() => { setSelectedLib(lib); setViewMode('items'); setInnerTab('items'); }}>ABRIR</button>
+                {isMine && <div className="im-card-actions"><button className="btn-icon" onClick={() => { setEditingObj(lib); setShowLibModal(true); }}>✎</button><button className="btn-icon danger" onClick={() => handleDeleteLib(lib.id)}>🗑</button></div>}
+            </div>
+        </div>
+    );
 
     return (
         <div className="im-container">
-            {/* HEADER DA PÁGINA */}
             <div className="im-header">
                 {viewMode === 'libraries' ? (
                     <>
-                        <h2 className="im-title">DEPÓSITOS DE ITENS</h2>
-                        <div className="im-tabs">
-                            <button className={`im-tab ${activeTab === 'mine' ? 'active' : ''}`} onClick={() => setActiveTab('mine')}>MEUS ARSENAIS</button>
-                            <button className={`im-tab ${activeTab === 'public' ? 'active' : ''}`} onClick={() => setActiveTab('public')}>REDE COMUNITÁRIA</button>
+                        <h1 className="chars-title">Depósitos de Itens</h1>
+                        <div className="im-actions-top">
+                            <button className="btn-action-outline" onClick={() => setShowCommunityModal(true)}>🌐 EXPLORAR COMUNIDADE</button>
+                            <button className="btn-action-primary" onClick={() => { setEditingObj(null); setShowLibModal(true); }}>+ NOVO</button>
                         </div>
                     </>
                 ) : (
@@ -180,89 +148,90 @@ function ItemManager() {
                 )}
             </div>
 
-            {/* CONTEÚDO PRINCIPAL */}
             <div className="im-content">
-                
-                {/* VISTA 1: LISTA DE BIBLIOTECAS */}
                 {viewMode === 'libraries' && (
                     <>
-                        {activeTab === 'mine' && (
-                            <div className="im-toolbar">
-                                <button className="btn-primary-action" onClick={() => { setEditingObj(null); setShowLibModal(true); }}>
-                                    + NOVO ARSENAL
-                                </button>
-                            </div>
-                        )}
-
-                        <div className="im-grid">
-                            {libraries.map(lib => (
-                                <div key={lib.id} className={`im-card ${lib.is_official ? 'official' : ''}`}>
-                                    <div className="im-card-header">
-                                        <span className="im-card-title">{lib.name}</span>
-                                        {lib.is_public && <span className="badge-public">PÚBLICO</span>}
-                                        {lib.is_official && <span className="badge-official">SISTEMA</span>}
-                                    </div>
-                                    <div className="im-card-body">
-                                        <p>{lib.description || "Sem descrição."}</p>
-                                    </div>
-                                    <div className="im-card-footer">
-                                        <button className="btn-open-lib" onClick={() => handleEnterLibrary(lib)}>ABRIR</button>
-                                        
-                                        {activeTab === 'mine' && (
-                                            <div className="im-card-actions">
-                                                <button className="btn-icon" onClick={() => { setEditingObj(lib); setShowLibModal(true); }}>✎</button>
-                                                <button className="btn-icon danger" onClick={() => handleDeleteLib(lib.id)}>🗑</button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="im-section">
+                            <h3 className="im-section-title">MEUS DEPÓSITOS</h3>
+                            <div className="im-grid">{myLibraries.map(lib => renderLibCard(lib, true))}{myLibraries.length===0 && <div className="empty-state-mini">Sem depósitos.</div>}</div>
+                        </div>
+                        <div className="im-section">
+                            <h3 className="im-section-title">MEUS FAVORITOS</h3>
+                            <div className="im-grid">{favLibraries.map(lib => renderLibCard(lib, false))}</div>
                         </div>
                     </>
                 )}
 
-                {/* VISTA 2: ITENS DA BIBLIOTECA */}
                 {viewMode === 'items' && selectedLib && (
                     <>
-                        <div className="im-toolbar">
-                            <span className="im-counter">{items.length} Itens cadastrados</span>
-                            {/* Só permite criar se for dono da lib (assumindo que só entra aqui se for dono ou public view) */}
-                            {/* Verificação simples: se veio da tab 'mine', pode editar. Se veio da 'public', é read-only (a menos que seja admin) */}
-                            {activeTab === 'mine' && (
-                                <button className="btn-primary-action" onClick={() => { setEditingObj(null); setShowItemModal(true); }}>
-                                    + NOVO ITEM
+                        <div className="im-tabs-inner" style={{ marginBottom: '20px', display: 'flex', gap: '5px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                            {['items', 'traits', 'kits'].map(t => (
+                                <button key={t} onClick={() => setInnerTab(t as any)}
+                                    style={{ background: innerTab === t ? 'var(--cor-tema)' : 'transparent', color: innerTab === t ? '#000' : '#888', border: 'none', padding: '10px 20px', fontWeight: '800', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '4px 4px 0 0' }}>
+                                    {t === 'items' ? 'Itens' : t === 'traits' ? 'Características' : 'Kits'}
                                 </button>
-                            )}
+                            ))}
                         </div>
 
-                        <div className="items-list-container">
-                            {items.map(item => (
-                                <div key={item.id} className="item-row">
-                                    <div className="item-info">
-                                        <div className="item-main">
-                                            <span className="item-name">{item.name}</span>
-                                            <span className="item-cat">{item.category}</span>
-                                        </div>
-                                        <p className="item-desc">{item.description}</p>
-                                    </div>
-                                    <div className="item-meta">
-                                        <span className="item-slots">{item.slots} SLOT(S)</span>
-                                        {activeTab === 'mine' && (
-                                            <div className="item-actions">
-                                                <button className="btn-icon-small" onClick={() => { setEditingObj(item); setShowItemModal(true); }}>✎</button>
-                                                <button className="btn-icon-small danger" onClick={() => handleDeleteItem(item.id!)}>✕</button>
-                                            </div>
-                                        )}
-                                    </div>
+                        {innerTab === 'items' && (
+                            <>
+                                <div className="im-toolbar">
+                                    <span className="im-counter">{items.length} ITENS</span>
+                                    {myLibraries.some(my => my.id === selectedLib.id) && <button className="btn-action-primary" onClick={() => { setEditingObj(null); setShowItemModal(true); }}>+ NOVO ITEM</button>}
                                 </div>
-                            ))}
-                            {items.length === 0 && <div className="empty-state">Nenhum item neste arsenal.</div>}
-                        </div>
+                                <div className="items-list-container">
+                                    {items.map(item => (
+                                        <div key={item.id} className="item-row">
+                                            <div className="item-info">
+                                                <div className="item-main"><span className="item-name">{item.name}</span><span className="item-cat">{item.category}</span></div>
+                                                <p className="item-desc">{item.description}</p>
+                                                <div style={{display:'flex', gap:'5px', marginTop:'5px'}}>
+                                                    {item.traits && item.traits.map((t: any) => (
+                                                        <span key={t.id} style={{fontSize:'0.65rem', padding:'2px 6px', background:'rgba(255,255,255,0.1)', borderRadius:'3px', color:'#aaa'}}>{t.name}</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="item-meta">
+                                                <span className="item-slots">{item.slots} SLOT(S)</span>
+                                                {myLibraries.some(my => my.id === selectedLib.id) && <div className="item-actions"><button className="btn-icon-small" onClick={() => { setEditingObj(item); setShowItemModal(true); }}>✎</button><button className="btn-icon-small danger" onClick={() => handleDeleteItem(item.id!)}>✕</button></div>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {items.length === 0 && <div className="empty-state">Depósito vazio.</div>}
+                                </div>
+                            </>
+                        )}
+
+                        {innerTab === 'traits' && (
+                            <>
+                                <div className="im-toolbar">
+                                    <span className="im-counter">{traits.length} CARACTERÍSTICAS</span>
+                                    {myLibraries.some(my => my.id === selectedLib.id) && <button className="btn-action-primary" onClick={() => { setEditingObj(null); setShowTraitModal(true); }}>+ NOVA CARAC.</button>}
+                                </div>
+                                <div className="items-list-container">
+                                    {traits.map(trait => (
+                                        <div key={trait.id} className="item-row">
+                                            <div className="item-info">
+                                                <div className="item-main">
+                                                    <span className="item-name" style={{color: '#ffd700'}}>{trait.name}</span>
+                                                    {trait.cost !== 0 && <span style={{fontSize:'0.7rem', color:'#888', marginLeft: '8px'}}>Custo: {trait.cost}</span>}
+                                                </div>
+                                                <p className="item-desc">{trait.description}</p>
+                                            </div>
+                                            {myLibraries.some(my => my.id === selectedLib.id) && <div className="item-actions"><button className="btn-icon-small" onClick={() => { setEditingObj(trait); setShowTraitModal(true); }}>✎</button><button className="btn-icon-small danger" onClick={() => handleDeleteTrait(trait.id!)}>✕</button></div>}
+                                        </div>
+                                    ))}
+                                    {traits.length === 0 && <div className="empty-state">Nenhuma característica.</div>}
+                                </div>
+                            </>
+                        )}
+                        
+                        {innerTab === 'kits' && <div className="empty-state">Em desenvolvimento...</div>}
                     </>
                 )}
             </div>
 
-            {/* MODAIS */}
+            {/* MODAIS - NOMES DE VARIÁVEIS CORRIGIDOS */}
             <LibraryModal 
                 isOpen={showLibModal} 
                 onClose={() => setShowLibModal(false)} 
@@ -271,10 +240,26 @@ function ItemManager() {
             />
             
             <ItemModal 
-                isOpen={showItemModal} 
-                onClose={() => setShowItemModal(false)} 
-                onSave={handleSaveItem} 
+                isOpen={showItemModal} // Nome correto
+                onClose={() => setShowItemModal(false)} // Nome correto
+                onSave={handleSaveItem}
+                initialData={editingObj} // Nome correto (editingObj, não editingItem)
+                availableTraits={traits}
+                onCreateTrait={openTraitCreatorFromItem} // Nome da função auxiliar criada acima
+                currentLibraryId={selectedLib?.id} // Nome correto (selectedLib, não selectedLibrary)
+            />
+            
+            <TraitModal 
+                isOpen={showTraitModal} 
+                onClose={() => setShowTraitModal(false)} 
+                onSave={handleSaveTrait} 
                 initialData={editingObj} 
+            />
+            
+            <CommunityModal 
+                isOpen={showCommunityModal} 
+                onClose={() => setShowCommunityModal(false)} 
+                onClone={loadAllLists} 
             />
         </div>
     );
