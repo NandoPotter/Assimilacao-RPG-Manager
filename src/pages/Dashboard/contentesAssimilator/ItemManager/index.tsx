@@ -46,7 +46,12 @@ function ItemManager() {
     const loadAllLists = async () => {
         try {
             const [mine, favs] = await Promise.all([itemLibraryService.getMyLibraries(), itemLibraryService.getMyFavorites()]);
-            setMyLibraries(mine); setFavLibraries(favs);
+            
+            // ORDENAÇÃO: Oficiais primeiro
+            const sortFunc = (a: ItemLibrary, b: ItemLibrary) => (a.is_official === b.is_official ? 0 : a.is_official ? -1 : 1);
+            
+            setMyLibraries(mine.sort(sortFunc)); 
+            setFavLibraries(favs.sort(sortFunc));
         } catch (error) { console.error(error); }
     };
 
@@ -74,10 +79,9 @@ function ItemManager() {
 
     const handleSaveItem = async (data: Item) => {
         try {
-            if (editingObj && editingObj.id) { // Verifica se é edição
+            if (editingObj && editingObj.id) { 
                 await itemLibraryService.updateItem(editingObj.id, data);
             } else {
-                // Garante que o library_id esteja presente
                 await itemLibraryService.createItem({ ...data, library_id: selectedLib!.id });
             }
             setShowItemModal(false); 
@@ -105,37 +109,56 @@ function ItemManager() {
         await itemLibraryService.deleteTrait(id); loadTraits(selectedLib!.id);
     };
 
-    // Função auxiliar para abrir o criador de traits a partir do modal de itens
     const openTraitCreatorFromItem = () => {
-        setShowItemModal(false); // Fecha o de item temporariamente
-        setEditingObj(null);     // Limpa edição para criar nova trait
-        setShowTraitModal(true); // Abre o de trait
-        setInnerTab('traits');   // Muda a aba visualmente para traits
+        setShowItemModal(false); 
+        setEditingObj(null);     
+        setShowTraitModal(true); 
+        setInnerTab('traits');   
     };
 
     const renderLibCard = (lib: ItemLibrary, isMine: boolean) => (
-        <div key={lib.id} className={`im-card ${lib.is_official ? 'official' : ''}`}>
-            <div className="im-card-header">
-                <span className="im-card-title">{lib.name}</span>
-                {lib.is_public && <span className="badge-public">PÚBLICO</span>}
-                {lib.is_official && <span className="badge-official">SISTEMA</span>}
+        <div key={lib.id} className={`sys-card ${lib.is_official ? 'official' : ''}`}>
+            
+            <div className="sys-card-header">
+                <span className="sys-card-title">{lib.name}</span>
+                
+                {(lib.is_public || lib.is_official) && (
+                    <div>
+                        {lib.is_public && <span className="badge-public">PÚBLICO</span>}
+                        {lib.is_official && <span className="badge-official">SISTEMA</span>}
+                    </div>
+                )}
             </div>
-            <div className="im-card-body"><p>{lib.description || "Sem descrição."}</p></div>
-            <div className="im-card-footer">
+
+            <div className="sys-card-body">
+                {lib.description || "Sem descrição."}
+            </div>
+
+            <div className="sys-card-footer">
                 <button className="btn-open-lib" onClick={() => { setSelectedLib(lib); setViewMode('items'); setInnerTab('items'); }}>ABRIR</button>
-                {isMine && <div className="im-card-actions"><button className="btn-icon" onClick={() => { setEditingObj(lib); setShowLibModal(true); }}>✎</button><button className="btn-icon danger" onClick={() => handleDeleteLib(lib.id)}>🗑</button></div>}
+                
+                {isMine && (
+                    <div className="sys-card-actions">
+                        <button className="btn-icon" onClick={() => { setEditingObj(lib); setShowLibModal(true); }}>✎</button>
+                        
+                        {/* REGRAS DO ITEMMANAGER: Oficial PODE editar, mas NÃO pode apagar */}
+                        {!lib.is_official && (
+                            <button className="btn-icon danger" onClick={() => handleDeleteLib(lib.id)}>🗑</button>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
 
     return (
-        <div className="im-container">
+        <div>
             <div className="im-header">
                 {viewMode === 'libraries' ? (
                     <>
                         <h1 className="chars-title">Depósitos de Itens</h1>
                         <div className="im-actions-top">
-                            <button className="btn-action-outline" onClick={() => setShowCommunityModal(true)}>🌐 EXPLORAR COMUNIDADE</button>
+                            <button className="btn-action-outline" onClick={() => setShowCommunityModal(true)}>EXPLORAR COMUNIDADE</button>
                             <button className="btn-action-primary" onClick={() => { setEditingObj(null); setShowLibModal(true); }}>+ NOVO</button>
                         </div>
                     </>
@@ -153,11 +176,16 @@ function ItemManager() {
                     <>
                         <div className="im-section">
                             <h3 className="im-section-title">MEUS DEPÓSITOS</h3>
-                            <div className="im-grid">{myLibraries.map(lib => renderLibCard(lib, true))}{myLibraries.length===0 && <div className="empty-state-mini">Sem depósitos.</div>}</div>
+                            {/* USANDO A NOVA GRID GLOBAL */}
+                            <div className="sys-card-grid">
+                                {myLibraries.map(lib => renderLibCard(lib, true))}
+                                {myLibraries.length===0 && <div className="empty-state-mini">Sem depósitos.</div>}
+                            </div>
                         </div>
                         <div className="im-section">
                             <h3 className="im-section-title">MEUS FAVORITOS</h3>
-                            <div className="im-grid">{favLibraries.map(lib => renderLibCard(lib, false))}</div>
+                            {/* USANDO A NOVA GRID GLOBAL */}
+                            <div className="sys-card-grid">{favLibraries.map(lib => renderLibCard(lib, false))}</div>
                         </div>
                     </>
                 )}

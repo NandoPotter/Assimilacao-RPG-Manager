@@ -94,7 +94,10 @@ export function Sidebar({ mode, onToggleMode }: SidebarProps) {
                             Gestão de Campanhas
                         </NavLink>
                         <NavLink to="/dashboard/gestao-de-itens" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
-                            Gestão de Itens
+                            Depósitos de Itens
+                        </NavLink>
+                        <NavLink to="/dashboard/gestao-de-mundo" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
+                            Manipulação de Mundos
                         </NavLink>
                         <NavLink to="/dashboard/gestao-de-ameacas" className={({ isActive }) => isActive ? "nav-btn active" : "nav-btn"}>
                             Criador de conflitos

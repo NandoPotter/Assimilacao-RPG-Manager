@@ -3,18 +3,25 @@
    ESTILO: Gestão de Depósitos (Assimilator)
    ================================================================= */
 
-/* --- LAYOUT PRINCIPAL --- */
-.im-container {
-    width: 100%; height: 100%; display: flex; flex-direction: column; animation: fadeIn 0.4s ease-out;
-}
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
 /* --- HEADER & NAVEGAÇÃO --- */
 .im-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
 }
-.chars-title { font-size: 1.8rem; font-weight: 300; color: #fff; letter-spacing: 1px; line-height: 1; margin: 0; }
+.chars-title {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1;
+    margin: 0;
+}
+
 .im-actions-top { display: flex; gap: 12px; }
 
 /* Botões do Topo */
@@ -58,42 +65,12 @@
 /* --- GRID DE DEPÓSITOS --- */
 .im-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
 
-.im-card {
-    background: rgba(13, 17, 22, 0.7); border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(5px); border-radius: 6px; padding: 20px;
-    display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; overflow: hidden;
-}
-.im-card:hover { background: rgba(255,255,255,0.05); border-color: var(--cor-tema); box-shadow: 0 5px 20px rgba(0,0,0,0.5); transform: translateY(-2px); }
-.im-card.official { border-color: rgba(255, 215, 0, 0.3); background: linear-gradient(180deg, rgba(255, 215, 0, 0.05) 0%, transparent 100%); }
-
-.im-card-header { display: flex; justify-content: space-between; align-items: flex-start; flex-direction: column; gap: 5px; margin-bottom: 12px; }
-.im-card-title { font-weight: 800; color: #fff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; line-height: 1.3; }
-.author-tag { font-size: 0.75rem; color: #666; font-style: italic; }
-
-.badge-public, .badge-official {
-    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-    padding: 3px 6px; border-radius: 3px; letter-spacing: 0.5px; display: inline-block; width: fit-content;
-}
-.badge-public { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); }
-.badge-official { background: rgba(255, 215, 0, 0.1); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3); }
-
-.im-card-body { flex: 1; color: #aaa; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5; }
-.im-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; }
-
 .btn-open-lib {
     background: transparent; border: 1px solid var(--cor-tema); color: var(--cor-tema);
     padding: 8px 16px; border-radius: 4px; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
     cursor: pointer; transition: 0.2s;
 }
 .btn-open-lib:hover { background: var(--cor-tema); color: #000; box-shadow: 0 0 15px var(--cor-tema-glow); }
-
-.im-card-actions { display: flex; gap: 8px; }
-.btn-icon {
-    background: rgba(0,0,0,0.3); border: 1px solid #444; color: #888; width: 32px; height: 32px;
-    border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
-}
-.btn-icon:hover { border-color: #fff; color: #fff; background: #222; }
-.btn-icon.danger:hover { border-color: #ff4444; color: #ff4444; background: rgba(255,0,0,0.2); }
 
 .empty-state-mini { grid-column: 1 / -1; padding: 30px; border: 1px dashed #333; color: #555; text-align: center; border-radius: 6px; font-style: italic; background: rgba(0,0,0,0.2); }
 

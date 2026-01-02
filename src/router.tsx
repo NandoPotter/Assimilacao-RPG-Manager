@@ -19,7 +19,8 @@ import CharacterSheetBoard from './pages/Dashboard/contents/CharacterSheet/Index
 
 // Dashboard Assimilator Contentes
 import ThreatCreator from './pages/Dashboard/contentesAssimilator/ThreatCreator';
-import ItemManager from './pages/Dashboard/contentesAssimilator/ItemManager'
+import ItemManager from './pages/Dashboard/contentesAssimilator/ItemManager';
+import WorldManager from './pages/Dashboard/contentesAssimilator/WorldManager'
 
 export const Router = createHashRouter([
   {
@@ -61,6 +62,10 @@ export const Router = createHashRouter([
       {
         path: 'gestao-de-itens',
         element: <ItemManager />
+      },
+      {
+        path: 'gestao-de-mundo',
+        element: <WorldManager />
       }
     ]
   }

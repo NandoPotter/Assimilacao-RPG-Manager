@@ -99,6 +99,125 @@ html, body {
 }
 .link-btn:hover { color: var(--cor-neon-azul); }
 
+/* =================================================================
+   GLOBAL: CARD DE BIBLIOTECA (Padrão para ItemManager e WorldManager)
+   ================================================================= */
+
+.sys-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.sys-card {
+    background: rgba(13, 17, 22, 0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(5px);
+    border-radius: 6px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px; /* Garante uma altura mínima uniforme */
+}
+
+.sys-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--cor-tema);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+/* Variante Oficial/Sistema */
+.sys-card.official {
+    border-color: rgba(255, 215, 0, 0.3);
+    background: linear-gradient(180deg, rgba(255, 215, 0, 0.05) 0%, transparent 100%);
+}
+
+/* --- HEADER DO CARD --- */
+.sys-card-header {
+    display: flex;
+    flex-direction: column; /* Título em cima, Badges embaixo */
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.sys-card-title {
+    font-weight: 800;
+    color: #fff;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.3;
+}
+
+/* --- CORPO DO CARD --- */
+.sys-card-body {
+    flex: 1;
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+/* --- RODAPÉ DO CARD (Com a linha divisória) --- */
+.sys-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.1); /* A LINHA QUE FALTAVA */
+    padding-top: 15px;
+    margin-top: auto;
+}
+
+/* Ações dentro do rodapé */
+.sys-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* --- GLOBAL BADGES (Etiquetas) --- */
+
+.badge-public, .badge-official {
+    font-size: 0.65rem; 
+    font-weight: 700; 
+    text-transform: uppercase;
+    padding: 3px 6px; 
+    border-radius: 3px; 
+    letter-spacing: 0.5px; 
+    display: inline-block; 
+    width: fit-content;
+    
+    /* Ajustes de posição */
+    vertical-align: middle;
+    margin-right: 5px;
+    margin-bottom: 10px;
+}
+
+/* Estilo Público (Verde Neon Tech) */
+.badge-public { 
+    background: rgba(0, 255, 136, 0.1); 
+    color: #00ff88; 
+    border: 1px solid rgba(0, 255, 136, 0.3); 
+}
+
+/* Estilo Oficial/Sistema (Dourado Tech) */
+.badge-official { 
+    background: rgba(255, 215, 0, 0.1); 
+    color: #ffd700; 
+    border: 1px solid rgba(255, 215, 0, 0.3); 
+}
+
+/* Ajuste Mobile */
+@media (max-width: 768px) {
+    .sys-card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* 5. ANIMAÇÕES GLOBAIS */
 @keyframes fadeIn {
     from { opacity: 0; }
