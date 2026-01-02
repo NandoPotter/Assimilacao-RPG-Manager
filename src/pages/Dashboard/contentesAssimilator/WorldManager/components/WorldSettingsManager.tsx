@@ -1,12 +1,16 @@
+/** ============================================================
+ * ARQUIVO: src/pages/Dashboard/contentsAssimilator/WorldManager/components/WorldSettingsManager.tsx
+ * ============================================================ */
 import { useState } from 'react';
 import type { WorldLibrary, WorldSettings } from '../../../../../interfaces/World';
 
 interface Props {
     library: WorldLibrary;
     onUpdateSettings: (newSettings: any) => void;
+    readOnly?: boolean; // Nova prop para bloquear edição
 }
 
-export const WorldSettingsManager = ({ library, onUpdateSettings }: Props) => {
+export const WorldSettingsManager = ({ library, onUpdateSettings, readOnly = false }: Props) => {
     const [activeTab, setActiveTab] = useState<'biomes' | 'archetypes' | 'constructions'>('biomes');
     const [settings, setSettings] = useState<WorldSettings>(library.settings);
     
@@ -34,6 +38,7 @@ export const WorldSettingsManager = ({ library, onUpdateSettings }: Props) => {
 
     // --- LÓGICA DE EDIÇÃO GENÉRICA ---
     const startEdit = (index: number, item: any, type: 'biome' | 'archetype' | 'construction') => {
+        if (readOnly) return; // Segurança extra
         setEditingIndex(index);
         setEditItemName(item.name);
         
@@ -141,11 +146,14 @@ export const WorldSettingsManager = ({ library, onUpdateSettings }: Props) => {
 
     const renderBiomes = () => (
         <div className="settings-panel">
-            <div className="im-toolbar" style={{background: 'rgba(0,0,0,0.3)', marginBottom:'10px'}}>
-                <input className="input-dark-sheet" placeholder="Novo Bioma (Ex: Selva Tóxica)" value={newItemName} onChange={e => setNewItemName(e.target.value)} style={{flex:1}} />
-                <input className="input-dark-sheet" placeholder="Descrição rápida..." value={newItemDesc} onChange={e => setNewItemDesc(e.target.value)} style={{flex:2}} />
-                <button className="btn-action-primary" onClick={addBiome}>+ ADICIONAR</button>
-            </div>
+            {/* INPUT TOOLBAR: Só aparece se NÃO for readOnly */}
+            {!readOnly && (
+                <div className="im-toolbar" style={{background: 'rgba(0,0,0,0.3)', marginBottom:'10px'}}>
+                    <input className="input-dark-sheet" placeholder="Novo Bioma (Ex: Selva Tóxica)" value={newItemName} onChange={e => setNewItemName(e.target.value)} style={{flex:1}} />
+                    <input className="input-dark-sheet" placeholder="Descrição rápida..." value={newItemDesc} onChange={e => setNewItemDesc(e.target.value)} style={{flex:2}} />
+                    <button className="btn-action-primary" onClick={addBiome}>+ ADICIONAR</button>
+                </div>
+            )}
 
             <div className="settings-list">
                 {settings.biomes?.map((biome, idx) => {
@@ -169,10 +177,14 @@ export const WorldSettingsManager = ({ library, onUpdateSettings }: Props) => {
                                         <div style={{fontWeight:'bold', color:'var(--cor-tema)'}}>{biome.name}</div>
                                         <div style={{fontSize:'0.8rem', color:'#aaa'}}>{biome.description}</div>
                                     </div>
-                                    <div style={{display:'flex', gap:'5px'}}>
-                                        <button className="btn-icon" onClick={() => startEdit(idx, biome, 'biome')}>✎</button>
-                                        <button className="btn-icon danger" onClick={() => removeBiome(idx)}>✕</button>
-                                    </div>
+                                    
+                                    {/* BOTÕES DE AÇÃO: Só aparecem se NÃO for readOnly */}
+                                    {!readOnly && (
+                                        <div style={{display:'flex', gap:'5px'}}>
+                                            <button className="btn-icon" onClick={() => startEdit(idx, biome, 'biome')}>✎</button>
+                                            <button className="btn-icon danger" onClick={() => removeBiome(idx)}>✕</button>
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </div>
@@ -184,15 +196,19 @@ export const WorldSettingsManager = ({ library, onUpdateSettings }: Props) => {
 
     const renderArchetypes = () => (
         <div className="settings-panel">
-            <div className="im-toolbar" style={{background: 'rgba(0,0,0,0.3)', marginBottom:'10px', gap:'10px'}}>
-                <select className="input-dark-sheet" value={newItemType} onChange={e => setNewItemType(e.target.value as any)} style={{width:'120px'}}>
-                    <option value="community">Comunidade</option>
-                    <option value="group">Grupo</option>
-                </select>
-                <input className="input-dark-sheet" placeholder="Nome (Ex: Culto Solar)" value={newItemName} onChange={e => setNewItemName(e.target.value)} style={{flex:1}} />
-                <input className="input-dark-sheet" placeholder="Descrição..." value={newItemDesc} onChange={e => setNewItemDesc(e.target.value)} style={{flex:2}} />
-                <button className="btn-action-primary" onClick={addArchetype}>+ ADICIONAR</button>
-            </div>
+            {/* INPUT TOOLBAR: Só aparece se NÃO for readOnly */}
+            {!readOnly && (
+                <div className="im-toolbar" style={{background: 'rgba(0,0,0,0.3)', marginBottom:'10px', gap:'10px'}}>
+                    <select className="input-dark-sheet" value={newItemType} onChange={e => setNewItemType(e.target.value as any)} style={{width:'120px'}}>
+                        <option value="community">Comunidade</option>
+                        <option value="group">Grupo</option>
+                    </select>
+                    <input className="input-dark-sheet" placeholder="Nome (Ex: Culto Solar)" value={newItemName} onChange={e => setNewItemName(e.target.value)} style={{flex:1}} />
+                    <input className="input-dark-sheet" placeholder="Descrição..." value={newItemDesc} onChange={e => setNewItemDesc(e.target.value)} style={{flex:2}} />
+                    <button className="btn-action-primary" onClick={addArchetype}>+ ADICIONAR</button>
+                </div>
+            )}
+
             <div className="settings-list">
                 {settings.archetypes?.map((arch, idx) => {
                     const isEditing = editingIndex === idx;
@@ -228,10 +244,14 @@ export const WorldSettingsManager = ({ library, onUpdateSettings }: Props) => {
                                         </div>
                                         <div style={{fontSize:'0.8rem', color:'#aaa'}}>{arch.description}</div>
                                     </div>
-                                    <div style={{display:'flex', gap:'5px'}}>
-                                        <button className="btn-icon" onClick={() => startEdit(idx, arch, 'archetype')}>✎</button>
-                                        <button className="btn-icon danger" onClick={() => removeArchetype(idx)}>✕</button>
-                                    </div>
+
+                                    {/* BOTÕES DE AÇÃO: Só aparecem se NÃO for readOnly */}
+                                    {!readOnly && (
+                                        <div style={{display:'flex', gap:'5px'}}>
+                                            <button className="btn-icon" onClick={() => startEdit(idx, arch, 'archetype')}>✎</button>
+                                            <button className="btn-icon danger" onClick={() => removeArchetype(idx)}>✕</button>
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </div>
@@ -243,20 +263,27 @@ export const WorldSettingsManager = ({ library, onUpdateSettings }: Props) => {
 
     const renderConstructions = () => (
         <div className="settings-panel">
-            <div className="im-toolbar" style={{background: 'rgba(0,0,0,0.3)', marginBottom:'10px', display:'grid', gridTemplateColumns:'1fr 2fr 1fr 120px', gap:'10px'}}>
-                <input className="input-dark-sheet" placeholder="Nome (Ex: Enfermaria)" value={newItemName} onChange={e => setNewItemName(e.target.value)} />
-                <input className="input-dark-sheet" placeholder="Efeito / Regra" value={newItemEffect} onChange={e => setNewItemEffect(e.target.value)} />
-                <input className="input-dark-sheet" placeholder="Custo (Opcional)" value={newItemCost} onChange={e => setNewItemCost(e.target.value)} />
-                <button className="btn-action-primary" onClick={addConstruction}>+ ADD</button>
-            </div>
+            {/* INPUT TOOLBAR: Só aparece se NÃO for readOnly */}
+            {!readOnly && (
+                <div className="im-toolbar" style={{background: 'rgba(0,0,0,0.3)', marginBottom:'10px', display:'grid', gridTemplateColumns:'1fr 2fr 1fr 120px', gap:'10px'}}>
+                    <input className="input-dark-sheet" placeholder="Nome (Ex: Enfermaria)" value={newItemName} onChange={e => setNewItemName(e.target.value)} />
+                    <input className="input-dark-sheet" placeholder="Efeito / Regra" value={newItemEffect} onChange={e => setNewItemEffect(e.target.value)} />
+                    <input className="input-dark-sheet" placeholder="Custo (Opcional)" value={newItemCost} onChange={e => setNewItemCost(e.target.value)} />
+                    <button className="btn-action-primary" onClick={addConstruction}>+ ADD</button>
+                </div>
+            )}
 
             <div className="settings-list">
-                {/* Header Tabela */}
-                <div style={{display:'grid', gridTemplateColumns:'1fr 2fr 1fr 60px', padding:'0 10px', color:'#888', fontSize:'0.7rem', fontWeight:'bold', gap:'10px'}}>
+                {/* Header Tabela - Ajusta colunas dependendo se é readonly (remove a ultima coluna de ações) */}
+                <div style={{
+                    display:'grid', 
+                    gridTemplateColumns: readOnly ? '1fr 2fr 1fr' : '1fr 2fr 1fr 60px', 
+                    padding:'0 10px', color:'#888', fontSize:'0.7rem', fontWeight:'bold', gap:'10px'
+                }}>
                     <span>NOME</span>
                     <span>EFEITO</span>
                     <span>CUSTO</span>
-                    <span></span>
+                    {!readOnly && <span></span>}
                 </div>
 
                 {settings.constructions?.map((cons, idx) => {
@@ -276,14 +303,22 @@ export const WorldSettingsManager = ({ library, onUpdateSettings }: Props) => {
                                     </div>
                                 </div>
                             ) : (
-                                <div style={{display:'grid', gridTemplateColumns:'1fr 2fr 1fr 60px', gap:'10px', alignItems:'center'}}>
+                                <div style={{
+                                    display:'grid', 
+                                    gridTemplateColumns: readOnly ? '1fr 2fr 1fr' : '1fr 2fr 1fr 60px', 
+                                    gap:'10px', alignItems:'center'
+                                }}>
                                     <div style={{fontWeight:'bold', color:'var(--cor-tema)'}}>{cons.name}</div>
                                     <div style={{fontSize:'0.85rem', color:'#ccc'}}>{cons.effect}</div>
                                     <div style={{fontSize:'0.8rem', color:'#88ff88'}}>{cons.cost || '-'}</div>
-                                    <div style={{display:'flex', gap:'5px', justifyContent:'flex-end'}}>
-                                        <button className="btn-icon" onClick={() => startEdit(idx, cons, 'construction')}>✎</button>
-                                        <button className="btn-icon danger" onClick={() => removeConstruction(idx)}>✕</button>
-                                    </div>
+                                    
+                                    {/* BOTÕES DE AÇÃO: Só aparecem se NÃO for readOnly */}
+                                    {!readOnly && (
+                                        <div style={{display:'flex', gap:'5px', justifyContent:'flex-end'}}>
+                                            <button className="btn-icon" onClick={() => startEdit(idx, cons, 'construction')}>✎</button>
+                                            <button className="btn-icon danger" onClick={() => removeConstruction(idx)}>✕</button>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

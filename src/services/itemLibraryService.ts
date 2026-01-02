@@ -1,45 +1,31 @@
 /** ============================================================
  * ARQUIVO: src/services/itemLibraryService.ts
- * DESCRIÇÃO: Serviço unificado para Itens e Características
+ * DESCRIÇÃO: Serviço unificado para Itens, Características e Kits
  * ============================================================ */
 
 import { supabase } from './supabaseClient';
 
 // =============================================================
-// 1. INTERFACES DE MECÂNICA (A Lógica Complexa das Traits)
+// 1. INTERFACES DE MECÂNICA (Traits)
 // =============================================================
 
 export interface TraitEffect {
     id: string;
-    
-    // --- GATILHOS / TESTES ---
     trigger_type: 'instinct' | 'knowledge' | 'practice' | 'specific_roll' | 'always'; 
     trigger_val_1: string; 
     trigger_val_2?: string; 
-    
-    // --- AÇÃO / CONSEQUÊNCIA ---
     action: 'add' | 'remove' | 'convert' | 'none'; 
-    
-    // --- VALORES ---
     source_qty?: number;
     source_resource?: string;
     target_qty: number;
     target_resource: string;
-    
-    // --- CONFIGURAÇÕES ---
     is_mandatory: boolean; 
-    
-    // Configurações de Consequência (Filhos)
     negate_main_effect_on_failure?: boolean; 
     apply_on_first_use?: boolean; 
     risk_condition?: 'always' | 'conflict' | 'non_conflict'; 
-
-    // Dificuldade (Individual)
     difficulty_mode?: 'fixed' | 'increasing'; 
     difficulty_target?: number; 
     difficulty_resource?: string; 
-
-    // Container de Penalidade (Apenas no Pai)
     penalty?: {
         enabled: boolean;
         description?: string; 
@@ -52,7 +38,7 @@ export interface TraitCooldown {
 }
 
 // =============================================================
-// 2. INTERFACES DE DADOS (O Formato do Banco)
+// 2. INTERFACES DE DADOS
 // =============================================================
 
 export interface ItemLibrary {
@@ -72,7 +58,6 @@ export interface ItemTrait {
     name: string;
     description: string;
     cost: number;
-    // Aqui usamos a tipagem forte que definimos acima
     mechanics: {
         effects: TraitEffect[];
         cooldown: TraitCooldown;
@@ -89,17 +74,18 @@ export interface Item {
     category: string;
     charges?: number;
     quality?: number;
-    // O Item salva apenas uma referência leve (ID e Nome) das Traits
     traits: { id: string; name: string }[]; 
     created_by?: string;
 }
 
-export interface StartingKit {
+// --- KIT ATUALIZADO (BD: id=uuid, items=jsonb, description=text) ---
+export interface ItemKit {
     id?: string;
     library_id: string;
     name: string;
     description: string;
-    items_data?: any;
+    items: string[]; // Array de IDs (Front)
+    created_by?: string;
 }
 
 // =============================================================
@@ -164,26 +150,28 @@ export const itemLibraryService = {
         if (error) throw error;
     },
 
-    // --- FAVORITOS (Mantidos simplificados) ---
+    // --- FAVORITOS ---
     async getMyFavorites() {
         const { data: { user } } = await supabase.auth.getUser();
-        const { data } = await supabase.from('user_favorite_items_libraries').select('library:item_libraries(*)').eq('user_id', user?.id);
+        const { data } = await supabase.from('item_user_favorite_libraries').select('library:item_libraries(*)').eq('user_id', user?.id);
         return data?.map((e: any) => e.library) as ItemLibrary[] || [];
     },
+    
     async toggleFavorite(libraryId: string) {
         const { data: { user } } = await supabase.auth.getUser();
         if(!user) return false;
-        const { data: ex } = await supabase.from('user_favorite_items_libraries').select('id').eq('user_id', user.id).eq('library_id', libraryId).single();
-        if (ex) { await supabase.from('user_favorite_items_libraries').delete().eq('id', ex.id); return false; }
-        else { await supabase.from('user_favorite_items_libraries').insert([{ user_id: user.id, library_id: libraryId }]); return true; }
+        const { data: ex } = await supabase.from('item_user_favorite_libraries').select('id').eq('user_id', user.id).eq('library_id', libraryId).single();
+        if (ex) { await supabase.from('item_user_favorite_libraries').delete().eq('id', ex.id); return false; }
+        else { await supabase.from('item_user_favorite_libraries').insert([{ user_id: user.id, library_id: libraryId }]); return true; }
     },
+
     async getFavoriteIds() {
         const { data: { user } } = await supabase.auth.getUser();
-        const { data } = await supabase.from('user_favorite_items_libraries').select('library_id').eq('user_id', user?.id);
+        const { data } = await supabase.from('item_user_favorite_libraries').select('library_id').eq('user_id', user?.id);
         return data?.map(d => d.library_id) || [];
     },
 
-    // --- ITENS (AQUI ESTAVA O FOCO DA SUA DÚVIDA) ---
+    // --- ITENS ---
 
     async getItemsByLibrary(libraryId: string) {
         const { data, error } = await supabase
@@ -199,8 +187,6 @@ export const itemLibraryService = {
     async createItem(item: Item) {
         const { data: { user } } = await supabase.auth.getUser();
         
-        // Prepara o objeto para o banco
-        // IMPORTANTE: traits é um array JSONB simples aqui
         const payload = { 
             library_id: item.library_id,
             name: item.name,
@@ -209,7 +195,7 @@ export const itemLibraryService = {
             category: item.category,
             charges: item.charges,
             quality: item.quality,
-            traits: item.traits || [], // Garante que não vá null
+            traits: item.traits || [],
             created_by: user?.id 
         };
 
@@ -228,7 +214,7 @@ export const itemLibraryService = {
         if (error) throw error;
     },
 
-    // --- CARACTERÍSTICAS (TRAITS) - COM A LÓGICA COMPLEXA ---
+    // --- CARACTERÍSTICAS (TRAITS) ---
 
     async getTraitsByLibrary(libId: string) {
         const { data, error } = await supabase
@@ -239,7 +225,6 @@ export const itemLibraryService = {
             
         if (error) throw error;
         
-        // Converte o JSON do banco para a Interface Tipada
         return data.map((t: any) => ({
             ...t,
             mechanics: t.automation_config || { 
@@ -252,7 +237,6 @@ export const itemLibraryService = {
     async saveTrait(trait: ItemTrait) {
         const { data: { user } } = await supabase.auth.getUser();
         
-        // Converte a Interface Tipada para JSON do banco
         const payload: any = { 
             name: trait.name,
             description: trait.description,
@@ -278,16 +262,60 @@ export const itemLibraryService = {
         if (error) throw error;
     },
 
-    // --- KITS ---
+    // --- KITS (CORRIGIDO: Coluna 'items' no lugar de 'items_list') ---
 
     async getKitsByLibrary(libId: string) {
         const { data, error } = await supabase
-            .from('starting_kits')
+            .from('item_kits')
             .select('*')
             .eq('library_id', libId)
             .order('name', { ascending: true });
             
         if (error) throw error;
-        return data as StartingKit[];
+
+        // Processamento Mínimo: JSON do Banco -> Array de IDs da UI
+        return data.map((kit: any) => ({
+            id: kit.id,
+            library_id: kit.library_id,
+            name: kit.name,
+            description: kit.description, // Coluna 'description' do banco
+            // Coluna 'items' do banco (JSON [{item_id, qty}]) -> Array string[]
+            items: Array.isArray(kit.items) 
+                ? kit.items.map((i: any) => i.item_id) 
+                : [],
+            created_by: kit.created_by
+        })) as ItemKit[];
+    },
+
+    async saveKit(kit: ItemKit) {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        // Formata Array de Strings -> JSON para o Banco
+        const formattedItems = kit.items 
+            ? kit.items.map(id => ({ item_id: id, quantity: 1 }))
+            : [];
+
+        const payload = {
+            library_id: kit.library_id,
+            name: kit.name,
+            description: kit.description,
+            items: formattedItems, // Agora grava na coluna 'items'
+            created_by: user?.id
+        };
+
+        if (kit.id) {
+            const { data, error } = await supabase.from('item_kits').update(payload).eq('id', kit.id).select().single();
+            if (error) throw error;
+            return data;
+        } else {
+            const { data, error } = await supabase.from('item_kits').insert([payload]).select().single();
+            if (error) throw error;
+            return data;
+        }
+    },
+
+    async deleteKit(id: string) {
+        const { error } = await supabase.from('item_kits').delete().eq('id', id);
+        if (error) throw error;
     }
 };

@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Lê direto dos metadados (Rápido e sem ir no banco)
     const meta = sessionUser.user_metadata;
     if (meta) {
-        setUsername(meta.display_name || 'Explorador');
+        setUsername(meta.display_name || 'Username');
         // Se existir role no token, usa. Se não, usa infectado.
         setRole((meta.role as UserMode) || 'infectado');
     }

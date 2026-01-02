@@ -25,22 +25,6 @@
 
 .wm-actions-top { display: flex; gap: 12px; }
 
-/* Botões do Topo */
-.btn-action-primary {
-    background: var(--cor-tema); color: #000; border: none; padding: 10px 20px;
-    border-radius: 4px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s;
-    font-size: 0.85rem; letter-spacing: 0.5px;
-}
-.btn-action-primary:hover { box-shadow: 0 0 15px var(--cor-tema-glow); transform: translateY(-2px); }
-
-.btn-action-outline {
-    background: transparent; border: 1px solid var(--cor-tema); color: var(--cor-tema);
-    padding: 10px 20px; border-radius: 4px; font-weight: 800; text-transform: uppercase;
-    cursor: pointer; transition: 0.2s; font-size: 0.85rem; letter-spacing: 0.5px;
-}
-.btn-action-outline:hover { background: rgba(var(--cor-tema-rgb), 0.1); box-shadow: 0 0 10px var(--cor-tema-glow); }
-.btn-action-outline.active { background: var(--cor-tema); color: #000; }
-
 /* Breadcrumbs */
 .wm-breadcrumbs { display: flex; align-items: center; gap: 12px; margin-top: 8px;}
 .btn-back-text {
@@ -118,6 +102,11 @@
     text-transform: uppercase;
     font-size: 1rem;
     letter-spacing: 0.5px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 
 .stat-row-grid {

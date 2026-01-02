@@ -1,17 +1,19 @@
 /** ============================================================
  * ARQUIVO: src/pages/Dashboard/contentsAssimilator/ItemManager/index.tsx
- * DESCRIÇÃO: Gestão de Itens
+ * DESCRIÇÃO: Gestão de Itens e Kits
  * ============================================================ */
 
 import { useEffect, useState } from 'react';
-import { itemLibraryService, type ItemLibrary, type Item, type ItemTrait } from '../../../../services/itemLibraryService';
+import { itemLibraryService, type ItemLibrary, type Item, type ItemTrait, type ItemKit } from '../../../../services/itemLibraryService';
 import './Styles.css';
+import '../../../../styles/Libraries.css';
 
 // Componentes
-import { TraitModal } from './components/TraitModal';
+import { TraitModal } from './components/ItemTraitModal'; // Verifique se o nome do arquivo é este ou TraitModal.tsx
 import { ItemModal } from './components/ItemModal';
-import { LibraryModal } from './components/LibraryModal';
-import { CommunityModal } from './components/CommunityModal';
+import { LibraryModal } from './components/ItemLibraryModal'; // Verifique se o nome do arquivo é este ou LibraryModal.tsx
+import { CommunityModal } from './components/ItemCommunityModal'; // Verifique se o nome do arquivo é este ou CommunityModal.tsx
+import { KitModal } from './components/ItemKitModal'; // Ou KitModal.tsx, dependendo de como você salvou
 
 function ItemManager() {
     const [viewMode, setViewMode] = useState<'libraries' | 'items'>('libraries');
@@ -22,14 +24,16 @@ function ItemManager() {
     
     const [items, setItems] = useState<Item[]>([]);
     const [traits, setTraits] = useState<ItemTrait[]>([]);
+    const [kits, setKits] = useState<ItemKit[]>([]); 
     
     // Modais
     const [showLibModal, setShowLibModal] = useState(false);
     const [showItemModal, setShowItemModal] = useState(false);
     const [showTraitModal, setShowTraitModal] = useState(false);
+    const [showKitModal, setShowKitModal] = useState(false);
     const [showCommunityModal, setShowCommunityModal] = useState(false);
     
-    // Objeto genérico de edição (pode ser Item, Library ou Trait)
+    // Objeto genérico de edição (pode ser Item, Library, Trait ou Kit)
     const [editingObj, setEditingObj] = useState<any>(null);
 
     // Initial Load
@@ -38,8 +42,11 @@ function ItemManager() {
     // Detail Load
     useEffect(() => {
         if (viewMode === 'items' && selectedLib) {
+            // Sempre carregamos traits e items pois Kits dependem de Itens para serem montados
             loadTraits(selectedLib.id); 
-            if (innerTab === 'items') loadItems(selectedLib.id);
+            loadItems(selectedLib.id);
+            
+            if (innerTab === 'kits') loadKits(selectedLib.id);
         }
     }, [viewMode, selectedLib, innerTab]);
 
@@ -61,6 +68,16 @@ function ItemManager() {
 
     const loadTraits = async (libId: string) => {
         try { const data = await itemLibraryService.getTraitsByLibrary(libId); setTraits(data); } catch (error) { console.error(error); }
+    };
+
+    // --- LOAD KITS ---
+    const loadKits = async (libId: string) => {
+        try { 
+            const data = await itemLibraryService.getKitsByLibrary(libId); 
+            setKits(data); 
+        } catch (error) { 
+            console.error("Erro ao carregar kits", error); 
+        }
     };
 
     // --- HANDLERS ---
@@ -109,6 +126,19 @@ function ItemManager() {
         await itemLibraryService.deleteTrait(id); loadTraits(selectedLib!.id);
     };
 
+    // --- HANDLERS DE KITS ---
+    const handleSaveKit = async (data: ItemKit) => {
+        try {
+            await itemLibraryService.saveKit({ ...data, library_id: selectedLib!.id });
+            setShowKitModal(false); loadKits(selectedLib!.id);
+        } catch (e) { alert("Erro ao salvar kit."); }
+    };
+
+    const handleDeleteKit = async (id: string) => {
+        if(!confirm("Apagar kit?")) return;
+        await itemLibraryService.deleteKit(id); loadKits(selectedLib!.id);
+    };
+
     const openTraitCreatorFromItem = () => {
         setShowItemModal(false); 
         setEditingObj(null);     
@@ -117,31 +147,29 @@ function ItemManager() {
     };
 
     const renderLibCard = (lib: ItemLibrary, isMine: boolean) => (
-        <div key={lib.id} className={`sys-card ${lib.is_official ? 'official' : ''}`}>
+        <div key={lib.id} className={`bib-card ${lib.is_official ? 'official' : ''}`}>
             
-            <div className="sys-card-header">
-                <span className="sys-card-title">{lib.name}</span>
+            <div className="bib-card-header">
+                <span className="bib-card-title">{lib.name}</span>
                 
                 {(lib.is_public || lib.is_official) && (
                     <div>
-                        {lib.is_public && <span className="badge-public">PÚBLICO</span>}
-                        {lib.is_official && <span className="badge-official">SISTEMA</span>}
+                        {lib.is_public && <span className="bib-badge-public">PÚBLICO</span>}
+                        {lib.is_official && <span className="bib-badge-official">SISTEMA</span>}
                     </div>
                 )}
             </div>
 
-            <div className="sys-card-body">
+            <div className="bib-card-body">
                 {lib.description || "Sem descrição."}
             </div>
 
-            <div className="sys-card-footer">
+            <div className="bib-card-footer">
                 <button className="btn-open-lib" onClick={() => { setSelectedLib(lib); setViewMode('items'); setInnerTab('items'); }}>ABRIR</button>
                 
                 {isMine && (
-                    <div className="sys-card-actions">
+                    <div className="bib-card-actions">
                         <button className="btn-icon" onClick={() => { setEditingObj(lib); setShowLibModal(true); }}>✎</button>
-                        
-                        {/* REGRAS DO ITEMMANAGER: Oficial PODE editar, mas NÃO pode apagar */}
                         {!lib.is_official && (
                             <button className="btn-icon danger" onClick={() => handleDeleteLib(lib.id)}>🗑</button>
                         )}
@@ -176,16 +204,14 @@ function ItemManager() {
                     <>
                         <div className="im-section">
                             <h3 className="im-section-title">MEUS DEPÓSITOS</h3>
-                            {/* USANDO A NOVA GRID GLOBAL */}
-                            <div className="sys-card-grid">
+                            <div className="bib-card-grid">
                                 {myLibraries.map(lib => renderLibCard(lib, true))}
                                 {myLibraries.length===0 && <div className="empty-state-mini">Sem depósitos.</div>}
                             </div>
                         </div>
                         <div className="im-section">
                             <h3 className="im-section-title">MEUS FAVORITOS</h3>
-                            {/* USANDO A NOVA GRID GLOBAL */}
-                            <div className="sys-card-grid">{favLibraries.map(lib => renderLibCard(lib, false))}</div>
+                            <div className="bib-card-grid">{favLibraries.map(lib => renderLibCard(lib, false))}</div>
                         </div>
                     </>
                 )}
@@ -254,12 +280,46 @@ function ItemManager() {
                             </>
                         )}
                         
-                        {innerTab === 'kits' && <div className="empty-state">Em desenvolvimento...</div>}
+                        {/* --- IMPLEMENTAÇÃO DA ABA DE KITS (CORRIGIDA) --- */}
+                        {innerTab === 'kits' && (
+                            <>
+                                <div className="im-toolbar">
+                                    <span className="im-counter">{kits.length} KITS</span>
+                                    {myLibraries.some(my => my.id === selectedLib.id) && <button className="btn-action-primary" onClick={() => { setEditingObj(null); setShowKitModal(true); }}>+ NOVO KIT</button>}
+                                </div>
+                                <div className="items-list-container">
+                                    {kits.map(kit => (
+                                        <div key={kit.id} className="item-row">
+                                            <div className="item-info">
+                                                <div className="item-main">
+                                                    <span className="item-name" style={{color: '#aaffaa'}}>📦 {kit.name}</span>
+                                                    {/* REMOVIDO O SPAN DE CUSTO QUE ESTAVA AQUI */}
+                                                </div>
+                                                <p className="item-desc">{kit.description}</p>
+                                                {/* Lista resumida de itens dentro do kit */}
+                                                <div style={{display:'flex', gap:'5px', flexWrap:'wrap', marginTop:'5px'}}>
+                                                    {kit.items && kit.items.length > 0 ? (
+                                                        kit.items.map(itemId => {
+                                                            const item = items.find(i => i.id === itemId);
+                                                            return item ? (
+                                                                <span key={itemId} style={{fontSize:'0.65rem', padding:'2px 6px', background:'rgba(100,255,100,0.1)', borderRadius:'3px', color:'#afa'}}>{item.name}</span>
+                                                            ) : null;
+                                                        })
+                                                    ) : <span style={{fontSize:'0.7rem', color:'#555'}}>Kit vazio</span>}
+                                                </div>
+                                            </div>
+                                            {myLibraries.some(my => my.id === selectedLib.id) && <div className="item-actions"><button className="btn-icon-small" onClick={() => { setEditingObj(kit); setShowKitModal(true); }}>✎</button><button className="btn-icon-small danger" onClick={() => handleDeleteKit(kit.id!)}>✕</button></div>}
+                                        </div>
+                                    ))}
+                                    {kits.length === 0 && <div className="empty-state">Nenhum kit criado.</div>}
+                                </div>
+                            </>
+                        )}
                     </>
                 )}
             </div>
 
-            {/* MODAIS - NOMES DE VARIÁVEIS CORRIGIDOS */}
+            {/* MODAIS */}
             <LibraryModal 
                 isOpen={showLibModal} 
                 onClose={() => setShowLibModal(false)} 
@@ -268,13 +328,13 @@ function ItemManager() {
             />
             
             <ItemModal 
-                isOpen={showItemModal} // Nome correto
-                onClose={() => setShowItemModal(false)} // Nome correto
+                isOpen={showItemModal} 
+                onClose={() => setShowItemModal(false)} 
                 onSave={handleSaveItem}
-                initialData={editingObj} // Nome correto (editingObj, não editingItem)
+                initialData={editingObj} 
                 availableTraits={traits}
-                onCreateTrait={openTraitCreatorFromItem} // Nome da função auxiliar criada acima
-                currentLibraryId={selectedLib?.id} // Nome correto (selectedLib, não selectedLibrary)
+                onCreateTrait={openTraitCreatorFromItem} 
+                currentLibraryId={selectedLib?.id} 
             />
             
             <TraitModal 
@@ -282,6 +342,14 @@ function ItemManager() {
                 onClose={() => setShowTraitModal(false)} 
                 onSave={handleSaveTrait} 
                 initialData={editingObj} 
+            />
+
+            <KitModal 
+                isOpen={showKitModal} 
+                onClose={() => setShowKitModal(false)} 
+                onSave={handleSaveKit} 
+                initialData={editingObj}
+                availableItems={items} 
             />
             
             <CommunityModal 

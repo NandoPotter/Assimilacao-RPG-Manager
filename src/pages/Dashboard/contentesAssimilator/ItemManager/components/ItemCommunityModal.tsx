@@ -1,10 +1,10 @@
 /** ============================================================
- * ARQUIVO: src/pages/Dashboard/contentsAssimilator/WorldManager/components/WorldCommunityModal.tsx
+ * ARQUIVO: src/pages/Dashboard/contentsAssimilator/ItemManager/components/CommunityModal.tsx
+ * DESCRIÇÃO: Modal de Comunidade para Itens
  * ============================================================ */
 
 import { useEffect, useState } from 'react';
-import { worldLibraryService } from '../../../../../services/worldLibraryService';
-import type { WorldLibrary } from '../../../../../interfaces/World';
+import { itemLibraryService, type ItemLibrary } from '../../../../../services/itemLibraryService';
 
 interface Props {
     isOpen: boolean;
@@ -12,62 +12,67 @@ interface Props {
     onClone: () => void;
 }
 
-export const WorldCommunityModal = ({ isOpen, onClose, onClone }: Props) => {
-    const [publicLibs, setPublicLibs] = useState<WorldLibrary[]>([]);
-    const [favorites, setFavorites] = useState<string[]>([]);
+export const CommunityModal = ({ isOpen, onClose, onClone }: Props) => {
+    const [publicLibs, setPublicLibs] = useState<ItemLibrary[]>([]);
+    const [favIds, setFavIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
     useEffect(() => {
         if (isOpen) {
-            loadData();
+            loadCommunity();
         }
     }, [isOpen]);
 
-    const loadData = async () => {
+    const loadCommunity = async () => {
         setLoading(true);
         try {
-            const [pubs, favs] = await Promise.all([
-                worldLibraryService.getPublicLibraries(),
-                worldLibraryService.getMyFavorites()
+            // Busca depósitos públicos e IDs favoritados
+            // O getPublicLibraries já deve retornar o tipo correto (ItemLibrary[])
+            const [libs, ids] = await Promise.all([
+                itemLibraryService.getPublicLibraries(),
+                itemLibraryService.getFavoriteIds()
             ]);
-            setPublicLibs(pubs);
-            setFavorites(favs.map(f => f.id));
+            
+            // Casting explícito se necessário, dependendo do retorno do seu service
+            setPublicLibs((libs as unknown as ItemLibrary[]) || []); 
+            setFavIds(ids || []);
         } catch (error) {
-            console.error("Erro ao carregar dados", error);
+            console.error("Erro ao carregar comunidade de itens", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleClone = async (lib: WorldLibrary) => {
-        if (!confirm(`Importar "${lib.name}"? Isso criará uma cópia editável nos seus mundos.`)) return;
-        
-        setActionLoading(lib.id);
+    const handleToggleFav = async (libId: string) => {
         try {
-            await worldLibraryService.cloneLibrary(lib.id);
-            alert("Mundo importado com sucesso!");
-            onClone(); 
-            onClose(); 
-        } catch (error) {
-            console.error(error);
-            alert("Erro ao importar.");
-        } finally {
-            setActionLoading(null);
+            const isNowFav = await itemLibraryService.toggleFavorite(libId);
+            if (isNowFav) {
+                setFavIds([...favIds, libId]);
+            } else {
+                setFavIds(favIds.filter(id => id !== libId));
+            }
+            onClone(); // Atualiza a lista principal em tempo real
+        } catch (e) {
+            console.error(e);
+            alert("Erro ao favoritar");
         }
     };
 
-    const handleToggleFav = async (lib: WorldLibrary) => {
+    const handleClone = async (lib: ItemLibrary) => {
+        if (!confirm(`Clonar "${lib.name}" para seus depósitos?`)) return;
+
+        setActionLoading(lib.id);
         try {
-            const isNowFav = await worldLibraryService.toggleFavorite(lib.id);
-            if (isNowFav) {
-                setFavorites([...favorites, lib.id]);
-            } else {
-                setFavorites(favorites.filter(id => id !== lib.id));
-            }
-            onClone(); // Atualiza a tela principal (se estiver mostrando favoritos lá)
+            await itemLibraryService.createLibrary(lib); // Assume que createLibrary aceita Partial<ItemLibrary> para clonar
+            alert("Depósito clonado com sucesso!");
+            onClone();
+            onClose();
         } catch (error) {
             console.error(error);
+            alert("Erro ao clonar depósito.");
+        } finally {
+            setActionLoading(null);
         }
     };
 
@@ -76,41 +81,49 @@ export const WorldCommunityModal = ({ isOpen, onClose, onClone }: Props) => {
     return (
         <div className="modal-overlay" style={{zIndex: 2200}}>
             <div className="modal-box large-modal" style={{maxWidth: '900px', height: '80vh', display: 'flex', flexDirection: 'column'}}>
+                
+                {/* Header */}
                 <div className="modal-header-row">
-                    <h3 className="modal-title">COMUNIDADE DE MUNDOS</h3>
+                    <h3 className="modal-title">COMUNIDADE DE ITENS</h3>
                     <button className="btn-close-x" onClick={onClose} style={{fontSize:'1.5rem', background:'none', border:'none', color:'#fff', cursor:'pointer'}}>✕</button>
                 </div>
 
+                {/* Lista Scrollável */}
                 <div className="community-list-scroll" style={{flex: 1, overflowY: 'auto', padding: '10px'}}>
-                    {loading && <div className="loading-text">Carregando universos...</div>}
+                    {loading && <div className="loading-text">Buscando sinais na rede...</div>}
                     
                     {!loading && (
                         <div className="bib-card-grid">
                             {publicLibs.map(lib => {
-                                const isFav = favorites.includes(lib.id);
+                                const isFav = favIds.includes(lib.id);
                                 return (
                                     <div key={lib.id} className={`bib-card ${lib.is_official ? 'official' : ''}`} style={{minHeight:'auto'}}>
+                                        
+                                        {/* Card Header */}
                                         <div className="bib-card-header">
                                             <span className="bib-card-title">{lib.name}</span>
-                                            {(lib.is_public || lib.is_official) && (
-                                                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                                    {lib.is_public && <span className="badge-public">PÚBLICO</span>}
-                                                    {lib.is_official && <span className="badge-official">SISTEMA</span>}
-                                                </div>
-                                            )}
+                                            
+                                            {/* Badges e Autor */}
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}>
+                                                {lib.is_public && <span className="badge-public">PÚBLICO</span>}
+                                                {lib.is_official && <span className="badge-official">SISTEMA</span>}                                                
+                                            </div>
                                             <span className="bib-car-author">
                                                 Criado por: {lib.profiles?.username || 'Desconhecido'}
                                             </span>
                                         </div>
+
+                                        {/* Card Body */}
                                         <div className="bib-card-body" style={{fontSize:'0.85rem', marginBottom:'15px'}}>
                                             {lib.description || "Sem descrição."}
                                         </div>
                                         
+                                        {/* Card Footer (Ações) */}
                                         <div className="bib-card-footer" style={{paddingTop:'10px', gap:'10px'}}>
                                             {/* BOTÃO FAVORITAR */}
                                             <button 
                                                 className="bib-btn-explore"
-                                                onClick={() => handleToggleFav(lib)}
+                                                onClick={() => handleToggleFav(lib.id)}
                                                 title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                                                 style={{
                                                     flex: 1, 
@@ -129,14 +142,14 @@ export const WorldCommunityModal = ({ isOpen, onClose, onClone }: Props) => {
                                                 </span>
                                             </button>
 
-                                            {/* BOTÃO IMPORTAR */}
+                                            {/* Botão Importar/Clonar */}
                                             <button 
-                                                className="bib-btn-action" 
+                                                className="btn-action-primary" 
                                                 style={{flex: 3, fontSize:'0.75rem'}}
                                                 onClick={() => handleClone(lib)}
                                                 disabled={actionLoading === lib.id}
                                             >
-                                                {actionLoading === lib.id ? '...' : 'ASSIMILAR'}
+                                                {actionLoading === lib.id ? '...' : 'CLONAR'}
                                             </button>
                                         </div>
                                     </div>
@@ -146,7 +159,7 @@ export const WorldCommunityModal = ({ isOpen, onClose, onClone }: Props) => {
                     )}
 
                     {!loading && publicLibs.length === 0 && (
-                        <div className="empty-state">Nenhum mundo público encontrado.</div>
+                        <div className="empty-state">Nenhum depósito público encontrado.</div>
                     )}
                 </div>
             </div>
